@@ -33,7 +33,7 @@ class RegisterController {
             const token = genToken(newUser);
             res.status(ResponseCodes.CREATED).json(
                 {
-                    owner: newUser,
+                    user: newUser,
                     token: token
                 }
             );

@@ -26,7 +26,8 @@ class CaretakerController{
             const token = genToken(caretaker);
             res.status(ResponseCodes.SUCCESS).json(
                 {
-                    token: token
+                    token: token,
+                    user: caretaker
                 }
             );
         }

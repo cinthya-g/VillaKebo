@@ -2,10 +2,10 @@
   "name": "villakebo",
   "version": "1.0.0",
   "description": "Proyecto TDS 2024",
-  "main": "index.js",
+  "main": "dist/index.js", 
   "scripts": {
     "start": "node dist/.",
-    "local": "ts-node index.ts",
+    "local": "ts-node src/index.ts",
     "dev": "nodemon src/index.ts",
     "build": "rimraf dist && tsc"
   },

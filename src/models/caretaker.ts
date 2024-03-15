@@ -6,7 +6,7 @@ const caretakerSchema = new Schema({
     email: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: String, default: Roles.CARETAKER },
-    status: { type: String },
+    status: { type: String, default: "I <3 pets!"},
     GroupsIDs: [{ type: Schema.Types.ObjectId, ref: "Pet" }],
     profilePicture: { type: String },
     //TODO DEFINE WHAT IS REQUIRED

@@ -12,7 +12,12 @@ Si hay problemas con la versión de node, instalar la v16.20.1 o la que indique 
 
 Crear un archivo `.env` en la raíz del proyecto con las variables indicadas en el `.envTemplate`, sustituyéndolas por lo indicado en el campo.
 
-Iniciar escucha del servidor:
+Primero, se debe crear un build con
+```
+npm run build
+```
+
+y, después, correr el proyecto con
 ```
 node .
 ```
