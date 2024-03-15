@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import Owner from "../models/owner";
 import { ResponseCodes } from "../utils/res-codes";
-import { Rols } from "../utils/rols";
+import { Roles } from "../utils/roles";
 import { hashPassword, comparePassword } from "../utils/passwordHash";
 import { genToken } from "../utils/genToken";
 
@@ -13,7 +13,7 @@ class OwnerController{
                 username: req.body.username,
                 email: req.body.email.toLowerCase(),
                 password: hashPassword(req.body.password),
-                rol: Rols.OWNER
+                rol: Roles.OWNER
             }
 
             if(!data.username || !data.email || !data.password){

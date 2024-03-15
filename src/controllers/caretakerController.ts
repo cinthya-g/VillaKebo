@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 
-import User from "../models/users";
+import User from "../models/caretaker";
 import { ResponseCodes } from "../utils/res-codes";
-import { Rols } from "../utils/rols";
+import { Roles } from "../utils/roles";
 import { hashPassword } from "../utils/passwordHash";
 import { genToken } from "../utils/genToken";
 
-class UserController{
+class CaretakerController{
 
 }
 
-export default new UserController();
+export default new CaretakerController();

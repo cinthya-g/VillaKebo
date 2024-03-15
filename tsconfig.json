@@ -5,9 +5,12 @@
       "outDir": "./dist",
       "esModuleInterop": true,
       "noImplicitAny": true,
+      "baseUrl": "./src",
     },
     "include": [
       "src/**/*.ts",
     ],
-    "exclude": [],
+    "exclude": [
+      "node_modules",
+    ],
   }
