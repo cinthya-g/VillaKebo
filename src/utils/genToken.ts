@@ -10,6 +10,3 @@ export function genToken(data: any) {
     return jwt.sign(processedData, process.env.TOKEN_KEY || 'shhhh', { expiresIn: '1h' });
 }
 
-export function verifyToken(token: string) {
-    return jwt.verify(token, process.env.TOKEN_KEY);
-}
