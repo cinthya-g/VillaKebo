@@ -1,0 +1,4 @@
+DB=<insert your db string here>
+PORT=3000
+salt=<number for hashing password>
+TOKEN_KEY=<string for token key>
