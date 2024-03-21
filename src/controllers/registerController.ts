@@ -22,7 +22,7 @@ class RegisterController {
                 res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
                 return;
             }
-
+            
             let newUser;
             if(data.isOwner) {
                 newUser = await Owner.create(data);
