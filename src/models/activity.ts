@@ -1,10 +1,10 @@
 import {Schema, model} from "mongoose";
 
 const activitySchema = new Schema({
-    ID: { type: String, required: true },
-    Name: { type: String, required: true },
+    name: { type: String, required: true },
     Description: { type: String, required: true },
-    Frequency: { type: String, required: true }
+    Frequency: { type: String, required: true },
+    Completed: { type: Boolean, default: false },
 });
 
 export default model("activities", activitySchema);

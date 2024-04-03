@@ -1,10 +1,9 @@
 import { Schema, model } from "mongoose";
 
 const petGroupSchema = new Schema({
-    ID: { type: String, required: true},
-    PetsIDs: { type: String, required: true },
-    Name: [{ type: Schema.Types.ObjectId, ref: 'pets' }],
-    CaretakerID: { type: String, required: true },
+    petsIDs: { type: String, required: true },
+    name: [{ type: Schema.Types.ObjectId, ref: 'pets' }],
+    caretakerID: { type: String, required: true },
 
 });
 
