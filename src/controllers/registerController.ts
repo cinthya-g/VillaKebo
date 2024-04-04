@@ -7,6 +7,63 @@ import { ResponseCodes } from "../utils/res-codes";
 import Owner from "../models/owner";
 import Caretaker from "../models/caretaker";
 
+/**
+ * @swagger
+ * tags:
+ *   name: Registration
+ *   description: User registration operations
+ * 
+ * /auth/register:
+ *   post:
+ *     tags: [Registration]
+ *     summary: Register a new user
+ *     description: Registers a new user as either an owner or a caretaker based on the provided flag.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - email
+ *               - password
+ *               - isOwner
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 description: Username for the new account
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email address for the new account
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: Password for the new account
+ *               isOwner:
+ *                 type: boolean
+ *                 description: Flag to determine if the user is registering as an owner or caretaker
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *                 token:
+ *                   type: string
+ *                   description: Authentication token for the user
+ *       400:
+ *         description: Missing required fields or email already registered
+ *       500:
+ *         description: Internal Server Error
+ */
+
+
 class RegisterController {
 
     async registerUser(req: Request, res: Response) {       
