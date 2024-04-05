@@ -55,7 +55,7 @@ const s3Storage = multerS3({
 });
 
 
-const upload=multer({
+const upload = multer({
     storage:s3Storage});
 
 export default upload;

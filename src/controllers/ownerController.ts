@@ -6,6 +6,7 @@ import { ResponseCodes } from "../utils/res-codes";
 
 import Owner from "../models/owner";
 import Pet from "../models/pet";
+import upload from "middleware/aws-upload-middleware";
 
 /**
  * @swagger
@@ -162,10 +163,72 @@ class OwnerController{
                 breed: breed
             }
 
-            await Pet.create(newPet);
+            const pet = await Pet.create(newPet);
+            await Owner.findOneAndUpdate({ _id: ownerID }, { $push: { PetsIDs: pet._id } });
+
             res.status(ResponseCodes.SUCCESS).send("Pet created successfully");
 
         } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+    
+    async uploadPetRecords(req: Request, res: Response) {
+        try{
+            let { petID, records } = req.body;
+
+            if (!petID || !records) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            const pet = await Pet.findOne({ _id: petID });
+
+            if (!pet) {
+                res.status(ResponseCodes.BAD_REQUEST).send("This pet Does not exist");
+                return;
+            }
+
+            //Todo : Upload records to S3
+            // const upload = upload.single('file'); ???
+            // file name = petID + 'Record' ??
+
+            res.status(ResponseCodes.SUCCESS).send("Records uploaded successfully");
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+
+
+    async updatePet(req: Request, res: Response) {
+        try{
+            const options = { new: true }; // This option ensures that the updated document is returned
+            
+            let { petID, update } = req.body;
+            
+            if (!petID || !update) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            /* Expected request
+                {
+                    "petID": "66100027b52a931e19a6035d",
+                    "update": {
+                        "ownerID": "aaaff",
+                        "name": "bbccb",
+                        "age":  77795685,
+                        "breed": "5ccc"
+                    }
+                }
+            */
+            
+            const updatedPet = await Pet.findOneAndUpdate({ _id: petID }, update, options);
+            res.status(ResponseCodes.SUCCESS).send(updatedPet);
+        }
+        catch(error) {
             console.log('ERROR:', error);
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
         }
@@ -188,6 +251,28 @@ class OwnerController{
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
         }
     }
+
+    async getOwnerPets(req: Request, res: Response) {
+        try {
+            let { ownerID } = req.body.user;
+
+            console.log(ownerID);
+
+            if (!ownerID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            const petsByOwnerIDs = await Owner.findOne({ _id: ownerID }, 'PetsIDs');
+            const petsByOwner = await Pet.find({ _id: { $in: petsByOwnerIDs.PetsIDs } });
+            res.status(ResponseCodes.SUCCESS).send(petsByOwner);
+
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+
 
 }
 

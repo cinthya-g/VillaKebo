@@ -84,4 +84,9 @@ router.get('', (req, res) => {
     res.send('Owner Works');
 });
 
+router.put('/updatePet', authMiddleware, roleMiddleware(['owner', 'admin']), ownerController.updatePet);
+router.post('uploadRecord', authMiddleware, roleMiddleware(['owner', 'admin']), ownerController.uploadPetRecords);
+router.get('/getPetsByOwner', authMiddleware, roleMiddleware(['owner', 'admin']), ownerController.getOwnerPets);
+
+
 export default router;
