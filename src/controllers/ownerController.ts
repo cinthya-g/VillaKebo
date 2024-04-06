@@ -548,6 +548,8 @@ class OwnerController{
          Reservations can't be confirmed if they don't have any activities
          and can't be changed or updated, just canceled
          */
+
+        // TODO: Develop the logic to add pets to certain GroupPets when a Reservation's confirmed
         try {
             let { reservationID } = req.body;
             

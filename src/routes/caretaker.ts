@@ -28,4 +28,16 @@ router.post('/upload-photo', uploadPhoto.single('photo'), caretakerController.sa
 
 router.get('/get-picture', caretakerController.getPicture);
 
+// Caretaker-Pet-PetGroups actions
+
+router.put('/join-group', caretakerController.joinPetGroup);
+
+router.get('/get-groups', caretakerController.getPetGroups);
+
+router.get('/get-group/:id', caretakerController.getPetGroup);
+
+// Caretaker-Reservation-Activity actions
+
+router.put('/accomplish-activity', caretakerController.accomplishActivity);
+
 export default router;

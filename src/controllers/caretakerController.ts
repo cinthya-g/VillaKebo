@@ -6,6 +6,7 @@ import { ResponseCodes } from "../utils/res-codes";
 
 import Caretaker from "../models/caretaker";
 import Pet from "../models/pet";
+import Reservation from "../models/reservation";
 import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
 
  /**
@@ -165,6 +166,40 @@ class CaretakerController{
         }
 
     }
+
+    // TODO: Finish these functions with dummy responses
+    async joinPetGroup(req: Request, res: Response) {
+        // The caretaker will join a petgroup
+        /**
+         * Expected request
+         * {
+         *     "groupID": "5f7b1b7b4b3b4b3b4b3b4b3b"
+         * }
+         */
+        res.status(ResponseCodes.SUCCESS).send("Dummy: You joined the petgroup!");
+    }
+
+    async getPetGroups(req: Request, res: Response) {
+        // The caretaker will get the petgroups they are part of
+        res.status(ResponseCodes.SUCCESS).send("Dummy: Here are the petgroups!");
+    }
+
+    async getPetGroup(req: Request, res: Response) {
+        // The caretaker will get the details of a petgroup
+        res.status(ResponseCodes.SUCCESS).send("Dummy: Here is the single petgroup!");
+    }
+
+    async accomplishActivity(req: Request, res: Response) {
+        // The caretaker will increse the 'timesCompleted' field of an activity when it is accomplished
+        /**
+         * Expected request
+         * {
+         *     "activityID": "5f7b1b7b4b3b4b3b4b3b4b3b"
+         * }
+         */
+        res.status(ResponseCodes.SUCCESS).send("Dummy: You accomplished the activity one more time!");
+    }
+
 
 }
 
