@@ -11,114 +11,56 @@ import Activity from "../models/activity";
 import PetGroup from "../models/petgroup";
 import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
 
-/**
- * @swagger
- * tags:
- *   name: Owner
- *   description: Operations related to pet owners
- * 
- * /auth/owner-login:
- *   post:
- *     tags: [Owner]
- *     summary: Log in an owner
- *     description: Authenticates an owner and returns an auth token.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 description: Owner's email address
- *               password:
- *                 type: string
- *                 format: password
- *                 description: Owner's password
- *     responses:
- *       200:
- *         description: Successful login, returns token and owner information
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *                 user:
- *                   $ref: '#/components/schemas/Owner'
- *       400:
- *         description: Missing required fields
- *       401:
- *         description: Owner not found or incorrect password
- *       500:
- *         description: Internal Server Error
- * 
- * /owner/create-pet:
- *   post:
- *     tags: [Owner]
- *     summary: Create a pet for the owner
- *     description: Registers a new pet under the owner's account.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *               - age
- *               - breed
- *             properties:
- *               name:
- *                 type: string
- *                 description: Pet's name
- *               age:
- *                 type: integer
- *                 description: Pet's age
- *               breed:
- *                 type: string
- *                 description: Pet's breed
- *     responses:
- *       200:
- *         description: Pet created successfully
- *       400:
- *         description: Missing required fields
- *       500:
- *         description: Internal Server Error
- * 
- * /owner/delete-pet:
- *   delete:
- *     tags: [Owner]
- *     summary: Delete an owner's pet
- *     description: Removes a pet from the owner's account.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - petID
- *             properties:
- *               petID:
- *                 type: string
- *                 description: The ID of the pet to delete
- *     responses:
- *       200:
- *         description: Pet deleted successfully
- *       400:
- *         description: Missing required fields
- *       500:
- *         description: Internal Server Error
- */
+
 class OwnerController{
-    
+    /**
+     * @swagger
+     * tags:
+     *   name: OwnerLogin
+     *   description: Owner login operations
+     * 
+     * /auth/owner-login:
+     *   post:
+     *     tags: [Owner]
+     *     summary: Log in an owner
+     *     description: Authenticates an owner and returns an auth token.
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - email
+     *               - password
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 description: Owner's email address
+     *               password:
+     *                 type: string
+     *                 format: password
+     *                 description: Owner's password
+     *     responses:
+     *       200:
+     *         description: Successful login, returns token and owner information
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 token:
+     *                   type: string
+     *                 user:
+     *                   $ref: '#/components/schemas/Owner'
+     *       400:
+     *         description: Missing required fields
+     *       401:
+     *         description: Owner not found or incorrect password
+     *       500:
+     *         description: Internal Server Error
+     */
     async loginOwner(req: Request, res: Response) {
         try {
             let { email, password } = req.body;
@@ -147,6 +89,64 @@ class OwnerController{
         }
     }
 
+    /**
+     * @swagger
+     * tags:
+     *   name: UpdateOwner
+     *   description: Update owner details
+     * 
+     * /owner/update:
+     *   put:
+     *     tags: [Owner]
+     *     summary: Update owner details
+     *     description: Updates the details of an existing owner based on the provided information.
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - user
+     *               - update
+     *             properties:
+     *               user:
+     *                 type: object
+     *                 properties:
+     *                   id:
+     *                     type: string
+     *                     description: The ID of the owner to be updated
+     *               update:
+     *                 type: object
+     *                 description: The fields of the owner to update with new values
+     *                 properties:
+     *                   username:
+     *                     type: string
+     *                     description: New username of the owner
+     *                   email:
+     *                     type: string
+     *                     format: email
+     *                     description: New email address of the owner
+     *                   password:
+     *                     type: string
+     *                     format: password
+     *                     description: New password of the owner
+     *                   ...other fields if necessary...
+     *     responses:
+     *       200:
+     *         description: Owner details updated successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 updatedOwner:
+     *                   $ref: '#/components/schemas/Owner'
+     *       400:
+     *         description: Missing required fields or bad request
+     *       500:
+     *         description: Internal Server Error
+     */
     async updateOwner(req: Request, res: Response) {
         try{
             const options = { new: true }; 
@@ -180,6 +180,45 @@ class OwnerController{
         }
     }
 
+    /**
+     * @swagger
+     * tags:
+     *   name: CreatePet
+     *   description: Create a pet for the owner
+     * 
+     * /owner/create-pet:
+     *   post:
+     *     tags: [Owner]
+     *     summary: Create a pet for the owner
+     *     description: Registers a new pet under the owner's account.
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - name
+     *               - age
+     *               - breed
+     *             properties:
+     *               name:
+     *                 type: string
+     *                 description: Pet's name
+     *               age:
+     *                 type: integer
+     *                 description: Pet's age
+     *               breed:
+     *                 type: string
+     *                 description: Pet's breed
+     *     responses:
+     *       200:
+     *         description: Pet created successfully
+     *       400:
+     *         description: Missing required fields
+     *       500:
+     *         description: Internal Server Error
+     */
     async createPet(req: Request, res: Response) {
         try {
             let { name, age, breed  } = req.body;
@@ -207,7 +246,63 @@ class OwnerController{
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
         }
     }
-    
+
+    /**
+     * @swagger
+     * tags:
+     *   name: UpdatePet
+     *   description: Update pet details
+     * 
+     * /owner/update:
+     *   put:
+     *     tags: [Pet]
+     *     summary: Update pet details
+     *     description: Updates the details of an existing pet based on the provided information.
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - petID
+     *               - update
+     *             properties:
+     *               petID:
+     *                 type: string
+     *                 description: The ID of the pet to be updated
+     *               update:
+     *                 type: object
+     *                 description: The fields of the pet to update with new values
+     *                 properties:
+     *                   ownerID:
+     *                     type: string
+     *                     description: The owner's ID of the pet
+     *                   name:
+     *                     type: string
+     *                     description: New name of the pet
+     *                   age:
+     *                     type: integer
+     *                     description: New age of the pet
+     *                   breed:
+     *                     type: string
+     *                     description: New breed of the pet
+     *                   ...other fields if necessary...
+     *     responses:
+     *       200:
+     *         description: Pet details updated successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 updatedPet:
+     *                   $ref: '#/components/schemas/Pet'
+     *       400:
+     *         description: Missing required fields or bad request
+     *       500:
+     *         description: Internal Server Error
+     */
     async updatePet(req: Request, res: Response) {
         try{
             const options = { new: true }; // This option ensures that the updated document is returned
@@ -241,6 +336,37 @@ class OwnerController{
         }
     }
 
+    /**
+     * @swagger
+     * tags:
+     *   name: DeletePet
+     *   description: Delete a pet from the owner's account
+     * 
+     * /owner/delete-pet:
+     *   delete:
+     *     tags: [Owner]
+     *     summary: Delete an owner's pet
+     *     description: Removes a pet from the owner's account.
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - petID
+     *             properties:
+     *               petID:
+     *                 type: string
+     *                 description: The ID of the pet to delete
+     *     responses:
+     *       200:
+     *         description: Pet deleted successfully
+     *       400:
+     *         description: Missing required fields
+     *       500:
+     *         description: Internal Server Error
+     */
     async deletePet(req: Request, res: Response) {
         try {
             let ownerID = req.body.user.id;
@@ -273,6 +399,32 @@ class OwnerController{
         }
     }
 
+
+    /**
+     * @swagger
+     * /owner/get-pets-by-owner:
+     *   get:
+     *     tags: [Owner]
+     *     summary: Retrieve all pets owned by the owner
+     *     description: Fetches all pets associated with the owner's account. Requires 'owner' or 'admin' role.
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Successfully retrieved list of pets owned by the owner
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 $ref: '#/components/schemas/Pet' // This should be defined elsewhere in your Swagger components
+     *       400:
+     *         description: Missing required fields, such as owner ID
+     *       401:
+     *         description: Unauthorized access
+     *       500:
+     *         description: Internal Server Error
+     */
     async getOwnerPets(req: Request, res: Response) {
         try {
             let ownerID = req.body.user.id;
@@ -291,7 +443,47 @@ class OwnerController{
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
         }
     }
-
+    
+    /**
+     * @swagger
+     * /owner/upload-photo:
+     *   post:
+     *     tags: [Owner]
+     *     summary: Upload and update owner's profile photo
+     *     description: Uploads a new profile photo for the owner and updates the owner's profile with the new photo. Previous photo is deleted if it exists.
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         multipart/form-data:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - ownerID
+     *               - photo
+     *             properties:
+     *               ownerID:
+     *                 type: string
+     *                 description: The unique identifier of the owner
+     *               photo:
+     *                 type: string
+     *                 format: binary
+     *                 description: The photo file to upload
+     *     responses:
+     *       200:
+     *         description: Profile photo updated successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Owner' // Assumes an Owner schema is defined in your Swagger components
+     *       400:
+     *         description: Missing required fields, such as owner ID or photo
+     *       401:
+     *         description: Unauthorized access
+     *       500:
+     *         description: Internal Server Error
+     */
     async saveUploadedPhoto(req: Request, res: Response) {
 
             /* Expected request
@@ -332,6 +524,29 @@ class OwnerController{
         }
     }
 
+    /**
+     * @swagger
+     * /owner/get-picture:
+     *   get:
+     *     tags: [Owner]
+     *     summary: Get the owner's profile picture
+     *     description: Retrieves the URL of the owner's profile picture stored in S3.
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: URL of the profile picture retrieved successfully
+     *         content:
+     *           text/plain:
+     *             schema:
+     *               type: string
+     *       400:
+     *         description: Missing required fields, such as owner ID
+     *       401:
+     *         description: Unauthorized access
+     *       500:
+     *         description: Internal Server Error
+     */
     async getPicture(req: Request, res: Response) {
         try {
             const ownerID = req.body.user.id;
@@ -350,7 +565,50 @@ class OwnerController{
         }
 
     }
-
+    /**
+     * @swagger
+     * /owner/upload-pet-photo:
+     *   post:
+     *     tags: [Owner]
+     *     summary: Upload and update a pet's profile photo
+     *     description: Uploads a new profile photo for a pet and updates the pet's profile with the new photo. Previous photo is deleted if it exists.
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         multipart/form-data:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - ownerID
+     *               - petID
+     *               - photo
+     *             properties:
+     *               ownerID:
+     *                 type: string
+     *                 description: The owner's unique identifier
+     *               petID:
+     *                 type: string
+     *                 description: The pet's unique identifier
+     *               photo:
+     *                 type: string
+     *                 format: binary
+     *                 description: The photo file to upload
+     *     responses:
+     *       200:
+     *         description: Pet's profile photo updated successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Pet' // Assumes a Pet schema is defined in Swagger components
+     *       400:
+     *         description: Missing required fields, such as owner ID, pet ID, or photo
+     *       401:
+     *         description: Unauthorized access or pet does not belong to the owner
+     *       500:
+     *         description: Internal Server Error
+     */
     async saveUploadedPetPhoto(req: Request, res: Response) {
         /* Expected request
                 {
@@ -397,7 +655,42 @@ class OwnerController{
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
         }
     }
-    
+
+    /**
+     * @swagger
+     * /owner/get-pet-picture:
+     *   get:
+     *     tags: [Owner]
+     *     summary: Get the pet's profile picture
+     *     description: Retrieves the URL of the pet's profile picture. Validates if the pet belongs to the owner before proceeding.
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - petID
+     *             properties:
+     *               petID:
+     *                 type: string
+     *                 description: The pet's unique identifier
+     *     responses:
+     *       200:
+     *         description: URL of the pet's profile picture retrieved successfully
+     *         content:
+     *           text/plain:
+     *             schema:
+     *               type: string
+     *       400:
+     *         description: Missing required fields, such as pet ID
+     *       401:
+     *         description: Unauthorized access or pet does not belong to the owner
+     *       500:
+     *         description: Internal Server Error
+     */
     async getPetPicture(req: Request, res: Response) {
         try {
             const ownerID = req.body.user.id;
@@ -427,6 +720,50 @@ class OwnerController{
 
     }
 
+    /**
+     * @swagger
+     * /owner/upload-record:
+     *   post:
+     *     tags: [Owner]
+     *     summary: Upload and update a pet's record
+     *     description: Uploads a new record for the pet and updates the pet's profile with the new record file. Previous record file is deleted if it exists.
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         multipart/form-data:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - ownerID
+     *               - petID
+     *               - pdf
+     *             properties:
+     *               ownerID:
+     *                 type: string
+     *                 description: The owner's unique identifier
+     *               petID:
+     *                 type: string
+     *                 description: The pet's unique identifier
+     *               pdf:
+     *                 type: string
+     *                 format: binary
+     *                 description: The PDF file to upload as the pet's record
+     *     responses:
+     *       200:
+     *         description: Pet's record updated successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Pet' // Assumes a Pet schema is defined in Swagger components
+     *       400:
+     *         description: Missing required fields, such as owner ID, pet ID, or PDF file
+     *       401:
+     *         description: Unauthorized access or pet does not belong to the owner
+     *       500:
+     *         description: Internal Server Error
+     */
     async uploadPetRecord(req: Request, res: Response) {
 
         /* Expected request
@@ -475,6 +812,41 @@ class OwnerController{
         }   
     }
 
+    /**
+     * @swagger
+     * /owner/get-record:
+     *   get:
+     *     tags: [Owner]
+     *     summary: Get the pet's medical record
+     *     description: Retrieves the URL of the pet's medical record file stored in S3. Validates if the pet belongs to the owner before proceeding.
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - petID
+     *             properties:
+     *               petID:
+     *                 type: string
+     *                 description: The pet's unique identifier
+     *     responses:
+     *       200:
+     *         description: URL of the pet's medical record retrieved successfully
+     *         content:
+     *           text/plain:
+     *             schema:
+     *               type: string
+     *       400:
+     *         description: Missing required fields, such as pet ID
+     *       401:
+     *         description: Unauthorized access or pet does not belong to the owner
+     *       500:
+     *         description: Internal Server Error
+     */
     async getPetRecord(req: Request, res: Response) {
         try {
             const ownerID = req.body.user.id;
@@ -504,6 +876,51 @@ class OwnerController{
 
     }
 
+    /**
+     * @swagger
+     * /owner/create-reservation:
+     *   post:
+     *     tags: [Owner]
+     *     summary: Create a reservation for a pet
+     *     description: Creates a new reservation for a pet. Checks if the pet already has an active reservation before proceeding.
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - petID
+     *               - startDate
+     *               - endDate
+     *             properties:
+     *               petID:
+     *                 type: string
+     *                 description: The pet's unique identifier
+     *               startDate:
+     *                 type: string
+     *                 format: date-time
+     *                 description: The start date of the reservation
+     *               endDate:
+     *                 type: string
+     *                 format: date-time
+     *                 description: The end date of the reservation
+     *     responses:
+     *       200:
+     *         description: Reservation created successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Reservation' // Assumes a Reservation schema is defined in Swagger components
+     *       400:
+     *         description: Missing required fields, such as pet ID, start date, or end date
+     *       401:
+     *         description: Unauthorized access or pet already has an active reservation
+     *       500:
+     *         description: Internal Server Error
+     */
     async createReservation(req: Request, res: Response) {
         try {
             let ownerID = req.body.user.id;                        
@@ -542,7 +959,40 @@ class OwnerController{
         }
     }
 
-    async confirmReservation(req: Request, res: Response) {
+    /**
+     * @swagger
+     * /owner/confirm-reservation:
+     *   put:
+     *     tags: [Owner]
+     *     summary: Confirm a reservation
+     *     description: Confirms a previously created reservation. A reservation cannot be confirmed if it has no activities.
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - reservationID
+     *             properties:
+     *               reservationID:
+     *                 type: string
+     *                 description: The unique identifier of the reservation to confirm
+     *     responses:
+     *       200:
+     *         description: Reservation confirmed successfully
+     *       400:
+     *         description: Missing required fields
+     *       404:
+     *         description: No reservation found with that ID
+     *       401:
+     *         description: Unauthorized or reservations without activities cannot be confirmed
+     *       500:
+     *         description: Internal Server Error
+     */
+     async confirmReservation(req: Request, res: Response) {
         /* A previously created Reservation with Activities within its activitiesIDs array
          is confirmed by changing its status to confirmed: true
          Reservations can't be confirmed if they don't have any activities
@@ -579,6 +1029,37 @@ class OwnerController{
         }
     }
 
+    /**
+     * @swagger
+     * /owner/cancel-reservation:
+     *   delete:
+     *     tags: [Owner]
+     *     summary: Cancel a reservation
+     *     description: Cancels an existing reservation and deletes it along with any associated activities.
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - reservationID
+     *             properties:
+     *               reservationID:
+     *                 type: string
+     *                 description: The unique identifier of the reservation to cancel
+     *     responses:
+     *       200:
+     *         description: Reservation canceled and deleted successfully
+     *       400:
+     *         description: Missing required fields
+     *       404:
+     *         description: No reservation found with that ID
+     *       500:
+     *         description: Internal Server Error
+     */
     async cancelReservation(req: Request, res: Response) {
         // Delete the created reservation
         try {
@@ -612,6 +1093,31 @@ class OwnerController{
         }
     }
 
+    /**
+     * @swagger
+     * /owner/get-reservations-by-owner:
+     *   get:
+     *     tags: [Owner]
+     *     summary: Get confirmed reservations by owner
+     *     description: Retrieves all confirmed reservations made by the owner.
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Successfully retrieved confirmed reservations
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 $ref: '#/components/schemas/Reservation' // Assumes a Reservation schema is defined
+     *       400:
+     *         description: Missing required fields
+     *       401:
+     *         description: Unauthorized access
+     *       500:
+     *         description: Internal Server Error
+     */
     async getOwnerReservations(req: Request, res: Response) {
         // Return the confirmed:true reservations made by the owner
         try {
@@ -630,6 +1136,53 @@ class OwnerController{
         }
     }
 
+    /**
+     * @swagger
+     * /owner/create-activity:
+     *   post:
+     *     tags: [Owner]
+     *     summary: Create a new activity for a reservation
+     *     description: Creates a new activity associated with a specific reservation.
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - reservationID
+     *               - title
+     *               - description
+     *               - frequency
+     *             properties:
+     *               reservationID:
+     *                 type: string
+     *                 description: The unique identifier of the reservation
+     *               title:
+     *                 type: string
+     *                 description: The title of the activity
+     *               description:
+     *                 type: string
+     *                 description: The description of the activity
+     *               frequency:
+     *                 type: string
+     *                 description: How often the activity occurs
+     *     responses:
+     *       200:
+     *         description: Activity created successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Activity' // Assumes an Activity schema is defined in Swagger components
+     *       400:
+     *         description: Missing required fields
+     *       401:
+     *         description: Unauthorized access
+     *       500:
+     *         description: Internal Server Error
+    */
     async createActivity(req: Request, res: Response) {
         try {
             let { reservationID, title, description, frequency } = req.body;
@@ -657,6 +1210,45 @@ class OwnerController{
         }
     }
 
+    /**
+     * @swagger
+     * /owner/update-activity:
+     *   put:
+     *     tags: [Owner]
+     *     summary: Update an existing activity
+     *     description: Updates the details of an existing activity.
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - activityID
+     *               - update
+     *             properties:
+     *               activityID:
+     *                 type: string
+     *                 description: The unique identifier of the activity to update
+     *               update:
+     *                 type: object
+     *                 description: The fields to update with their new values
+     *     responses:
+     *       200:
+     *         description: Activity updated successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Activity' // Assumes an Activity schema is defined in Swagger components
+     *       400:
+     *         description: Missing required fields
+     *       401:
+     *         description: Unauthorized access
+     *       500:
+     *         description: Internal Server Error
+     */
     async updateActivity(req: Request, res: Response) {
         try{
             const options = { new: true }; 
@@ -688,7 +1280,38 @@ class OwnerController{
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
         }
     }
-    
+
+    /**
+     * @swagger
+     * /owner/delete-activity:
+     *   delete:
+     *     tags: [Owner]
+     *     summary: Delete an existing activity
+     *     description: Deletes an activity by its ID. Removes the activity from the associated reservation.
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - activityID
+     *             properties:
+     *               activityID:
+     *                 type: string
+     *                 description: The unique identifier of the activity to delete
+     *     responses:
+     *       200:
+     *         description: Activity deleted successfully
+     *       400:
+     *         description: Missing required field 'activityID'
+     *       404:
+     *         description: No activity found with that ID
+     *       500:
+     *         description: Internal Server Error
+     */
     async deleteActivity(req: Request, res: Response) {
         try {
             let { activityID } = req.body;
@@ -713,6 +1336,41 @@ class OwnerController{
         }
     }
 
+    /**
+     * @swagger
+     * /owner/get-activities-by-reservation:
+     *   get:
+     *     tags: [Owner]
+     *     summary: Get activities for a reservation
+     *     description: Retrieves all activities associated with a specific reservation.
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - reservationID
+     *             properties:
+     *               reservationID:
+     *                 type: string
+     *                 description: The unique identifier of the reservation to fetch activities for
+     *     responses:
+     *       200:
+     *         description: Successfully retrieved activities for the reservation
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 $ref: '#/components/schemas/Activity' // Assumes an Activity schema is defined
+     *       400:
+     *         description: Missing required fields
+     *       500:
+     *         description: Internal Server Error
+     */
     async getReservationActivities(req: Request, res: Response) {
         try {
             let { reservationID } = req.body;

@@ -9,56 +9,57 @@ import Pet from "../models/pet";
 import Reservation from "../models/reservation";
 import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
 
- /**
- * @swagger
- * tags:
- *   name: Caretaker
- *   description: Caretaker related operations
- * 
- * /auth/caretaker-login:
- *   post:
- *     tags: [Caretaker]
- *     summary: Log in a caretaker
- *     description: Authenticates a caretaker and returns an auth token.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 description: Caretaker's email address
- *               password:
- *                 type: string
- *                 format: password
- *                 description: Caretaker's password
- *     responses:
- *       200:
- *         description: Successful login
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *                   description: Authentication token
- *                 user:
- *                   $ref: '#/components/schemas/Caretaker'
- *       400:
- *         description: Missing required fields
- *       401:
- *         description: Caretaker not found or incorrect password
- *       500:
- *         description: Internal Server Error
- */   
+
 class CaretakerController{
+        /**
+     * @swagger
+     * tags:
+     *   name: Caretaker
+     *   description: Caretaker related operations
+     * 
+     * /auth/caretaker-login:
+     *   post:
+     *     tags: [Caretaker]
+     *     summary: Log in a caretaker
+     *     description: Authenticates a caretaker and returns an auth token.
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - email
+     *               - password
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 description: Caretaker's email address
+     *               password:
+     *                 type: string
+     *                 format: password
+     *                 description: Caretaker's password
+     *     responses:
+     *       200:
+     *         description: Successful login
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 token:
+     *                   type: string
+     *                   description: Authentication token
+     *                 user:
+     *                   $ref: '#/components/schemas/Caretaker'
+     *       400:
+     *         description: Missing required fields
+     *       401:
+     *         description: Caretaker not found or incorrect password
+     *       500:
+     *         description: Internal Server Error
+     */   
 
     async loginCaretaker(req: Request, res: Response) {
         try {
@@ -87,6 +88,61 @@ class CaretakerController{
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
         }
     }
+    /**
+     * @swagger
+     * tags:
+     *   name: Caretaker
+     *   description: Caretaker related operations
+     * 
+     * /caretaker/update-caretaker:
+     *   put:
+     *     tags: [Caretaker]
+     *     summary: Update caretaker details
+     *     description: Updates the details of an existing caretaker based on the provided information.
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - user
+     *               - update
+     *             properties:
+     *               user:
+     *                 type: object
+     *                 properties:
+     *                   id:
+     *                     type: string
+     *                     description: The ID of the caretaker to be updated
+     *               update:
+     *                 type: object
+     *                 description: The fields of the caretaker to update with new values
+     *                 properties:
+     *                   username:
+     *                     type: string
+     *                     description: New username of the caretaker
+     *                   email:
+     *                     type: string
+     *                     format: email
+     *                     description: New email address of the caretaker
+     *                   password:
+     *                     type: string
+     *                     format: password
+     *                     description: New password of the caretaker
+     *                   ...other fields if necessary...
+     *     responses:
+     *       200:
+     *         description: Caretaker details updated successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Caretaker'
+     *       400:
+     *         description: Missing required fields or bad request
+     *       500:
+     *         description: Internal Server Error
+     */
 
     async updateCaretaker(req: Request, res: Response) {
         try{
@@ -120,6 +176,46 @@ class CaretakerController{
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
         }
     }
+    /**
+     * @swagger
+     * tags:
+     *   name: Caretaker
+     *   description: Caretaker related operations
+     * 
+     * /caretaker/upload-photo:
+     *   post:
+     *     tags: [Caretaker]
+     *     summary: Upload a profile photo for a caretaker
+     *     description: Uploads a photo to the caretaker's profile, replacing the existing one if applicable, and returns the updated caretaker information.
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         multipart/form-data:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - caretakerID
+     *               - file
+     *             properties:
+     *               caretakerID:
+     *                 type: string
+     *                 description: The ID of the caretaker whose photo is being uploaded
+     *               file:
+     *                 type: string
+     *                 format: binary
+     *                 description: The photo file to upload
+     *     responses:
+     *       200:
+     *         description: Photo uploaded successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Caretaker'
+     *       400:
+     *         description: Missing required fields or bad request
+     *       500:
+     *         description: Internal Server Error
+     */
 
     async saveUploadedPhoto(req: Request, res: Response) {
         try {
@@ -147,6 +243,44 @@ class CaretakerController{
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
         }
     }
+    /**
+     * @swagger
+     * tags:
+     *   name: Caretaker
+     *   description: Caretaker related operations
+     *
+     * /caretaker/get-picture:
+     *   get:
+     *     tags: [Caretaker]
+     *     summary: Get the profile picture of a caretaker
+     *     description: Retrieves the URL of the profile picture for the specified caretaker.
+     *     parameters:
+     *       - in: body
+     *         name: user
+     *         description: The user object containing the ID of the caretaker
+     *         required: true
+     *         schema:
+     *           type: object
+     *           properties:
+     *             id:
+     *               type: string
+     *               description: The ID of the caretaker to retrieve the picture for
+     *     responses:
+     *       200:
+     *         description: Profile picture URL retrieved successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 url:
+     *                   type: string
+     *                   description: URL of the profile picture
+     *       400:
+     *         description: Missing required fields or bad request
+     *       500:
+     *         description: Internal Server Error
+     */
 
     async getPicture(req: Request, res: Response) {
         try {
