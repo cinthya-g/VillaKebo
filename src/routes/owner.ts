@@ -79,14 +79,13 @@ router.delete('/delete-pet', authMiddleware, roleMiddleware(['owner', 'admin']),
  *   name: Owner
  *   description: Operations related to pet owners
  */
-
 router.get('', (req, res) => {
     res.send('Owner Works');
 });
 
-router.put('/updatePet', authMiddleware, roleMiddleware(['owner', 'admin']), ownerController.updatePet);
-router.post('uploadRecord', authMiddleware, roleMiddleware(['owner', 'admin']), ownerController.uploadPetRecords);
-router.get('/getPetsByOwner', authMiddleware, roleMiddleware(['owner', 'admin']), ownerController.getOwnerPets);
+router.put('/update-pet', authMiddleware, roleMiddleware(['owner', 'admin']), ownerController.updatePet);
+router.post('upload-record', authMiddleware, roleMiddleware(['owner', 'admin']), ownerController.uploadPetRecords);
+router.get('/get-pets-by-owner', authMiddleware, roleMiddleware(['owner', 'admin']), ownerController.getOwnerPets);
 
 
 export default router;

@@ -164,7 +164,7 @@ class OwnerController{
             }
 
             const pet = await Pet.create(newPet);
-            await Owner.findOneAndUpdate({ _id: ownerID }, { $push: { PetsIDs: pet._id } });
+            await Owner.findOneAndUpdate({ _id: ownerID }, { $push: { petsIDs: pet._id } });
 
             res.status(ResponseCodes.SUCCESS).send("Pet created successfully");
 
@@ -221,6 +221,7 @@ class OwnerController{
                         "name": "bbccb",
                         "age":  77795685,
                         "breed": "5ccc"
+                        ...other fields if necessary...
                     }
                 }
             */
@@ -236,15 +237,28 @@ class OwnerController{
 
     async deletePet(req: Request, res: Response) {
         try {
-            let { petID } = req.body;
+            let { ownerID, petID } = req.body;
+            
+            /* Expected request
+                {   
+                    "ownerID": "66100027b52a931e19a6111a",
+                    "petID": "66100027b52a931e19a6035d"
+                }
+            */
 
             if (!petID) {
                 res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
                 return;
             }
             
-            await Pet.findOneAndDelete({ _id: petID });
-            res.status(ResponseCodes.SUCCESS).send("Pet deleted successfully");
+            const result = await Pet.findOneAndDelete({ _id: petID });
+            if (!result) {
+                res.status(ResponseCodes.NOT_FOUND).send("No pet found with that ID");
+            } else {
+                // Delete pet from the Owner's petsIDs array
+                await Owner.findOneAndUpdate({ _id: ownerID }, {$pull: { petsIDs: petID }});
+                res.status(ResponseCodes.SUCCESS).send("Pet deleted successfully");
+            }
 
         } catch(error) {
             console.log('ERROR:', error);
@@ -263,8 +277,8 @@ class OwnerController{
                 return;
             }
 
-            const petsByOwnerIDs = await Owner.findOne({ _id: ownerID }, 'PetsIDs');
-            const petsByOwner = await Pet.find({ _id: { $in: petsByOwnerIDs.PetsIDs } });
+            const petsByOwnerIDs = await Owner.findOne({ _id: ownerID }, 'petsIDs');
+            const petsByOwner = await Pet.find({ _id: { $in: petsByOwnerIDs.petsIDs } });
             res.status(ResponseCodes.SUCCESS).send(petsByOwner);
 
         } catch(error) {

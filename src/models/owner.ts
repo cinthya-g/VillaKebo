@@ -58,8 +58,8 @@ const ownerSchema = new Schema({
     role: { type: String, default: Roles.OWNER },
     phone: { type: String },
     status: { type: String, default: "¡Acabo de unirme a Villa Kebo!" },
-    PetsIDs: [{ type: Schema.Types.ObjectId, ref: "pets" }],
-    ReservationsIDs: [{ type: Schema.Types.ObjectId, ref: "reservations" }],
+    petsIDs: [{ type: Schema.Types.ObjectId, ref: "pets" }],
+    reservationsIDs: [{ type: Schema.Types.ObjectId, ref: "reservations" }],
     profilePicture: { type: String },
     //TODO DEFINE WHAT IS REQUIRED
 });
