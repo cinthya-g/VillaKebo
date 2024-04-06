@@ -50,7 +50,7 @@ const petSchema = new Schema({
     size: { type: String, default: 'M' },
     weight: { type: Number },
     profilePicture: { type: String },
-    files: [{ type: String }], 
+    record: { type: String }, 
 
 });
 

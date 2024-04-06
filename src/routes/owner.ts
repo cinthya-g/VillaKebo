@@ -106,7 +106,9 @@ router.post('/upload-pet-photo', uploadPhoto.single('photo'), ownerController.sa
 
 router.get('/get-pet-picture', ownerController.getPetPicture);
 
-router.post('/upload-record', ownerController.uploadPetRecords);
+router.post('/upload-record', uploadPDF.single('pdf'), ownerController.uploadPetRecord);
+
+router.get('/get-record', ownerController.getPetRecord);
 
 
 export default router;

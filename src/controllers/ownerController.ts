@@ -297,7 +297,7 @@ class OwnerController{
                     "file": {
                         "originalname": "newFilename.jpg",
                         "fieldname": "aaaff",
-                        "mimetype": "5ccc",
+                        "mimetype": "image",
                         ...other fields...
                     }
                 }
@@ -356,7 +356,7 @@ class OwnerController{
                     "file": {
                         "originalname": "newFilename.jpg",
                         "fieldname": "aaaff",
-                        "mimetype": "5ccc",
+                        "mimetype": "image",
                         ...other fields...
                     }
                 }
@@ -424,33 +424,82 @@ class OwnerController{
 
     }
 
-    async uploadPetRecords(req: Request, res: Response) {
-        try{
-            let { petID, records } = req.body;
+    async uploadPetRecord(req: Request, res: Response) {
 
-            if (!petID || !records) {
+        /* Expected request
+            {
+                "ownerID": "aaaaaa",
+                "petID", "bbbbbb",
+                "pdf": {
+                    "originalname": "newFilename.jpg",
+                    "fieldname": "aaaff",
+                    "mimetype": "application/pdf",
+                    ...other fields...
+                }
+            }
+        */
+
+        try {
+            const options = { new: true };
+            const fileName =  req.file.originalname;
+            const { ownerID, petID } = req.body;
+            
+            if (!ownerID || !petID || !fileName) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+                        
+            // Check that the pet belongs to the owner
+            const owner = await Owner.findOne({ _id: ownerID });
+            if (!owner.petsIDs.includes(petID)) {
+                res.status(ResponseCodes.UNAUTHORIZED).send("This pet does not belong to the owner");
+                return;
+            }
+    
+            // Look for the previous pet record on the S3 bucket and delete it
+            const pet = await Pet.findOne({ _id: petID });
+            if (pet.record) {
+                await deleteFileFromS3(process.env.FILES_BUCKET_NAME, pet.record);
+            }
+            
+            // Save the uploaded photo to the pets's profile
+            const updatedPet = await Pet.findOneAndUpdate({ _id: petID }, { record: fileName }, options);
+            res.status(ResponseCodes.SUCCESS).send(updatedPet);
+                    
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }   
+    }
+
+    async getPetRecord(req: Request, res: Response) {
+        try {
+            const ownerID = req.body.user.id;
+            const { petID } = req.body;
+
+            if (!ownerID || !petID) {
                 res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
                 return;
             }
 
-            const pet = await Pet.findOne({ _id: petID });
-
-            if (!pet) {
-                res.status(ResponseCodes.BAD_REQUEST).send("This pet Does not exist");
+            // Check that the pet belongs to the owner
+            const owner = await Owner.findOne({ _id: ownerID });
+            if (!owner.petsIDs.includes(petID)) {
+                res.status(ResponseCodes.UNAUTHORIZED).send("This pet does not belong to the owner");
                 return;
             }
 
-            //Todo : Upload records to S3
-            // const upload = upload.single('file'); ???
-            // file name = petID + 'Record' ??
+            // Get the pet's record
+            const pet = await Pet.findOne({ _id: petID }, 'record');
+            const recordUrl = getS3Url(process.env.FILES_BUCKET_NAME, pet.record);
+            res.status(ResponseCodes.SUCCESS).send(recordUrl);
 
-            res.status(ResponseCodes.SUCCESS).send("Records uploaded successfully");
         } catch(error) {
             console.log('ERROR:', error);
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
         }
-    }
 
+    }
 }
 
 export default new OwnerController();
