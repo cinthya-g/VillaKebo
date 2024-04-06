@@ -6,6 +6,9 @@ import { ResponseCodes } from "../utils/res-codes";
 
 import Owner from "../models/owner";
 import Pet from "../models/pet";
+import Reservation from "../models/reservation";
+import Activity from "../models/activity";
+import PetGroup from "../models/petgroup";
 import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
 
 /**
@@ -500,6 +503,137 @@ class OwnerController{
         }
 
     }
+
+    async createReservation(req: Request, res: Response) {
+        try {
+            let ownerID = req.body.user.id;                        
+            let { petID, startDate, endDate } = req.body;
+            
+            if (!ownerID || !petID || !startDate || !endDate) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            const newReservation = {
+                ownerID: ownerID,
+                petID: petID,
+                startDate: startDate,
+                endDate: endDate
+            }
+
+            // Check if the currentReservation pet field is null
+            const pet = await Pet.findOne({ _id: petID });
+            if(pet.currentReservation) {
+                res.status(ResponseCodes.UNAUTHORIZED).send("This pet already has an active reservation");
+                return;
+            }
+
+            // If not, then create it and add it to the Owner's array and the Pet's currentReservation field
+            const reservation = await Reservation.create(newReservation);
+            await Owner.findOneAndUpdate({ _id: ownerID }, { $push: { reservationsIDs: reservation._id } });
+            pet.currentReservation = reservation._id.toString();
+            await pet.save();
+
+            res.status(ResponseCodes.SUCCESS).send(reservation);
+
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+
+    async confirmReservation(req: Request, res: Response) {}
+
+    async cancelReservation(req: Request, res: Response) {}
+
+    async getOwnerReservations(req: Request, res: Response) {}
+
+    async createActivity(req: Request, res: Response) {
+        try {
+            let { reservationID, title, description, frequency } = req.body;
+            
+            if (!reservationID || !title || !description || !frequency) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            const newActivity = {
+                reservationID: reservationID,
+                title: title,
+                description: description,
+                frequency: frequency
+            }
+
+            const activity = await Activity.create(newActivity);
+            await Reservation.findOneAndUpdate({ _id: reservationID }, { $addToSet: { activitiesIDs: activity._id } });
+            
+            res.status(ResponseCodes.SUCCESS).send(activity);
+
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+
+    async updateActivity(req: Request, res: Response) {
+        try{
+            const options = { new: true }; 
+            let { activityID, update } = req.body;
+            
+            if (!activityID || !update) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            /* Expected request
+                {
+                    "activityID": "66100027b52a931e19a6035d",
+                    "update": {
+                        "reservationID": "aaaa",
+                        "title": "title",
+                        "description": "aaaa",
+                        "frequency": "once"
+                        "timesCompleted": 3
+                    }
+                }
+            */
+            
+            const updatedActivity = await Activity.findOneAndUpdate({ _id: activityID }, update, options);
+            res.status(ResponseCodes.SUCCESS).send(updatedActivity);
+        }
+        catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+    
+    async deleteActivity(req: Request, res: Response) {
+        try {
+            let { activityID } = req.body;
+            
+            if (!activityID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+            
+            const result = await Activity.findOneAndDelete({ _id: activityID });
+            if (!result) {
+                res.status(ResponseCodes.NOT_FOUND).send("No activity found with that ID");
+            } else {
+                // Delete from the reservation's activitiesIDs array
+                await Reservation.findOneAndUpdate({ activitiesIDs: activityID }, {$pull: { activitiesIDs: activityID }});
+                res.status(ResponseCodes.SUCCESS).send("Activity deleted successfully");
+            }
+
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+
+    async getReservationActivities(req: Request, res: Response) {}
+
+
 }
 
 export default new OwnerController();

@@ -37,7 +37,7 @@ const reservationSchema = new Schema({
     petID: { type: String, required: true },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
-    activitiesIDs:[ { type: String, required: true }],
+    activitiesIDs:[ { type: String, default: []}],
 });
 
 export default model("reservations", reservationSchema);

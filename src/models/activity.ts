@@ -8,30 +8,31 @@ import {Schema, model} from "mongoose";
  *    Activity:
  *      type: object
  *      required:
- *        - name
- *        - Description
- *        - Frequency
+ *        - title
+ *        - description
+ *        - frequency
  *      properties:
- *        name:
+ *        title:
  *          type: string
- *          description: Activity name
+ *          description: Activity title
  *        Description:
  *          type: string
  *          description: Activity description
  *        Frequency:
  *          type: string
  *          description: How often the activity occurs
- *        Completed:
- *          type: boolean
- *          default: false
- *          description: Status of whether the activity is completed or not
+ *        timesCompleted:
+ *          type: number
+ *          default: 0
+ *          description: Status of how many times the activity has been completed according to the frequency parameter
  */
 
 const activitySchema = new Schema({
-    name: { type: String, required: true },
-    Description: { type: String, required: true },
-    Frequency: { type: String, required: true },
-    Completed: { type: Boolean, default: false },
+    reservationID: { type: String, required: true },
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    frequency: { type: String, required: true },
+    timesCompleted: { type: Number, default: 0 },
 });
 
 export default model("activities", activitySchema);

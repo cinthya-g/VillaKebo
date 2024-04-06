@@ -111,4 +111,25 @@ router.post('/upload-record', uploadPDF.single('pdf'), ownerController.uploadPet
 router.get('/get-record', ownerController.getPetRecord);
 
 
+// Owner-Pet-Reservation  actions
+
+router.post('/create-reservation', ownerController.createReservation);
+
+router.put('/confirm-reservation', ownerController.confirmReservation);
+
+router.delete('/cancel-reservation', ownerController.cancelReservation);
+
+router.get('/get-reservations-by-owner', ownerController.getOwnerReservations);
+
+
+// Owner-Pet-Activity actions
+
+router.post('/create-activity', ownerController.createActivity);
+
+router.put('/update-activity', ownerController.updateActivity);
+
+router.delete('/delete-activity', ownerController.deleteActivity);
+
+router.get('/get-activities-by-reservation', ownerController.getReservationActivities);
+
 export default router;

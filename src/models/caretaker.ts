@@ -33,7 +33,7 @@ import { Roles } from "../utils/roles";
  *        GroupsIDs:
  *          type: array
  *          items:
- *            type: Schema.Types.ObjectId
+ *            type: string
  *            format: uuid
  *            description: Identifiers for groups that the Caretaker is part of
  *        profilePicture:
@@ -48,7 +48,7 @@ const caretakerSchema = new Schema({
     password: { type: String, required: true },
     role: { type: String, default: Roles.CARETAKER },
     status: { type: String, default: "I <3 pets!"},
-    groupsIDs: [{ type: Schema.Types.ObjectId, ref: "Pet" }],
+    groupsIDs: [{ type: Schema.Types.ObjectId, ref: "petgroups" }],
     profilePicture: { type: String },
     //TODO DEFINE WHAT IS REQUIRED
 });

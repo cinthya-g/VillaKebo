@@ -51,7 +51,7 @@ const petSchema = new Schema({
     weight: { type: Number },
     profilePicture: { type: String },
     record: { type: String }, 
-
+    currentReservation: { type: String, default: null }
 });
 
 
