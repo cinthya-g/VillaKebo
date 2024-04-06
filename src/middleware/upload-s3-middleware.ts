@@ -3,6 +3,7 @@ import multer, { FileFilterCallback } from 'multer';
 import multerS3 from 'multer-s3';
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 
+// TODO: fix the way Multer receives the Request (it erases the body fields)
 
 // Create new connection to S3
 const s3Conn = new S3Client({
@@ -58,6 +59,7 @@ const uploadPhoto = multer({
     fileFilter: photoFileFilter,
 });
 
+
 // PDF files
 const s3FileStorage = multerS3({
     s3: s3Conn,
@@ -88,5 +90,14 @@ const uploadPDF = multer({
     fileFilter: pdfFileFilter,
 });
 
+const getS3Url = (bucketName: string, fileName: string) => {
+    return `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+};
+
 // Export both uploads
-export { uploadPhoto, uploadPDF, deleteFileFromS3 };
+export { 
+    uploadPhoto, 
+    uploadPDF, 
+    deleteFileFromS3, 
+    getS3Url 
+};

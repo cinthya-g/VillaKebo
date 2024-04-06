@@ -6,7 +6,7 @@ import { ResponseCodes } from "../utils/res-codes";
 
 import Owner from "../models/owner";
 import Pet from "../models/pet";
-import { deleteFileFromS3 } from "../middleware/upload-s3-middleware";
+import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
 
 /**
  * @swagger
@@ -290,12 +290,25 @@ class OwnerController{
     }
 
     async saveUploadedPhoto(req: Request, res: Response) {
+
+            /* Expected request
+                {
+                    "ownerID": "aaaaaa",
+                    "file": {
+                        "originalname": "newFilename.jpg",
+                        "fieldname": "aaaff",
+                        "mimetype": "5ccc",
+                        ...other fields...
+                    }
+                }
+            */
+
         try {
             const options = { new: true };
             const fileName =  req.file.originalname;
             const { ownerID } = req.body;
 
-            if (!ownerID) {
+            if (!ownerID || !fileName) {
                 res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
                 return;
             }
@@ -316,7 +329,99 @@ class OwnerController{
         }
     }
 
-    async uploadPetPhoto(req: Request, res: Response) {
+    async getPicture(req: Request, res: Response) {
+        try {
+            const ownerID = req.body.user.id;
+            if (!ownerID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            const owner = await Owner.findOne({ _id: ownerID }, 'profilePicture');
+            const pictureUrl = getS3Url(process.env.PHOTOS_BUCKET_NAME, owner.profilePicture);
+            res.status(ResponseCodes.SUCCESS).send(pictureUrl);
+
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+
+    }
+
+    async saveUploadedPetPhoto(req: Request, res: Response) {
+        /* Expected request
+                {
+                    "ownerID": "aaaaaa",
+                    "petID": "bbbbbb",
+                    "file": {
+                        "originalname": "newFilename.jpg",
+                        "fieldname": "aaaff",
+                        "mimetype": "5ccc",
+                        ...other fields...
+                    }
+                }
+            */
+        
+        try {
+            const options = { new: true };
+            const fileName =  req.file.originalname;
+            const { ownerID, petID } = req.body;
+        
+            if (!ownerID || !petID || !fileName) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+                    
+            // Check that the pet belongs to the owner
+            const owner = await Owner.findOne({ _id: ownerID });
+            if (!owner.petsIDs.includes(petID)) {
+                res.status(ResponseCodes.UNAUTHORIZED).send("This pet does not belong to the owner");
+                return;
+            }
+
+            // Look for the previous pet photo on the S3 bucket and delete it
+            const pet = await Pet.findOne({ _id: petID });
+            if (pet.profilePicture) {
+                await deleteFileFromS3(process.env.PHOTOS_BUCKET_NAME, pet.profilePicture);
+            }
+        
+            // Save the uploaded photo to the pets's profile
+            const updatedPet = await Pet.findOneAndUpdate({ _id: petID }, { profilePicture: fileName }, options);
+            res.status(ResponseCodes.SUCCESS).send(updatedPet);
+                
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+    
+    async getPetPicture(req: Request, res: Response) {
+        try {
+            const ownerID = req.body.user.id;
+            const { petID } = req.body;
+
+            if (!ownerID || !petID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            // Check that the pet belongs to the owner
+            const owner = await Owner.findOne({ _id: ownerID });
+            if (!owner.petsIDs.includes(petID)) {
+                res.status(ResponseCodes.UNAUTHORIZED).send("This pet does not belong to the owner");
+                return;
+            }
+
+            // Get the pet's profile picture
+            const pet = await Pet.findOne({ _id: petID }, 'profilePicture');
+            const pictureUrl = getS3Url(process.env.PHOTOS_BUCKET_NAME, pet.profilePicture);
+            res.status(ResponseCodes.SUCCESS).send(pictureUrl);
+
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+
     }
 
     async uploadPetRecords(req: Request, res: Response) {

@@ -26,7 +26,7 @@ router.put('/update-owner', ownerController.updateOwner);
 
 router.post('/upload-photo', uploadPhoto.single('photo'), ownerController.saveUploadedPhoto);
 
-
+router.get('/get-picture', ownerController.getPicture);
 
 // Owner-Pet actions
 /**
@@ -102,7 +102,9 @@ router.put('/update-pet', ownerController.updatePet);
 
 router.get('/get-pets-by-owner', ownerController.getOwnerPets);
 
-router.post('/upload-pet-photo', ownerController.uploadPetPhoto);
+router.post('/upload-pet-photo', uploadPhoto.single('photo'), ownerController.saveUploadedPetPhoto);
+
+router.get('/get-pet-picture', ownerController.getPetPicture);
 
 router.post('/upload-record', ownerController.uploadPetRecords);
 

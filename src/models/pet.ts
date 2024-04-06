@@ -49,7 +49,7 @@ const petSchema = new Schema({
     breed: { type: String, required: true },
     size: { type: String, default: 'M' },
     weight: { type: Number },
-    photo: { type: String },
+    profilePicture: { type: String },
     files: [{ type: String }], 
 
 });

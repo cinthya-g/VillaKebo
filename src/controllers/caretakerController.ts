@@ -6,7 +6,7 @@ import { ResponseCodes } from "../utils/res-codes";
 
 import Caretaker from "../models/caretaker";
 import Pet from "../models/pet";
-import { deleteFileFromS3 } from "../middleware/upload-s3-middleware";
+import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
 
  /**
  * @swagger
@@ -145,6 +145,25 @@ class CaretakerController{
             console.log('ERROR:', error);
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
         }
+    }
+
+    async getPicture(req: Request, res: Response) {
+        try {
+            const caretakerID = req.body.user.id;
+            if (!caretakerID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            const caretaker = await Caretaker .findOne({ _id: caretakerID }, 'profilePicture');
+            const pictureUrl = getS3Url(process.env.PHOTOS_BUCKET_NAME, caretaker.profilePicture);
+            res.status(ResponseCodes.SUCCESS).send(pictureUrl);
+
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+
     }
 
 }

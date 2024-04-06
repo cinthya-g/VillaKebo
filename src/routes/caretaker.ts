@@ -26,5 +26,6 @@ router.put('/update-caretaker', caretakerController.updateCaretaker);
 
 router.post('/upload-photo', uploadPhoto.single('photo'), caretakerController.saveUploadedPhoto);
 
+router.get('/get-picture', caretakerController.getPicture);
 
 export default router;
