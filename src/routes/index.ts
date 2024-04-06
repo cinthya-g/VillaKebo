@@ -1,6 +1,8 @@
 import { Router } from "express";
 import authRoutes from "./auth";
 import ownerRoutes from "./owner";
+import caretakerRouter from "./caretaker";
+
 /**
  * @swagger
  * tags:
@@ -8,6 +10,7 @@ import ownerRoutes from "./owner";
  *     description: API General Endpoints
  */
 const router = Router();
+
 /**
  * @swagger
  * paths:
@@ -16,6 +19,7 @@ const router = Router();
  *     description: Includes all authentication related routes like login, register, etc.
  */
 router.use("/auth", authRoutes);
+
 /**
  * @swagger
  * paths:
@@ -24,6 +28,16 @@ router.use("/auth", authRoutes);
  *     description: Includes routes related to pet owner operations like creating or deleting pets.
  */
 router.use("/owner", ownerRoutes);
+
+/**
+ * @swagger
+ * paths:
+ *   /owner:
+ *     summary: Caretaker routes
+ *     description: Includes routes related to pet caretaker operations like managing pet groups and activities.
+ */
+router.use("/caretaker", caretakerRouter);
+
 /**
  * @swagger
  * /:
@@ -40,7 +54,6 @@ router.use("/owner", ownerRoutes);
  *              type: string
  *              example: API works!
  */
-
 router.get("/", (req, res) => {
     res.send('API works!');
 });

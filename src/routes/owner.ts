@@ -1,9 +1,34 @@
-import { Router, RequestHandler } from 'express';
+import { Router, Request, Response } from 'express';
 import ownerController from '../controllers/ownerController';
 import authMiddleware from '../middleware/auth-middleware';
 import roleMiddleware from '../middleware/role-middleware';
+import { uploadPhoto, uploadPDF } from '../middleware/upload-s3-middleware';
 
 const router = Router();
+
+// Use the authMiddleware  and roleMiddleware on all routes
+router.use(authMiddleware);
+router.use(roleMiddleware(['owner', 'admin']));
+
+/**
+ * @swagger
+ * tags:
+ *   name: Owner
+ *   description: Operations related to pet owners
+ */
+router.get('', (req, res) => {
+    res.send('Owner Works');
+});
+
+// Owner-Owner actions
+
+router.put('/update-owner', ownerController.updateOwner);
+
+router.post('/upload-photo', uploadPhoto.single('photo'), ownerController.saveUploadedPhoto);
+
+
+
+// Owner-Pet actions
 /**
  * @swagger
  * /owner/create-pet:
@@ -41,7 +66,7 @@ const router = Router();
  *      500:
  *        description: Internal Server Error
  */
-router.post('/create-pet', authMiddleware, roleMiddleware(['owner', 'admin']), ownerController.createPet);
+router.post('/create-pet', ownerController.createPet);
 /**
  * @swagger
  * /owner/delete-pet:
@@ -71,21 +96,15 @@ router.post('/create-pet', authMiddleware, roleMiddleware(['owner', 'admin']), o
  *      500:
  *        description: Internal Server Error
  */
-router.delete('/delete-pet', authMiddleware, roleMiddleware(['owner', 'admin']), ownerController.deletePet);
+router.delete('/delete-pet', ownerController.deletePet);
 
-/**
- * @swagger
- * tags:
- *   name: Owner
- *   description: Operations related to pet owners
- */
-router.get('', (req, res) => {
-    res.send('Owner Works');
-});
+router.put('/update-pet', ownerController.updatePet);
 
-router.put('/update-pet', authMiddleware, roleMiddleware(['owner', 'admin']), ownerController.updatePet);
-router.post('upload-record', authMiddleware, roleMiddleware(['owner', 'admin']), ownerController.uploadPetRecords);
-router.get('/get-pets-by-owner', authMiddleware, roleMiddleware(['owner', 'admin']), ownerController.getOwnerPets);
+router.get('/get-pets-by-owner', ownerController.getOwnerPets);
+
+router.post('/upload-pet-photo', ownerController.uploadPetPhoto);
+
+router.post('/upload-record', ownerController.uploadPetRecords);
 
 
 export default router;

@@ -5,11 +5,9 @@ import { genToken } from "../utils/genToken";
 import { ResponseCodes } from "../utils/res-codes";
 
 import Caretaker from "../models/caretaker";
+import Pet from "../models/pet";
+import { deleteFileFromS3 } from "../middleware/upload-s3-middleware";
 
-
-
-
-class CaretakerController{
  /**
  * @swagger
  * tags:
@@ -59,6 +57,8 @@ class CaretakerController{
  *       500:
  *         description: Internal Server Error
  */   
+class CaretakerController{
+
     async loginCaretaker(req: Request, res: Response) {
         try {
             let { email, password } = req.body;
@@ -83,6 +83,66 @@ class CaretakerController{
             );
         }
         catch (error) {
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+
+    async updateCaretaker(req: Request, res: Response) {
+        try{
+            const options = { new: true }; 
+
+            let caretakerID = req.body.user.id;
+            let {update} = req.body;
+            
+            if (!caretakerID || !update) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            /* Expected request
+                {
+                    (the user.id parameter comes from the authMiddleware already)
+                    "update": {
+                        "username": "bbccb",
+                        "email": "aaaff",
+                        "password": "5ccc"
+                        ...other fields if necessary...
+                    }
+                }
+            */
+            
+            const updatedCaretaker = await Caretaker.findOneAndUpdate({ _id: caretakerID }, update, options);
+            res.status(ResponseCodes.SUCCESS).send(updatedCaretaker);
+        }
+        catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+
+    async saveUploadedPhoto(req: Request, res: Response) {
+        try {
+            const options = { new: true };
+            const fileName =  req.file.originalname;
+            const { caretakerID } = req.body;
+
+            if (!caretakerID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+            
+            // Look for the previous photo on the S3 bucket and delete it 
+            const caretaker = await Caretaker.findOne({ _id: caretakerID });
+            if (caretaker.profilePicture) {
+                await deleteFileFromS3(process.env.PHOTOS_BUCKET_NAME, caretaker.profilePicture);
+            }
+
+            // Save the uploaded photo to the caretaker's profile
+            const updatedCaretaker = await Caretaker.findOneAndUpdate({ _id: caretakerID }, { profilePicture: fileName }, options);
+            res.status(ResponseCodes.SUCCESS).send(updatedCaretaker);
+        
+        } catch(error) {
+            console.log('ERROR:', error);
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
         }
     }

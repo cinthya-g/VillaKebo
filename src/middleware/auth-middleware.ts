@@ -35,7 +35,7 @@ const middleware = (req: Request, res: Response, next: NextFunction) => {
         const decoded = verifyToken(token);
         if (decoded) {
             req.body.user = decoded;
-            //console.log("AuthMiddleware: req body user: ", req.body.user);
+            console.log("AuthMiddleware: req body user: ", req.body.user);
             next();
         }
         else {

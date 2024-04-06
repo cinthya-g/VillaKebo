@@ -6,7 +6,7 @@ import { ResponseCodes } from "../utils/res-codes";
 
 import Owner from "../models/owner";
 import Pet from "../models/pet";
-import upload from "middleware/aws-upload-middleware";
+import { deleteFileFromS3 } from "../middleware/upload-s3-middleware";
 
 /**
  * @swagger
@@ -114,8 +114,6 @@ import upload from "middleware/aws-upload-middleware";
  *       500:
  *         description: Internal Server Error
  */
-
-
 class OwnerController{
     
     async loginOwner(req: Request, res: Response) {
@@ -142,6 +140,39 @@ class OwnerController{
             );
         }
         catch (error) {
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+
+    async updateOwner(req: Request, res: Response) {
+        try{
+            const options = { new: true }; 
+
+            let ownerID = req.body.user.id;
+            let {update} = req.body;
+            
+            if (!ownerID || !update) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            /* Expected request
+                {
+                    (the user.id parameter comes from the authMiddleware already)
+                    "update": {
+                        "username": "bbccb",
+                        "email": "aaaff",
+                        "password": "5ccc"
+                        ...other fields if necessary...
+                    }
+                }
+            */
+            
+            const updatedOwner = await Owner.findOneAndUpdate({ _id: ownerID }, update, options);
+            res.status(ResponseCodes.SUCCESS).send(updatedOwner);
+        }
+        catch(error) {
+            console.log('ERROR:', error);
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
         }
     }
@@ -174,34 +205,6 @@ class OwnerController{
         }
     }
     
-    async uploadPetRecords(req: Request, res: Response) {
-        try{
-            let { petID, records } = req.body;
-
-            if (!petID || !records) {
-                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
-                return;
-            }
-
-            const pet = await Pet.findOne({ _id: petID });
-
-            if (!pet) {
-                res.status(ResponseCodes.BAD_REQUEST).send("This pet Does not exist");
-                return;
-            }
-
-            //Todo : Upload records to S3
-            // const upload = upload.single('file'); ???
-            // file name = petID + 'Record' ??
-
-            res.status(ResponseCodes.SUCCESS).send("Records uploaded successfully");
-        } catch(error) {
-            console.log('ERROR:', error);
-            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
-        }
-    }
-
-
     async updatePet(req: Request, res: Response) {
         try{
             const options = { new: true }; // This option ensures that the updated document is returned
@@ -237,11 +240,12 @@ class OwnerController{
 
     async deletePet(req: Request, res: Response) {
         try {
-            let { ownerID, petID } = req.body;
+            let ownerID = req.body.user.id;
+            let { petID } = req.body;
             
             /* Expected request
                 {   
-                    "ownerID": "66100027b52a931e19a6111a",
+                    (the user.id parameter comes from the authMiddleware already)
                     "petID": "66100027b52a931e19a6035d"
                 }
             */
@@ -268,9 +272,7 @@ class OwnerController{
 
     async getOwnerPets(req: Request, res: Response) {
         try {
-            let { ownerID } = req.body.user;
-
-            console.log(ownerID);
+            let ownerID = req.body.user.id;
 
             if (!ownerID) {
                 res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
@@ -287,6 +289,62 @@ class OwnerController{
         }
     }
 
+    async saveUploadedPhoto(req: Request, res: Response) {
+        try {
+            const options = { new: true };
+            const fileName =  req.file.originalname;
+            const { ownerID } = req.body;
+
+            if (!ownerID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+            
+            // Look for the previous photo on the S3 bucket and delete it 
+            const owner = await Owner.findOne({ _id: ownerID });
+            if (owner.profilePicture) {
+                await deleteFileFromS3(process.env.PHOTOS_BUCKET_NAME, owner.profilePicture);
+            }
+
+            // Save the uploaded photo to the owner's profile
+            const updatedOwner = await Owner.findOneAndUpdate({ _id: ownerID }, { profilePicture: fileName }, options);
+            res.status(ResponseCodes.SUCCESS).send(updatedOwner);
+        
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+
+    async uploadPetPhoto(req: Request, res: Response) {
+    }
+
+    async uploadPetRecords(req: Request, res: Response) {
+        try{
+            let { petID, records } = req.body;
+
+            if (!petID || !records) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            const pet = await Pet.findOne({ _id: petID });
+
+            if (!pet) {
+                res.status(ResponseCodes.BAD_REQUEST).send("This pet Does not exist");
+                return;
+            }
+
+            //Todo : Upload records to S3
+            // const upload = upload.single('file'); ???
+            // file name = petID + 'Record' ??
+
+            res.status(ResponseCodes.SUCCESS).send("Records uploaded successfully");
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
 
 }
 

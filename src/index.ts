@@ -1,12 +1,12 @@
 import express from "express";
-import routes from "./routes";
 import dotenv from "dotenv";
+dotenv.config();
+
+import routes from "./routes";
 import './db/db-connector'; // Ensures database connection on server start
 import swaggerJSDoc from 'swagger-jsdoc';
 import { serve, setup } from 'swagger-ui-express';
 import { swaggerConfig } from './../swagger.config';
-
-dotenv.config();
 
 const app = express();
 app.use(express.json()); // Parses incoming JSON requests and puts the parsed data in req.body
@@ -18,8 +18,8 @@ app.use(routes);
 const swaggerDocs = swaggerJSDoc(swaggerConfig);
 app.use('/api-docs', serve, setup(swaggerDocs)); // Set up the Swagger-UI-express to serve the generated Swagger docs
 
-// Define the port from the environment or use 3000 by default
-const port = process.env.PORT || 3000;
+// Define the port from the environment or use 3001 by default
+const port = process.env.PORT || 3001;
 
 // Start the server and listen on the defined port
 app.listen(port, () => {
