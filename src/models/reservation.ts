@@ -38,6 +38,7 @@ const reservationSchema = new Schema({
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     activitiesIDs:[ { type: String, default: []}],
+    confirmed: { type: Boolean, default: false }
 });
 
 export default model("reservations", reservationSchema);

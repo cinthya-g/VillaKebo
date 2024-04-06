@@ -542,11 +542,91 @@ class OwnerController{
         }
     }
 
-    async confirmReservation(req: Request, res: Response) {}
+    async confirmReservation(req: Request, res: Response) {
+        /* A previously created Reservation with Activities within its activitiesIDs array
+         is confirmed by changing its status to confirmed: true
+         Reservations can't be confirmed if they don't have any activities
+         and can't be changed or updated, just canceled
+         */
+        try {
+            let { reservationID } = req.body;
+            
+            if (!reservationID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
 
-    async cancelReservation(req: Request, res: Response) {}
+            const reservation = await Reservation.findOne({ _id: reservationID });
+            if (!reservation) {
+                res.status(ResponseCodes.NOT_FOUND).send("No reservation found with that ID");
+                return;
+            }
 
-    async getOwnerReservations(req: Request, res: Response) {}
+            if (reservation.activitiesIDs.length === 0) {
+                res.status(ResponseCodes.UNAUTHORIZED).send("Reservations without activities can't be confirmed!");
+                return;
+            }
+
+            reservation.confirmed = true;
+            await reservation.save();
+
+            res.status(ResponseCodes.SUCCESS).send(reservation);
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+
+    async cancelReservation(req: Request, res: Response) {
+        // Delete the created reservation
+        try {
+            let ownerID = req.body.user.id;
+            let { reservationID } = req.body;
+            
+            if (!reservationID || !ownerID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            const result = await Reservation.findOneAndDelete({ _id: reservationID });
+            if (!result) {
+                res.status(ResponseCodes.NOT_FOUND).send("No reservation found with that ID");
+            } else {
+                // Save the petID from the reservation
+                const { petID } = result;
+                // Find the owner with that reservation and delete it from its reservationsIDs array
+                await Owner.findOneAndUpdate({ _id: ownerID },{ $pull: { reservationsIDs: reservationID }});
+                // Delete from the pet's currentReservation field
+                await Pet.findOneAndUpdate({ _id: petID },{ currentReservation: null} );
+                // Delete the activities associated with that reservationID
+                await Activity.deleteMany({ reservationID: reservationID });
+                
+                res.status(ResponseCodes.SUCCESS).send("Reservation deleted successfully");
+            }
+
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+
+    async getOwnerReservations(req: Request, res: Response) {
+        // Return the confirmed:true reservations made by the owner
+        try {
+            let ownerID = req.body.user.id;
+
+            if (!ownerID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            const reservations = await Reservation.find({ ownerID: ownerID, confirmed: true });
+            res.status(ResponseCodes.SUCCESS).send(reservations);
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
 
     async createActivity(req: Request, res: Response) {
         try {
@@ -631,7 +711,23 @@ class OwnerController{
         }
     }
 
-    async getReservationActivities(req: Request, res: Response) {}
+    async getReservationActivities(req: Request, res: Response) {
+        try {
+            let { reservationID } = req.body;
+
+            if (!reservationID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            const activities = await Activity.find({ reservationID: reservationID });
+            res.status(ResponseCodes.SUCCESS).send(activities);
+
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
 
 
 }
