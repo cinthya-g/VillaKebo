@@ -15,10 +15,6 @@ import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
 class OwnerController{
     /**
      * @swagger
-     * tags:
-     *   name: OwnerLogin
-     *   description: Owner login operations
-     * 
      * /auth/owner-login:
      *   post:
      *     tags: [Owner]
@@ -91,10 +87,6 @@ class OwnerController{
 
     /**
      * @swagger
-     * tags:
-     *   name: UpdateOwner
-     *   description: Update owner details
-     * 
      * /owner/update:
      *   put:
      *     tags: [Owner]
@@ -182,10 +174,6 @@ class OwnerController{
 
     /**
      * @swagger
-     * tags:
-     *   name: CreatePet
-     *   description: Create a pet for the owner
-     * 
      * /owner/create-pet:
      *   post:
      *     tags: [Owner]
@@ -249,10 +237,6 @@ class OwnerController{
 
     /**
      * @swagger
-     * tags:
-     *   name: UpdatePet
-     *   description: Update pet details
-     * 
      * /owner/update:
      *   put:
      *     tags: [Pet]
@@ -338,10 +322,6 @@ class OwnerController{
 
     /**
      * @swagger
-     * tags:
-     *   name: DeletePet
-     *   description: Delete a pet from the owner's account
-     * 
      * /owner/delete-pet:
      *   delete:
      *     tags: [Owner]

@@ -7,7 +7,11 @@ import { ResponseCodes } from "../utils/res-codes";
 import Owner from "../models/owner";
 import Caretaker from "../models/caretaker";
 
-/**
+
+
+
+class RegisterController {
+    /**
  * @swagger
  * tags:
  *   name: Registration
@@ -62,9 +66,6 @@ import Caretaker from "../models/caretaker";
  *       500:
  *         description: Internal Server Error
  */
-
-
-class RegisterController {
 
     async registerUser(req: Request, res: Response) {       
         try {

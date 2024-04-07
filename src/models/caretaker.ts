@@ -49,7 +49,7 @@ const caretakerSchema = new Schema({
     role: { type: String, default: Roles.CARETAKER },
     status: { type: String, default: "I <3 pets!"},
     groupsIDs: [{ type: Schema.Types.ObjectId, ref: "petgroups" }],
-    profilePicture: { type: String },
+    profilePicture: { type: String ,default: null},
     //TODO DEFINE WHAT IS REQUIRED
 });
 

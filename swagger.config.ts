@@ -2,8 +2,8 @@ export const swaggerConfig = {
     swaggerDefinition: {
         openapi: "3.1.0",
         info: {
-            title: "Sample API",
-            description: "dummy api to test swagger",
+            title: "VillaKebo API",
+            description: "Villakebo documentation",
             version: "1.0.0"
         },
         servers: [

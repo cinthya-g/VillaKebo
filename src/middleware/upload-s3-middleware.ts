@@ -17,7 +17,7 @@ const s3Conn = new S3Client({
 // Delete an existing file from S3
 /**
  * @swagger
- * tags:
+ * tags:[Database]
  *   name: deleteFileFromS3
  *   description: Delete a file from S3
  * 
@@ -67,7 +67,7 @@ const deleteFileFromS3 = async (bucketName: string, fileName: string) => {
 // Images
 /**
  * @swagger
- * tags:
+ * tags:[Database]
  *   name: S3Photo Storage
  *   description: Storage of photos in Amazon S3
  * 
@@ -112,6 +112,7 @@ const s3PhotoStorage = multerS3({
 });
 /**
  * @swagger
+ * tags:[Database]
  * components:
  *   schemas:
  *     PhotoFileFilter:
@@ -142,6 +143,7 @@ const photoFileFilter = (req: Request, file: Express.Multer.File, cb: FileFilter
 
 /**
  * @swagger
+ * tags:[Database]
  * paths:
  *   /upload/photo:
  *     post:
@@ -178,7 +180,7 @@ const uploadPhoto = multer({
 // PDF files
 /**
  * @swagger
- * tags:
+ * tags:[Database]
  *   name: S3
  *   description: Amazon S3 storage operations
  * 
@@ -223,6 +225,7 @@ const s3FileStorage = multerS3({
 });
 /**
  * @swagger
+ * tags:[Database]
  * components:
  *   schemas:
  *     PDFFileFilter:
@@ -254,6 +257,7 @@ const pdfFileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCa
 
 /**
  * @swagger
+ * tags:[Database]
  * paths:
  *   /upload/pdf:
  *     post:
@@ -287,7 +291,7 @@ const uploadPDF = multer({
 });
 /**
  * @swagger
- * tags:
+ * tags: [Database]
  *   name: S3
  *   description: Amazon S3 storage operations
  * 
