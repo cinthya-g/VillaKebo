@@ -227,7 +227,7 @@ class OwnerController{
             const pet = await Pet.create(newPet);
             await Owner.findOneAndUpdate({ _id: ownerID }, { $push: { petsIDs: pet._id } });
 
-            res.status(ResponseCodes.SUCCESS).send("Pet created successfully");
+            res.status(ResponseCodes.SUCCESS).send(pet);
 
         } catch(error) {
             console.log('ERROR:', error);
@@ -369,8 +369,8 @@ class OwnerController{
                 res.status(ResponseCodes.NOT_FOUND).send("No pet found with that ID");
             } else {
                 // Delete pet from the Owner's petsIDs array
-                await Owner.findOneAndUpdate({ _id: ownerID }, {$pull: { petsIDs: petID }});
-                res.status(ResponseCodes.SUCCESS).send("Pet deleted successfully");
+                const owner = await Owner.findOneAndUpdate({ _id: ownerID }, {$pull: { petsIDs: petID }}, { new: true });
+                res.status(ResponseCodes.SUCCESS).send(owner);
             }
 
         } catch(error) {
@@ -911,6 +911,11 @@ class OwnerController{
                 return;
             }
 
+            if(startDate > endDate) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Start date must be before end date");
+                return;
+            }
+
             const newReservation = {
                 ownerID: ownerID,
                 petID: petID,
@@ -1180,9 +1185,16 @@ class OwnerController{
             }
 
             const activity = await Activity.create(newActivity);
-            await Reservation.findOneAndUpdate({ _id: reservationID }, { $addToSet: { activitiesIDs: activity._id } });
+            const reservation = await Reservation.findOneAndUpdate(
+                { _id: reservationID },
+                { $addToSet: { activitiesIDs: activity._id } },
+                { new: true }
+            );
             
-            res.status(ResponseCodes.SUCCESS).send(activity);
+            res.status(ResponseCodes.SUCCESS).send({
+                activity,
+                reservation
+            });
 
         } catch(error) {
             console.log('ERROR:', error);
