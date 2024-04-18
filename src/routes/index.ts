@@ -1,5 +1,6 @@
 import { Router } from "express";
 import authRoutes from "./auth";
+import googleRouter from "./google-passport";
 import ownerRoutes from "./owner";
 import caretakerRouter from "./caretaker";
 
@@ -37,6 +38,15 @@ router.use("/owner", ownerRoutes);
  *     description: Includes routes related to pet caretaker operations like managing pet groups and activities.
  */
 router.use("/caretaker", caretakerRouter);
+
+/**
+ * @swagger
+ * paths:
+ *   /google-passport:
+ *     summary: Google authentication routes
+ *     description: Includes routes related to Google authentication.
+ */
+router.use("/google-passport", googleRouter);
 
 /**
  * @swagger

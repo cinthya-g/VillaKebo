@@ -8,3 +8,6 @@ AWS_REGION =<string for region>
 PHOTOS_BUCKET_NAME =<string for bucket name>
 FILES_BUCKET_NAME =<string for bucket name>
 ACL_ACCESS =<string for type of access>
+GOOGLE_CLIENT_ID=<string for client id>
+GOOGLE_CLIENT_SECRET=<string for client secret>
+GOOGLE_CALLBACK=<string for google uri callback>

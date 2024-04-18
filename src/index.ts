@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
 
+import { googleAuth } from './middleware/auth-google-middleware';
+
 import routes from "./routes";
 import './db/db-connector'; // Ensures database connection on server start
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -11,7 +13,8 @@ import { swaggerConfig } from './../swagger.config';
 const app = express();
 app.use(express.json()); // Parses incoming JSON requests and puts the parsed data in req.body
 
-// Add the API routes to the Express server
+// Add the API routes to the Express server and use the Google Auth middleware
+googleAuth(app);
 app.use(routes);
 
 // Generate Swagger documentation and serve it at the '/api-docs' endpoint
