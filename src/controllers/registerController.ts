@@ -57,7 +57,7 @@ class RegisterController {
  *               type: object
  *               properties:
  *                 user:
- *                   $ref: '#/components/schemas/User'
+ *                   $ref: '#/components/schemas/Owner'
  *                 token:
  *                   type: string
  *                   description: Authentication token for the user

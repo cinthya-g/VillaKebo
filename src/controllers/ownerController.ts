@@ -48,7 +48,7 @@ class OwnerController{
      *               properties:
      *                 token:
      *                   type: string
-     *                 user:
+     *                 owner:
      *                   $ref: '#/components/schemas/Owner'
      *       400:
      *         description: Missing required fields
@@ -123,7 +123,6 @@ class OwnerController{
      *                     type: string
      *                     format: password
      *                     description: New password of the owner
-     *                   ...other fields if necessary...
      *     responses:
      *       200:
      *         description: Owner details updated successfully
@@ -158,7 +157,6 @@ class OwnerController{
                         "username": "bbccb",
                         "email": "aaaff",
                         "password": "5ccc"
-                        ...other fields if necessary...
                     }
                 }
             */
@@ -271,7 +269,6 @@ class OwnerController{
      *                   breed:
      *                     type: string
      *                     description: New breed of the pet
-     *                   ...other fields if necessary...
      *     responses:
      *       200:
      *         description: Pet details updated successfully
@@ -306,7 +303,6 @@ class OwnerController{
                         "name": "bbccb",
                         "age":  77795685,
                         "breed": "5ccc"
-                        ...other fields if necessary...
                     }
                 }
             */
@@ -473,7 +469,6 @@ class OwnerController{
                         "originalname": "newFilename.jpg",
                         "fieldname": "aaaff",
                         "mimetype": "image",
-                        ...other fields...
                     }
                 }
             */
@@ -598,7 +593,6 @@ class OwnerController{
                         "originalname": "newFilename.jpg",
                         "fieldname": "aaaff",
                         "mimetype": "image",
-                        ...other fields...
                     }
                 }
             */
@@ -754,7 +748,6 @@ class OwnerController{
                     "originalname": "newFilename.jpg",
                     "fieldname": "aaaff",
                     "mimetype": "application/pdf",
-                    ...other fields...
                 }
             }
         */

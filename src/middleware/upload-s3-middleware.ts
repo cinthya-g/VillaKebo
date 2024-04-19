@@ -17,13 +17,13 @@ const s3Conn = new S3Client({
 // Delete an existing file from S3
 /**
  * @swagger
- * tags:[Database]
- *   name: deleteFileFromS3
- *   description: Delete a file from S3
- * 
+ * tags:
+ *   - name: Database
+ *     description: Operations related to database storage
  * /s3/delete-file:
  *   delete:
- *     tags: [S3]
+ *     tags: 
+ *       - S3
  *     summary: Delete a file from S3
  *     description: Deletes an existing file from the specified S3 bucket.
  *     parameters:
@@ -50,6 +50,7 @@ const s3Conn = new S3Client({
  *         description: Internal Server Error
  */
 
+
 const deleteFileFromS3 = async (bucketName: string, fileName: string) => {
     try {
         const deleteParams = {
@@ -67,13 +68,13 @@ const deleteFileFromS3 = async (bucketName: string, fileName: string) => {
 // Images
 /**
  * @swagger
- * tags:[Database]
- *   name: S3Photo Storage
- *   description: Storage of photos in Amazon S3
- * 
+ * tags:
+ *   - name: S3Photo Storage
+ *     description: Storage of photos in Amazon S3
  * /s3/upload-photo:
  *   post:
- *     tags: [S3]
+ *     tags:
+ *       - S3
  *     summary: Upload a photo to S3
  *     description: Uploads a photo to the specified S3 bucket.
  *     requestBody:
@@ -96,6 +97,7 @@ const deleteFileFromS3 = async (bucketName: string, fileName: string) => {
  *         description: Internal Server Error
  */
 
+
 const s3PhotoStorage = multerS3({
     s3: s3Conn,
     bucket: process.env.PHOTOS_BUCKET_NAME,
@@ -112,7 +114,6 @@ const s3PhotoStorage = multerS3({
 });
 /**
  * @swagger
- * tags:[Database]
  * components:
  *   schemas:
  *     PhotoFileFilter:
@@ -124,14 +125,15 @@ const s3PhotoStorage = multerS3({
  *           description: An object representing the file being uploaded.
  *       required:
  *         - file
- *       example:
- *         file:
- *           mimetype: 'image/jpeg'
  *       methods:
  *         filter:
  *           type: function
  *           description: Function to determine if the file should be accepted based on its MIME type. Only images are allowed.
+ *       example:
+ *         file:
+ *           mimetype: 'image/jpeg'
  */
+
 
 const photoFileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
     console.log("File info: ", file);
@@ -143,7 +145,9 @@ const photoFileFilter = (req: Request, file: Express.Multer.File, cb: FileFilter
 
 /**
  * @swagger
- * tags:[Database]
+ * tags:
+ *   - name: Database
+ *     description: Database operations related to file storage
  * paths:
  *   /upload/photo:
  *     post:
@@ -171,6 +175,7 @@ const photoFileFilter = (req: Request, file: Express.Multer.File, cb: FileFilter
  *           description: Internal Server Error.
  */
 
+
 const uploadPhoto = multer({
     storage: s3PhotoStorage,
     fileFilter: photoFileFilter,
@@ -180,13 +185,13 @@ const uploadPhoto = multer({
 // PDF files
 /**
  * @swagger
- * tags:[Database]
- *   name: S3
- *   description: Amazon S3 storage operations
- * 
+ * tags:
+ *   - name: S3
+ *     description: Amazon S3 storage operations
  * /s3/upload-pdf:
  *   post:
- *     tags: [S3]
+ *     tags:
+ *       - S3
  *     summary: Upload a PDF to S3
  *     description: Uploads a PDF file to the specified S3 bucket.
  *     requestBody:
@@ -209,6 +214,7 @@ const uploadPhoto = multer({
  *         description: Internal Server Error
  */
 
+
 const s3FileStorage = multerS3({
     s3: s3Conn,
     bucket: process.env.FILES_BUCKET_NAME,
@@ -225,7 +231,6 @@ const s3FileStorage = multerS3({
 });
 /**
  * @swagger
- * tags:[Database]
  * components:
  *   schemas:
  *     PDFFileFilter:
@@ -247,6 +252,7 @@ const s3FileStorage = multerS3({
  *           mimetype: 'application/pdf'
  */
 
+
 const pdfFileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
     console.log("File info: ", file);
     if (file.mimetype.startsWith('application/pdf')) 
@@ -257,7 +263,9 @@ const pdfFileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCa
 
 /**
  * @swagger
- * tags:[Database]
+ * tags:
+ *   - name: Database
+ *     description: Database operations related to file storage
  * paths:
  *   /upload/pdf:
  *     post:
@@ -285,19 +293,20 @@ const pdfFileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCa
  *           description: Internal Server Error.
  */
 
+
 const uploadPDF = multer({
     storage: s3FileStorage,
     fileFilter: pdfFileFilter,
 });
 /**
  * @swagger
- * tags: [Database]
- *   name: S3
- *   description: Amazon S3 storage operations
- * 
+ * tags:
+ *   - name: S3
+ *     description: Amazon S3 storage operations
  * /s3/get-url:
  *   get:
- *     tags: [S3]
+ *     tags:
+ *       - S3
  *     summary: Get S3 File URL
  *     description: Retrieves the URL of a file stored in S3.
  *     parameters:
@@ -316,14 +325,6 @@ const uploadPDF = multer({
  *     responses:
  *       200:
  *         description: URL retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 url:
- *                   type: string
- *                   description: Public URL of the file
  *       400:
  *         description: Missing required fields
  *       404:
@@ -331,6 +332,7 @@ const uploadPDF = multer({
  *       500:
  *         description: Internal Server Error
  */
+
 
 const getS3Url = (bucketName: string, fileName: string) => {
     return `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
