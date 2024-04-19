@@ -21,7 +21,6 @@ import { ResponseCodes } from "../utils/res-codes";
 
 const roleMiddleware = (allowedRoles: Array<string> | string) => {
     return (req: Request, res: Response, next: NextFunction) => {
-        //console.log("RoleMiddleware (req body user): ", req.body.user);
         
         const user = req.body.user;
 
