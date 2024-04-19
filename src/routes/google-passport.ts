@@ -1,12 +1,15 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import { User } from '../../types/user';
+import authMiddleware from '../middleware/auth-middleware';
+import roleMiddleware from '../middleware/role-middleware';
 
 
 const router = Router();
 
-router.get('/', (req: Request, res: Response) => {
-    res.send(`<h1>Bienvenido, ${req.user ? (req.user as User).displayName : 'Invitado'}!</h1>`);
+router.get('/', authMiddleware, (req: Request, res: Response) => {
+    console.log("AFTER MIDDLEWARE:", req.body.user);
+    res.send(`<h1>Bienvenido, ${req.body.user ? (req.body.user as User).username : 'Invitado'} !</h1>`);
 });
 
 router.get('/login', (req: Request, res: Response) => {
@@ -22,7 +25,8 @@ router.get('/google/callback',
         failureRedirect: '/google-passport/login' 
     }),
     (req: Request, res: Response) => {
-      res.redirect('/google-passport/'); 
+        console.log("AFTER STRATEGY:", req.user);
+        res.redirect('/google-passport/'); 
     }
 );
 
