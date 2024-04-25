@@ -8,6 +8,7 @@ import Caretaker from "../models/caretaker";
 import Pet from "../models/pet";
 import Reservation from "../models/reservation";
 import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
+import Activity from "../models/activity";
 
 
 class CaretakerController{
@@ -281,29 +282,71 @@ class CaretakerController{
 
     }
 
-    // TODO: Finish these functions with dummy responses
-    async joinPetGroup(req: Request, res: Response) {
-        // The caretaker will join a petgroup
-        /**
-         * Expected request
-         * {
-         *     "groupID": "5f7b1b7b4b3b4b3b4b3b4b3b"
-         * }
-         */
-        res.status(ResponseCodes.SUCCESS).send("Dummy: You joined the petgroup!");
-    }
 
-    async getPetGroups(req: Request, res: Response) {
-        // The caretaker will get the petgroups they are part of
-        res.status(ResponseCodes.SUCCESS).send("Dummy: Here are the petgroups!");
-    }
+    /**
+     * @swagger
+     * /caretaker/accomplish-activity:
+     *   put:
+     *     tags: [Caretaker]
+     *     summary: Mark an activity as accomplished
+     *     description: Increments the 'timesCompleted' field for a specified activity by the caretaker.
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - activityID
+     *             properties:
+     *               activityID:
+     *                 type: string
+     *                 description: The unique identifier of the activity to update
+     *     responses:
+     *       200:
+     *         description: Activity accomplished successfully
+     *       400:
+     *         description: Missing required fields or no activity found
+     *       500:
+     *         description: Internal Server Error
+     */
 
-    async getPetGroup(req: Request, res: Response) {
-        // The caretaker will get the details of a petgroup
-        res.status(ResponseCodes.SUCCESS).send("Dummy: Here is the single petgroup!");
+    async accomplishActivity(req: Request, res: Response, io: SocketIOServer){
+        try {
+            const { activityID } = req.body;
+    
+            if (!activityID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields: activityID");
+                return;
+            }
+    
+            // Busca la actividad y incrementa el contador 'timesCompleted'
+            const updatedActivity = await Activity.findOneAndUpdate(
+                { _id: activityID },
+                { $inc: { timesCompleted: 1 } },
+                { new: true, runValidators: true }
+            );
+    
+            if (!updatedActivity) {
+                res.status(ResponseCodes.NOT_FOUND).send("No activity found with the provided ID");
+                return;
+            }
+            // Emitir un evento a través de Socket.IO
+        io.emit('activityUpdated', {
+            activityID: updatedActivity._id,
+            timesCompleted: updatedActivity.timesCompleted
+        });
+    
+            res.status(ResponseCodes.SUCCESS).send(`Activity ${updatedActivity.title} accomplished. Times completed: ${updatedActivity.timesCompleted}`);
+        } catch (error) {
+            console.error('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
     }
-
-    async accomplishActivity(req: Request, res: Response) {
+    //async accomplishActivity(req: Request, res: Response) {
+        
         // The caretaker will increse the 'timesCompleted' field of an activity when it is accomplished
         /**
          * Expected request
@@ -311,8 +354,8 @@ class CaretakerController{
          *     "activityID": "5f7b1b7b4b3b4b3b4b3b4b3b"
          * }
          */
-        res.status(ResponseCodes.SUCCESS).send("Dummy: You accomplished the activity one more time!");
-    }
+        //res.status(ResponseCodes.SUCCESS).send("Dummy: You accomplished the activity one more time!");
+    //}
 
 
 }
