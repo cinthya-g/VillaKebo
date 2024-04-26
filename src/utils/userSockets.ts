@@ -11,7 +11,7 @@ export const userSockets = new Map<string, Socket>();
 // Función para agregar un socket al mapa
 export function addSocket(userId: string, socket: Socket): void {
     userSockets.set(userId, socket);
-    console.log(`Socket added for user ${userId}`);
+    console.log(`Socket: ${socket} added for user ${userId}`);
 }
 
 // Función para eliminar un socket del mapa
@@ -34,3 +34,4 @@ export function getUserIdFromSocket(socket: Socket): string | undefined {
     }
     return undefined;
 }
+

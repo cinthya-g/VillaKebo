@@ -362,45 +362,6 @@ class CaretakerController{
             res.status(500).send("Internal Server Error"); // SERVER_ERROR
         }
     }
-    // async accomplishActivity(req: Request, res: Response){
-    //     try {
-    //         const { activityID } = req.body;
-    
-    //         if (!activityID) {
-    //             res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields: activityID");
-    //             return;
-    //         }
-    
-    //         // Busca la actividad y incrementa el contador 'timesCompleted'
-    //         const updatedActivity = await Activity.findOneAndUpdate(
-    //             { _id: activityID },
-    //             { $inc: { timesCompleted: 1 } },
-    //             { new: true, runValidators: true }
-    //         );
-    
-    //         if (!updatedActivity) {
-    //             res.status(ResponseCodes.NOT_FOUND).send("No activity found with the provided ID");
-    //             return;
-    //         }
-
-    //         res.status(ResponseCodes.SUCCESS).send(`Activity ${updatedActivity.title} accomplished. Times completed: ${updatedActivity.timesCompleted}`);
-    //     } catch (error) {
-    //         console.error('ERROR:', error);
-    //         res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
-    //     }
-    // }
-    //async accomplishActivity(req: Request, res: Response) {
-        
-        // The caretaker will increse the 'timesCompleted' field of an activity when it is accomplished
-        /**
-         * Expected request
-         * {
-         *     "activityID": "5f7b1b7b4b3b4b3b4b3b4b3b"
-         * }
-         */
-        //res.status(ResponseCodes.SUCCESS).send("Dummy: You accomplished the activity one more time!");
-    //}
-
 
 }
 
