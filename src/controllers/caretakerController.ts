@@ -9,6 +9,7 @@ import Pet from "../models/pet";
 import Reservation from "../models/reservation";
 import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
 import Activity from "../models/activity";
+import { userSockets } from "../utils/userSockets";
 
 
 class CaretakerController{
@@ -312,13 +313,12 @@ class CaretakerController{
      *       500:
      *         description: Internal Server Error
      */
-
-    async accomplishActivity(req: Request, res: Response, io: SocketIOServer){
+    async  accomplishActivity(req: Request, res: Response) {
         try {
             const { activityID } = req.body;
     
             if (!activityID) {
-                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields: activityID");
+                res.status(400).send("Missing required fields: activityID"); // BAD_REQUEST
                 return;
             }
     
@@ -330,21 +330,65 @@ class CaretakerController{
             );
     
             if (!updatedActivity) {
-                res.status(ResponseCodes.NOT_FOUND).send("No activity found with the provided ID");
+                res.status(404).send("No activity found with the provided ID"); // NOT_FOUND
                 return;
             }
-            // Emitir un evento a través de Socket.IO
-        io.emit('activityUpdated', {
-            activityID: updatedActivity._id,
-            timesCompleted: updatedActivity.timesCompleted
-        });
     
-            res.status(ResponseCodes.SUCCESS).send(`Activity ${updatedActivity.title} accomplished. Times completed: ${updatedActivity.timesCompleted}`);
+            // Encuentra la reserva asociada a la actividad
+            const reservation = await Reservation.findById(updatedActivity.reservationID);
+    
+            if (!reservation) {
+                res.status(404).send("No reservation found for this activity"); // NOT_FOUND
+                return;
+            }
+    
+            // Extrae el userID del owner de la reserva
+            const ownerID = reservation.ownerID;
+    
+            // Encuentra el socket para el ownerID
+            const ownerSocket = userSockets.get(ownerID);
+            if (ownerSocket) {
+                // Emitir evento de actividad completada al socket específico del usuario
+                ownerSocket.emit('activityUpdated', {
+                    activityID: updatedActivity._id,
+                    timesCompleted: updatedActivity.timesCompleted,
+                    title: updatedActivity.title
+                });
+            }
+    
+            res.status(200).send(`Activity ${updatedActivity.title} accomplished. Times completed: ${updatedActivity.timesCompleted}`); // SUCCESS
         } catch (error) {
             console.error('ERROR:', error);
-            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+            res.status(500).send("Internal Server Error"); // SERVER_ERROR
         }
     }
+    // async accomplishActivity(req: Request, res: Response){
+    //     try {
+    //         const { activityID } = req.body;
+    
+    //         if (!activityID) {
+    //             res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields: activityID");
+    //             return;
+    //         }
+    
+    //         // Busca la actividad y incrementa el contador 'timesCompleted'
+    //         const updatedActivity = await Activity.findOneAndUpdate(
+    //             { _id: activityID },
+    //             { $inc: { timesCompleted: 1 } },
+    //             { new: true, runValidators: true }
+    //         );
+    
+    //         if (!updatedActivity) {
+    //             res.status(ResponseCodes.NOT_FOUND).send("No activity found with the provided ID");
+    //             return;
+    //         }
+
+    //         res.status(ResponseCodes.SUCCESS).send(`Activity ${updatedActivity.title} accomplished. Times completed: ${updatedActivity.timesCompleted}`);
+    //     } catch (error) {
+    //         console.error('ERROR:', error);
+    //         res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+    //     }
+    // }
     //async accomplishActivity(req: Request, res: Response) {
         
         // The caretaker will increse the 'timesCompleted' field of an activity when it is accomplished
