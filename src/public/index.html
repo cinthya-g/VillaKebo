@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <h1>Socket.io Client</h1>    
+    <form id="registerForm">
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br>
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" required><br>
+        <input type="submit" value="Register">
+    </form>
+    <script>
+        const socket = io('http://localhost:3000');
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+    
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+    
+            fetch('http://localhost:3000/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    username: 'test123',
+                    isOwner: true,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.user._id);
+                socket.emit('ownerRegistered', data.user._id);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+
+    <button id="sendButton">Send</button>
+    <script>
+        /*
+            Send the request to accomplish the activity, if the request is successful,
+            use the socket emit retrieving the ownerId from the request
+        */
+        document.getElementById('sendButton').addEventListener('click', function() {
+            socket.emit('activityAccomplished', '662d758cf5a7a8819f158be3'); // this goes inside a then as in line 39
+        });
+
+        socket.on('notifyOwner', function(data) {
+            alert(data);
+        });
+    </script>
+</body>
+</html>
