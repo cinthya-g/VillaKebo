@@ -1,12 +1,6 @@
 import { Socket } from 'socket.io';
+import {userSockets} from '../models/userSockets';
 
-declare module 'socket.io' {
-    interface Socket {
-        userId?: string;  // Haciendo 'userId' opcional para manejar casos donde aún no se ha asignado
-    }
-}
-// Crear un mapa para mantener la relación entre userId y su socket correspondiente
-export const userSockets = new Map<string, Socket>();
 
 // Función para agregar un socket al mapa
 export function addSocket(userId: string, socket: Socket): void {
@@ -34,4 +28,3 @@ export function getUserIdFromSocket(socket: Socket): string | undefined {
     }
     return undefined;
 }
-

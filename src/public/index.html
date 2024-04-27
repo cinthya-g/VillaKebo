@@ -12,14 +12,99 @@
     <div class="container mt-5">
         <h1>Socket.io Client Test</h1>
         <div id="status" class="alert alert-info">Disconnected</div>
-        <div class="mb-3">
-            <label for="token" class="form-label">Enter Token:</label>
-            <input type="text" class="form-control" id="token" placeholder="Token">
-        </div>
-        <button id="loginBtn" class="btn btn-primary">Login</button>
+
+        <!-- Formulario de inicio de sesión -->
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" class="form-control" id="email" required placeholder="Enter email">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password:</label>
+                <input type="password" class="form-control" id="password" required placeholder="Password">
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+
         <button id="disconnectBtn" class="btn btn-secondary">Disconnect</button>
     </div>
+    <div class="container mt-5">
+        <h1>Accomplish an Activity</h1>
+        <button id="accomplishActivityBtn" class="btn btn-success">Accomplish Activity</button>
+        <!-- Asumiendo que conoces el ID de la actividad por adelantado -->
+        <input type="hidden" id="activityID" value="66292997e699b5efc22c8706">
+    </div>
 
-    <script src="/main.js"></script>
+    <script>
+        const socket = io();
+
+
+        socket.on('acomplish-activity', (activity) => {
+            alert(`Activity Accomplished: ${activity}`);
+        });
+    
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+    
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+    
+            try {
+                const response = await fetch('/auth/owner-login', { // Asegúrate de que esta ruta es correcta
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, socket: socket.id })
+                });
+    
+                // Comprueba si el Content-Type es JSON antes de intentar parsear
+                if (response.headers.get('content-type').includes('application/json')) {
+                    const data = await response.json();
+    
+                    if (response.ok) {
+                        document.getElementById('status').className = 'alert alert-success';
+                        document.getElementById('status').textContent = 'Connected';
+                    } else {
+                        throw new Error(data.message || 'Failed to login');
+                    }
+                } else {
+                    // Maneja el caso en que la respuesta no sea JSON
+                    document.getElementById('status').className = 'alert alert-danger';
+                    document.getElementById('status').textContent = 'Unexpected response type';
+                }
+            } catch (error) {
+                document.getElementById('status').className = 'alert alert-danger';
+                document.getElementById('status').textContent = error.message;
+            }
+        });
+    
+        document.getElementById('disconnectBtn').addEventListener('click', function() {
+            socket.disconnect();
+            document.getElementById('status').className = 'alert alert-info';
+            document.getElementById('status').textContent = 'Disconnected';
+        });
+
+        document.getElementById('accomplishActivityBtn').addEventListener('click', function() {
+            const activityID = document.getElementById('activityID').value;
+
+            fetch('/caretaker/accomplish-activity?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MjkyNWYwODdjYjJkOTIyMmM4MzFjYSIsInVzZXJuYW1lIjoiSWtlckpvaGFubnNlbkIiLCJlbWFpbCI6ImlrZXJfam9oYW5uc2VuYkBlbWFpbC5jb20iLCJyb2xlIjoiY2FyZXRha2VyIiwiaWF0IjoxNzEzOTcyNzIwfQ.Hag1xCOq6j7xFE0RblUduNxEYHV1aixkU2D9150pptE', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ activityID })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.text();
+            })
+            .then(result => {
+                alert(`Activity Accomplished: ${result}`);
+            })
+            .catch((error) => {
+                alert(`Error: ${error.message}`);
+            });
+        });
+    </script>
+    
 </body>
 </html>

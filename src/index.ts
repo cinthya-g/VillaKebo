@@ -5,9 +5,7 @@ dotenv.config();
 import { googleAuth } from './middleware/auth-google-middleware';
 
 //Socket.io
-import { createServer } from 'http'; // Import the createServer function from the 'http' module
 import { Server as SocketIOServer } from 'socket.io'; // Import the Server class from the 'socket.io' module
-import { addSocket, getUserIdFromSocket, removeSocket } from './utils/userSockets'; // Import the addSocket and removeSocket functions from the 'userSockets' module
 
 import routes from "./routes";
 import './db/db-connector'; // Ensures database connection on server start
@@ -46,10 +44,10 @@ const io = new SocketIOServer(server); // Create a new instance of the Socket.io
 io.on('connection', (socket) => {
     console.log('A client connected with socketId:', socket.id);
 
-    socket.on('login', (data,socket) => {
-        socket.emit('login',data,socket.id);
+    socket.on('accomplishActivity',(data)=>{
+        console.log('Activity accomplished:',data);
+        socket.emit('accomplishActivity',data)
     });
-    socket.on('accomplishActivity',(data)=>{socket.emit('accomplishActivity',data)});
-    socket.on('disconnect', () => socket.emit('disconnect',socket.id));
+
 });
 

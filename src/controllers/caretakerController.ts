@@ -9,7 +9,8 @@ import Pet from "../models/pet";
 import Reservation from "../models/reservation";
 import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
 import Activity from "../models/activity";
-import { userSockets } from "../utils/userSockets";
+import { userSockets } from "../models/userSockets";
+import Owner from "../models/owner";
 
 
 class CaretakerController{
@@ -343,18 +344,25 @@ class CaretakerController{
             }
     
             // Extrae el userID del owner de la reserva
-            const ownerID = reservation.ownerID;
+            const owner = await Owner.findById(reservation.ownerID);
+            
+            if (!owner) {
+                res.status(404).send("No owner found for this reservation"); // NOT_FOUND
+                return;
+            }
+
+            const ownerName = owner.username;
+
+            
+
+            console.log('DEntro de funcion de acomplish activity OwnerID:', ownerName);
     
             // Encuentra el socket para el ownerID
-            const ownerSocket = userSockets.get(ownerID);
-            if (ownerSocket) {
-                // Emitir evento de actividad completada al socket específico del usuario
-                ownerSocket.emit('activityUpdated', {
-                    activityID: updatedActivity._id,
-                    timesCompleted: updatedActivity.timesCompleted,
-                    title: updatedActivity.title
-                });
-            }
+            const ownerSocket = userSockets.get(ownerName);
+
+            console.log('Owner socket before emitter:', ownerSocket);
+
+            console.log(userSockets);
     
             res.status(200).send(`Activity ${updatedActivity.title} accomplished. Times completed: ${updatedActivity.timesCompleted}`); // SUCCESS
         } catch (error) {
