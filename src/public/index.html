@@ -39,9 +39,7 @@
         const socket = io();
 
 
-        socket.on('acomplish-activity', (activity) => {
-            alert(`Activity Accomplished: ${activity}`);
-        });
+        
     
         document.getElementById('loginForm').addEventListener('submit', async function(event) {
             event.preventDefault();
@@ -98,7 +96,9 @@
                 return response.text();
             })
             .then(result => {
+                
                 alert(`Activity Accomplished: ${result}`);
+                socket.emit('activity-accomplished', activityID);
             })
             .catch((error) => {
                 alert(`Error: ${error.message}`);

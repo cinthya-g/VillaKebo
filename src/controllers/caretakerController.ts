@@ -353,15 +353,9 @@ class CaretakerController{
 
             const ownerName = owner.username;
 
-            
-
             console.log('DEntro de funcion de acomplish activity OwnerID:', ownerName);
-    
             // Encuentra el socket para el ownerID
             const ownerSocket = userSockets.get(ownerName);
-
-            console.log('Owner socket before emitter:', ownerSocket);
-
             console.log(userSockets);
     
             res.status(200).send(`Activity ${updatedActivity.title} accomplished. Times completed: ${updatedActivity.timesCompleted}`); // SUCCESS
