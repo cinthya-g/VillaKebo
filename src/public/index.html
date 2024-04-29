@@ -37,6 +37,9 @@
 
     <script>
         const socket = io();
+        socket.on('accomplishActivity', (event) => {
+            alert(`Activity Accomplished: ${event._id}`);
+        });	
 
 
         
@@ -61,6 +64,7 @@
                     if (response.ok) {
                         document.getElementById('status').className = 'alert alert-success';
                         document.getElementById('status').textContent = 'Connected';
+                        socket.emit('login', data.token);
                     } else {
                         throw new Error(data.message || 'Failed to login');
                     }
@@ -96,9 +100,9 @@
                 return response.text();
             })
             .then(result => {
+                console.log(result);
                 
-                alert(`Activity Accomplished: ${result}`);
-                socket.emit('activity-accomplished', activityID);
+                //socket.emit('activity-accomplished', activityID);
             })
             .catch((error) => {
                 alert(`Error: ${error.message}`);

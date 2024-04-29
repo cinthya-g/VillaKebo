@@ -11,6 +11,8 @@ import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
 import Activity from "../models/activity";
 import { userSockets } from "../models/userSockets";
 import Owner from "../models/owner";
+import {getIo} from '../utils/io';
+
 
 
 class CaretakerController{
@@ -351,12 +353,17 @@ class CaretakerController{
                 return;
             }
 
-            const ownerName = owner.username;
+            const ownerName = owner.id;
+            //console.log('Owner ID:', ownerName);
+
+            const Server = getIo();
+            console.log('Server:', Server.sockets.adapter.rooms)
+
 
             console.log('DEntro de funcion de acomplish activity OwnerID:', ownerName);
             // Encuentra el socket para el ownerID
-            const ownerSocket = userSockets.get(ownerName);
-            console.log(userSockets);
+            Server.to(ownerName).emit('accomplishActivity', updatedActivity);
+
     
             res.status(200).send(`Activity ${updatedActivity.title} accomplished. Times completed: ${updatedActivity.timesCompleted}`); // SUCCESS
         } catch (error) {
