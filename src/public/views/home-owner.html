@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="no-js" lang="zxx">
+<html lang="en">
 
 <head>
     <meta charset="utf-8">
@@ -65,6 +65,18 @@
                                     <ul id="navigation">
                                         <li><a>Nombre de usuario</a></li>
                                         <li><a href="edit-profile.html">Editar perfil</a></li>
+                                        <li>
+                                            <div class="notification-container">
+                                                <div class="bell-icon" onclick="toggleNotifications()">
+                                                    🔔
+                                                    <span class="notification-count">0</span>
+                                                </div>
+                                                <div class="notification-menu" style="display: none;">
+                                                    <ul id="notification-list">
+                                                        <!-- Los ítems de notificación se insertarán dinámicamente aquí -->
+                                                    </ul>
+                                                </div>
+                                            </div>                                                                                       
                                         <li><a href="login.html">Cerrar sesión</a></li>
                                     </ul>
                                 </nav>
@@ -84,29 +96,34 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="section_title text-center mb-80">
-                    <h3>Perfil de usuario</h3>
+                    <br>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-4">
                 <div class="card">
+                    <!-- Get profile photo -->
                     <img src="../img/keroppi.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
-                        <h5 class="card-title">Nombre de usuario</h5>
-                        <p class="card-text">Correo electrónico</p>
-                        <p class="card-text">Teléfono</p>
-                        <a href="edit-profile.html" class="btn btn-primary">Editar perfil</a>
+                        <h4 class="card-title">[Nombre de usuario]</h4>
+                        <h5 class="card-text"><i>"Este es el estatus del usuario"</i></h5>
+                        <br>
+                        <div class="row">
+                            <p class="btn boxed-btn5 mr-4">Editar perfil</p>
+                            <p class="btn boxed-btn5">Crear reservación</p>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-8">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title
-                        ">Mascotas</h5>
+                        <h3 class="card-title">Mascotas</h3>
                         <p class="card-text">Aquí se mostrarán las mascotas que tienes registradas</p>
-                        <a href="add-pet.html" class="btn btn-primary">Agregar mascota</a>
+                        <p class="btn boxed-btn5">Añadir mascota</p>
+
+
                     </div>
                 </div>
             </div>
@@ -140,8 +157,52 @@
 
 
     <!-- JS here -->
+    <script>
+    function toggleNotifications() {
+        const menu = document.querySelector('.notification-menu');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        document.querySelector('.notification-count').textContent = '0';
+    }
 
+    function updateNotificationCount(count) {
+        const notificationElement = document.querySelector('.notification-count');
+        notificationElement.textContent = count;
+    }
+
+    function addNotificationToMenu(notification) {
+    const list = document.getElementById('notification-list');
+    const item = document.createElement('li');
+
+    const icon = document.createElement('span');
+    icon.className = 'notification-icon';
+
+    const text = document.createElement('span');
+    text.className = 'notification-text';
+    text.textContent = notification;
+
+    item.appendChild(text);
+    list.appendChild(item);
+    }
+
+
+    // Example of receiving notifications
+    function simulateNotificationReceived() {
+        const newCount = 10; // Random count for example
+        updateNotificationCount(newCount);
         
+        // Clear existing notifications
+        document.getElementById('notification-list').innerHTML = '';
+        
+        // Add new notifications
+        for (let i = 0; i < newCount; i++) {
+            addNotificationToMenu(`[cuidador] completó [actividad] para [pet] ${i + 1}`);
+        }
+    }
+
+    // Update count and notifications periodically
+    setInterval(simulateNotificationReceived, 5000); // Update count every 5 seconds
+
+    </script>     
 
 </body>
 
