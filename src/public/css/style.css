@@ -575,6 +575,57 @@ h3 {
   outline: none;
 }
 
+.boxed-btn-round-accept {
+  background: #7abea4;
+  font-size: 18px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  color: #1d2e27;
+  padding: 7px 12px;
+  font-family: "Poppins", sans-serif;
+  display: inline-block;
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  border-radius: 30px;
+}
+
+/* line 59, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_btn.scss */
+.boxed-btn-round-accept:hover {
+  background: #1d7452;
+  color: #dbe7e2;
+  border: 1px solid #1d7452;
+}
+
+/* line 64, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_btn.scss */
+.boxed-btn-round-accept:focus {
+  outline: none;
+}
+
+.boxed-btn-round-cancel {
+  background: #a75555;
+  font-size: 18px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  color: #351f1f;
+  padding: 7px 12px;
+  font-family: "Poppins", sans-serif;
+  display: inline-block;
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  border-radius: 30px;
+}
+
+.boxed-btn-round-cancel:hover {
+  background: #831616;
+  color: #dbe7e2;
+  border: 1px solid #831616;
+}
+
+.boxed-btn-round-cancel:focus {
+  outline: none;
+}
+
+
 /* line 68, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_btn.scss */
 .boxed-btn2 {
   background: transparent;
@@ -6439,6 +6490,7 @@ h6 {
   padding-left: 18px;
   font-size: 13px;
   background: transparent;
+
 }
 
 /* line 1453, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog.scss */
@@ -6646,4 +6698,11 @@ h6 {
 .modal-content {
   overflow-y: auto;
   max-height: 80%; /* Ajusta esto según la altura máxima deseada */
+}
+
+.change-picture {
+  max-width: 100%;
+  max-height: 200px;
+  height: auto;
+  border-radius: 20px;
 }
