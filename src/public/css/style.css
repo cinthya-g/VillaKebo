@@ -51,6 +51,7 @@ body {
   font-family: "Open Sans", sans-serif;
   font-weight: normal;
   font-style: normal;
+  height: 100%;
 }
 
 /* line 11, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_reset.scss */
@@ -83,13 +84,6 @@ a:focus {
   text-decoration: none;
 }
 
-/* line 27, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_reset.scss */
-a:focus,
-a:hover,
-.portfolio-cat a:hover,
-.footer -menu li a:hover {
-  text-decoration: none;
-}
 
 /* line 33, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_reset.scss */
 a,
@@ -482,7 +476,7 @@ h3 {
   font-size: 14px;
   font-weight: 500;
   border: 1px solid transparent;
-  color: #292522;
+  color: #312d29;
   padding: 12px 20px;
   font-family: "Poppins", sans-serif;
   display: inline-block;
@@ -493,13 +487,91 @@ h3 {
 
 /* line 59, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_btn.scss */
 .boxed-btn5:hover {
-  background: #292522;
+  background: #3a332b;
   color: #fff;
-  border: 1px solid #292522;
+  border: 1px solid #3a332b;
 }
 
 /* line 64, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_btn.scss */
 .boxed-btn5:focus {
+  outline: none;
+}
+
+.boxed-btn6 {
+  background: #f2d7ac;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  color: #312d29;
+  padding: 12px 20px;
+  font-family: "Poppins", sans-serif;
+  display: inline-block;
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  border-radius: 30px;
+}
+
+/* line 59, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_btn.scss */
+.boxed-btn6:hover {
+  background: #7a4e1f;
+  color: #fff;
+  border: 1px solid #7a4e1f;
+}
+
+/* line 64, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_btn.scss */
+.boxed-btn6:focus {
+  outline: none;
+}
+
+.boxed-btn-round-green {
+  background: #c69164;
+  font-size: 18px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  color: #312d29;
+  padding: 7px 12px;
+  font-family: "Poppins", sans-serif;
+  display: inline-block;
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  border-radius: 30px;
+}
+
+/* line 59, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_btn.scss */
+.boxed-btn-round-green:hover {
+  background: #7abea4;
+  color: #1d2e27;
+  border: 1px solid #7abea4;
+}
+
+/* line 64, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_btn.scss */
+.boxed-btn-round-green:focus {
+  outline: none;
+}
+
+.boxed-btn-round-red {
+  background: #c69164;
+  font-size: 18px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  color: #312d29;
+  padding: 7px 12px;
+  font-family: "Poppins", sans-serif;
+  display: inline-block;
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  border-radius: 30px;
+}
+
+/* line 59, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_btn.scss */
+.boxed-btn-round-red:hover {
+  background: #9e3d3d;
+  color: #f1ebeb;
+  border: 1px solid #9e3d3d;
+}
+
+/* line 64, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_btn.scss */
+.boxed-btn-round-red:focus {
   outline: none;
 }
 
@@ -2787,7 +2859,7 @@ h3 {
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
-  background: #f3efde;
+  background: #f2eac9;
   position: relative;
   z-index: 0;
 }
@@ -2885,13 +2957,6 @@ h3 {
 }
 
 /* line 71, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_footer.scss */
-.footer .footer_top .footer_widget p {
-  color: #AAB1B7;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 26px;
-  color: #AAB1B7;
-}
 
 /* line 78, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_footer.scss */
 .footer .footer_top .footer_widget p a {
@@ -6490,220 +6555,95 @@ h6 {
   }
 }
 
-/* line 40, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-.blog_part .single-home-blog .card-img-top {
-  border-radius: 50%;
-  width: 200px;
-  height: 200px;
+.card-owner {
+  background: #fffdfc;
+  border: 0;
+  border-radius: 20px; 
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  height: auto;
 }
 
-/* line 43, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-.blog_part .single-home-blog .card {
-  border: 0px solid transparent;
-  border-radius: 0px;
-  background-color: transparent;
-  position: relative;
+.card-pets {
+  background: #f3edd5;
+  border: 0;
+  border-radius: 20px; 
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  padding-left: 5px;
+  height: auto;
 }
 
-/* line 48, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-.blog_part .single-home-blog .card .card-body {
-  padding: 25px 10px 29px 40px;
-  background-color: #fff;
-  position: absolute;
-  left: 20px;
-  bottom: -140px;
-  box-shadow: -7.552px 9.326px 20px 0px rgba(1, 84, 85, 0.1);
-  border-radius: 10px;
+.card-pet {
+  background: #fffdfc;
+  border: 0;
+  border-radius: 20px; 
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.102);
+  margin-bottom: 30px;
+  height: 450px;
+
 }
 
-@media (max-width: 576px) {
-  /* line 48, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-  .blog_part .single-home-blog .card .card-body {
-    padding: 15px;
-    left: 10px;
-    bottom: -140px;
-  }
+.card-img-top {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
-@media only screen and (min-width: 576px) and (max-width: 767px) {
-  /* line 48, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-  .blog_part .single-home-blog .card .card-body {
-    padding: 15px;
-    left: 10px;
-    bottom: -140px;
-  }
+.card-body {
+  padding: 15px;
 }
 
-@media only screen and (min-width: 992px) and (max-width: 1200px) {
-  /* line 48, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-  .blog_part .single-home-blog .card .card-body {
-    padding: 20px;
-  }
+.card-body-bottom {
+  padding: 15px;
+  border-top: 1px solid #f0e9ff;
+  text-align: center;
+
 }
 
-/* line 72, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-.blog_part .single-home-blog .card .card-body a {
-  color: #eb592d;
-  text-transform: uppercase;
-  -webkit-transition: 0.8s;
-  transition: 0.8s;
+.list-group {
+  text-align: center;
 }
 
-/* line 76, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-.blog_part .single-home-blog .card .card-body a:hover {
-  background: -webkit-linear-gradient(131deg, #ff7e5f 0%, #feb47b 99%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.card-reservations {
+  background: #f3edd5;
+  border: 0;
+  border-radius: 20px; 
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  padding-left: 5px;
+  height: auto;
 }
 
-/* line 83, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-.blog_part .single-home-blog .card .dot {
-  position: relative;
-  padding-left: 20px;
+.card-reservation {
+  background: #fffdfc;
+  border: 0;
+  border-radius: 20px; 
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  height: auto;
 }
 
-/* line 86, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-.blog_part .single-home-blog .card .dot:after {
-  position: absolute;
-  content: "";
-  width: 10px;
-  height: 10px;
-  top: 5px;
-  left: 0;
-  background-color: #eb592d;
-  border-radius: 50%;
+.list-group-item-activity {
+  text-align: left;
 }
 
-/* line 97, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-.blog_part .single-home-blog .card span {
-  color: #8a8a8a;
-  margin-bottom: 10px;
-  display: inline-block;
-  margin-top: 10px;
+.modal-backdrop {
+  z-index: 1040;
 }
 
-@media (max-width: 576px) {
-  /* line 97, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-  .blog_part .single-home-blog .card span {
-    margin-bottom: 5px;
-    margin-top: 5px;
-  }
+.modal {
+  z-index: 1050;
 }
 
-@media only screen and (min-width: 576px) and (max-width: 767px) {
-  /* line 97, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-  .blog_part .single-home-blog .card span {
-    margin-bottom: 5px;
-    margin-top: 5px;
-  }
+/* Ajuste CSS para centrar el modal */
+.modal-dialog {
+  display: flex;
+  align-items: center; /* Alinea verticalmente el contenido al centro */
+  min-height: calc(100vh - 60px); /* Altura mínima para asegurar la centración vertical */
 }
 
-@media only screen and (min-width: 768px) and (max-width: 991px) {
-  /* line 97, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-  .blog_part .single-home-blog .card span {
-    margin-bottom: 5px;
-    margin-top: 5px;
-  }
+/* Esta regla previene que el modal sea más grande que la ventana */
+.modal-content {
+  overflow-y: auto;
+  max-height: 80%; /* Ajusta esto según la altura máxima deseada */
 }
-
-@media only screen and (min-width: 992px) and (max-width: 1200px) {
-  /* line 97, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-  .blog_part .single-home-blog .card span {
-    margin-bottom: 5px;
-    margin-top: 5px;
-  }
-}
-
-/* line 119, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-.blog_part .single-home-blog .card h5 {
-  font-weight: 600;
-  line-height: 1.5;
-  font-size: 20px;
-  -webkit-transition: 0.8s;
-  transition: 0.8s;
-  text-transform: capitalize;
-  margin-bottom: 22px;
-}
-
-@media (max-width: 576px) {
-  /* line 119, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-  .blog_part .single-home-blog .card h5 {
-    margin-bottom: 10px;
-  }
-}
-
-@media only screen and (min-width: 576px) and (max-width: 767px) {
-  /* line 119, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-  .blog_part .single-home-blog .card h5 {
-    margin-bottom: 10px;
-    font-size: 16px;
-  }
-}
-
-@media only screen and (min-width: 768px) and (max-width: 991px) {
-  /* line 119, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-  .blog_part .single-home-blog .card h5 {
-    margin-bottom: 10px;
-  }
-}
-
-@media only screen and (min-width: 992px) and (max-width: 1200px) {
-  /* line 119, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-  .blog_part .single-home-blog .card h5 {
-    margin-bottom: 10px;
-    font-size: 18px;
-  }
-}
-
-/* line 140, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-.blog_part .single-home-blog .card h5:hover {
-  -webkit-transition: 0.8s;
-  transition: 0.8s;
-  background: -webkit-linear-gradient(131deg, #feb47b 0%, #ff7e5f 99%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -webkit-animation: 1s;
-}
-
-/* line 150, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-.blog_part .single-home-blog .card ul li {
-  display: inline-block;
-  color: #8a8a8a;
-  margin-right: 14px;
-}
-
-@media (max-width: 576px) {
-  /* line 150, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-  .blog_part .single-home-blog .card ul li {
-    margin-right: 10px;
-  }
-}
-
-@media only screen and (min-width: 576px) and (max-width: 767px) {
-  /* line 150, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-  .blog_part .single-home-blog .card ul li {
-    margin-right: 10px;
-  }
-}
-
-@media only screen and (min-width: 768px) and (max-width: 991px) {
-  /* line 150, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-  .blog_part .single-home-blog .card ul li {
-    margin-right: 10px;
-  }
-}
-
-@media only screen and (min-width: 992px) and (max-width: 1200px) {
-  /* line 150, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-  .blog_part .single-home-blog .card ul li {
-    margin-right: 10px;
-  }
-}
-
-/* line 166, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
-.blog_part .single-home-blog .card ul li span {
-  margin-right: 10px;
-  font-size: 12px;
-}
-
-/*# sourceMappingURL=style.css.map */

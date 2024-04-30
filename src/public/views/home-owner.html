@@ -54,7 +54,7 @@
                     <div class="row align-items-center">
                         <div class="col-xl-3 col-lg-3">
                             <div class="logo">
-                                <a href="index.html">
+                                <a href="#">
                                     <img src="../img/logo.png" alt="">
                                 </a>
                             </div>
@@ -64,7 +64,7 @@
                                 <nav>
                                     <ul id="navigation">
                                         <li><a>Nombre de usuario</a></li>
-                                        <li><a href="edit-profile.html">Editar perfil</a></li>
+                                        <li><a href="#reservacionesTitle">Tus reservaciones</a></li>
                                         <li>
                                             <div class="notification-container">
                                                 <div class="bell-icon" onclick="toggleNotifications()">
@@ -101,32 +101,205 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-4">
-                <div class="card">
-                    <!-- Get profile photo -->
-                    <img src="../img/keroppi.jpg" class="card-img-top" alt="...">
+            <div class="col-lg-3">
+                <div class="card-owner">
+                    <img class="card-img-top" src="../img/keroppi.jpg" alt="Profile picture">
                     <div class="card-body">
-                        <h4 class="card-title">[Nombre de usuario]</h4>
-                        <h5 class="card-text"><i>"Este es el estatus del usuario"</i></h5>
+                        <h4 class="card-title"><b>Sontia</b></h4>
+                        <h5 class="card-text-status"><i>
+                            Este es el estado del usuario.
+                        </i></h5>
                         <br>
-                        <div class="row">
-                            <p class="btn boxed-btn5 mr-4">Editar perfil</p>
-                            <p class="btn boxed-btn5">Crear reservación</p>
+                        <div class="card-body-bottom">
+                            <btn class="btn boxed-btn5" id="editProfileBtn" data-toggle="modal" data-target="#editProfileModal">
+                                <i class="fa fa-pencil-alt" aria-hidden="true"></i>
+                                <a>Editar perfil</a></btn>
+                            <br>
                         </div>
-                    </div>
-                </div>
+
+                    </div> 
+                  </div>
             </div>
-            <div class="col-lg-8">
-                <div class="card">
+
+            <!-- TODO: Terminar  Modal Editar Perfil -->
+    <div class="modal" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h4 class="modal-title" id="editProfileModalLabel">Editar perfil</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+            <form>
+                <div class="form-group">
+                <label for="user-name">Nombre</label>
+                <input type="text" class="form-control" id="user-name" placeholder="Ingresa tu nombre">
+                </div>
+                <div class="form-group">
+                <label for="user-status">Estado</label>
+                <input type="text" class="form-control" id="user-status" placeholder="Ingresa tu estado">
+                </div>
+            </form>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-primary">Guardar cambios</button>
+            </div>
+        </div>
+        </div>
+    </div>
+            
+            <div class="col-lg-9">
+                
+                <div class="card-pets">
                     <div class="card-body">
-                        <h3 class="card-title">Mascotas</h3>
-                        <p class="card-text">Aquí se mostrarán las mascotas que tienes registradas</p>
-                        <p class="btn boxed-btn5">Añadir mascota</p>
+                        <h3 class="card-title">
+                            <btn class="btn boxed-btn-round-green mr-2" id="addPetBtn">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                            </btn>
+                            Mascotas 
+                        </h3>
+                        
+                        <div class="row">
+                            
+                            <div class="col-md-4">
+                                <div class="card-pet">
+                                    <img class="card-img-top" src="../img/pug.png" alt="Profile picture">
+                                    <div class="card-body">
+                                        <h4 class="card-title"><b>Kebo</b></h4>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">Pug - 8 años</li>
+                                            <li class="list-group-item">
+                                                <btn class="btn boxed-btn6"><i class="fa fa-upload" aria-hidden="true"></i>
+                                                    <a>Expediente</a></btn>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <btn class="btn boxed-btn-round-green mr-3"><i class="fa fa-edit" aria-hidden="true"></i>
+                                                    <a></a></btn>
+                                                <btn class="btn boxed-btn-round-red ml-3"><i class="fa fa-eraser" aria-hidden="true"></i>
+                                                    <a></a></btn>
+                                            </li>
+                                          </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="card-pet">
+                                    <img class="card-img-top" src="../img/pug.png" alt="Profile picture">
+                                    <div class="card-body">
+                                        <h4 class="card-title"><b>Kebo</b></h4>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">Pug - 8 años</li>
+                                            <li class="list-group-item">
+                                                <btn class="btn boxed-btn6"><i class="fa fa-upload" aria-hidden="true"></i>
+                                                    <a>Expediente</a></btn>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <btn class="btn boxed-btn-round-green mr-3"><i class="fa fa-edit" aria-hidden="true"></i>
+                                                    <a></a></btn>
+                                                <btn class="btn boxed-btn-round-red ml-3"><i class="fa fa-eraser" aria-hidden="true"></i>
+                                                    <a></a></btn>
+                                            </li>
+                                          </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                        </div>  
 
 
                     </div>
                 </div>
+            
             </div>
+        
+            
+            
+            <div class="col-lg-12">
+                
+                <div class="card-reservations">
+                    <div class="card-body">
+                        <h3 class="card-title" id="reservacionesTitle">
+                            <btn class="btn boxed-btn-round-green mr-2" id="addReservationBtn">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                            </btn>
+                            Reservaciones 
+                        </h3>
+                        
+                        <div class="row">
+                            
+                            <div class="col-md-4">
+                                <div class="card-reservation">
+                                    <div class="card-body">
+                                        <h3 class="card-title"><b>Kebo</b></h3>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item"><h5>23/04/24 - 05/05/24</h5></li>
+                                            <li class="list-group-item">
+                                                <h4>Actividades:</h4>
+                                                <h5 class="list-group-item-activity">
+                                                    1. Paseo diario
+                                                </h5>
+                                                <h5 class="list-group-item-activity">
+                                                    2. Un solo baño
+                                                </h5>
+                                                <h5 class="list-group-item-activity">
+                                                    3. Dar medicina a las 10 p.m. y 11 p.m.
+                                                </h5>
+
+                                            </li>
+                                            <li class="list-group-item">
+                                                <btn class="btn boxed-btn-round-red"><i class="fa fa-eraser" aria-hidden="true"></i>
+                                                    <a></a></btn>
+                                            </li>
+                                          </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="card-reservation">
+                                    <div class="card-body">
+                                        <h3 class="card-title"><b>Kebo</b></h3>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item"><h5>23/04/24 - 05/05/24</h5></li>
+                                            <li class="list-group-item">
+                                                <h4>Actividades:</h4>
+                                                <h5 class="list-group-item-activity">
+                                                    1. Paseo diario
+                                                </h5>
+                                                <h5 class="list-group-item-activity">
+                                                    2. Un solo baño
+                                                </h5>
+                                                <h5 class="list-group-item-activity">
+                                                    3. Dar medicina a las 10 p.m. y 11 p.m.
+                                                </h5>
+
+                                            </li>
+                                            <li class="list-group-item">
+                                                <btn class="btn boxed-btn-round-red"><i class="fa fa-eraser" aria-hidden="true"></i>
+                                                    <a></a></btn>
+                                            </li>
+                                          </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+
+                        </div>  
+
+
+                    </div>
+                </div>
+            
+            </div>
+
+
         </div>
     </div>
 
@@ -157,6 +330,11 @@
 
 
     <!-- JS here -->
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
     <script>
     function toggleNotifications() {
         const menu = document.querySelector('.notification-menu');
