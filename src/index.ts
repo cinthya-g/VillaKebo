@@ -4,14 +4,23 @@ dotenv.config();
 
 import { googleAuth } from './middleware/auth-google-middleware';
 
+//Socket.io
+import { Server as SocketIOServer } from 'socket.io'; // Import the Server class from the 'socket.io' module
+import { addSocket } from './controllers/socketController'; // Import the utility functions for managing sockets
 import routes from "./routes";
 import './db/db-connector'; // Ensures database connection on server start
 import swaggerJSDoc from 'swagger-jsdoc';
 import { serve, setup } from 'swagger-ui-express';
 import { swaggerConfig } from './../swagger.config';
+import {getUserIDFromToken} from './utils/genToken';
+import {setIo,getIo} from './utils/io';
+import { set } from "mongoose";
+
+
 
 const app = express();
 app.use(express.json()); // Parses incoming JSON requests and puts the parsed data in req.body
+app.use(express.static(__dirname + '/public'));
 
 // Add the API routes to the Express server and use the Google Auth middleware
 googleAuth(app);
@@ -24,7 +33,33 @@ app.use('/api-docs', serve, setup(swaggerDocs)); // Set up the Swagger-UI-expres
 // Define the port from the environment or use 3001 by default
 const port = process.env.PORT || 3001;
 
-// Start the server and listen on the defined port
-app.listen(port, () => {
+//socket.io
+// Create a server using the Express app
+const server = app.listen(port, () => {
     console.log(`Server is running http://localhost:${port}/`); // Confirmation the server is running
 });
+
+// Create a server using the Express app
+const io = new SocketIOServer(server); // Create a new instance of the Socket.io server
+setIo(io); // Set the Socket.io server in the utility function to be accessed from anywhere
+// Escuchar conexiones de Socket.IO
+io.on('connection', (socket) => {
+    console.log('A client connected with socketId:', socket.id);
+
+    socket.on('login',  (token) => {
+            // Verificar el token y extraer el userID
+            const userId =  getUserIDFromToken(token); // Esta función debe extraer el userID del token
+            console.log('Desde Onlogin User ID:', userId);
+            if (userId) {
+                socket.join(userId); // Unirse a la sala correspondiente al userID
+        
+}});
+
+
+    socket.on('accomplishActivity',(data)=>{
+        console.log('Activity accomplished:',data);
+        socket.emit('accomplishActivity',data)
+    });
+
+});
+

@@ -115,3 +115,20 @@ export function verifyToken(token: string) {
     return jwt.verify(token, process.env.TOKEN_KEY);
 }
 
+/**
+ * Extracts the userID from a JWT token.
+ * @param token The JWT token from which to extract the userID.
+ * @returns The userID if the token is valid, or null if the token is invalid or expired.
+ */
+export function getUserIDFromToken(token: string): string | null {
+    try {
+        // Verifica el token utilizando la clave secreta del entorno
+        const decoded = jwt.verify(token, process.env.TOKEN_KEY) as jwt.JwtPayload;
+
+        // Asume que el payload del token incluye el 'id' del usuario
+        return decoded.id;
+    } catch (error) {
+        console.error("Error verifying token:", error);
+        return null;  // Retorna null si hay un error, como un token expirado o inválido
+    }
+}

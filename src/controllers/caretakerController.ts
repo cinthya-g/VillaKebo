@@ -8,6 +8,11 @@ import Caretaker from "../models/caretaker";
 import Pet from "../models/pet";
 import Reservation from "../models/reservation";
 import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
+import Activity from "../models/activity";
+import { userSockets } from "../models/userSockets";
+import Owner from "../models/owner";
+import {getIo} from '../utils/io';
+
 
 
 class CaretakerController{
@@ -281,39 +286,91 @@ class CaretakerController{
 
     }
 
-    // TODO: Finish these functions with dummy responses
-    async joinPetGroup(req: Request, res: Response) {
-        // The caretaker will join a petgroup
-        /**
-         * Expected request
-         * {
-         *     "groupID": "5f7b1b7b4b3b4b3b4b3b4b3b"
-         * }
-         */
-        res.status(ResponseCodes.SUCCESS).send("Dummy: You joined the petgroup!");
-    }
 
-    async getPetGroups(req: Request, res: Response) {
-        // The caretaker will get the petgroups they are part of
-        res.status(ResponseCodes.SUCCESS).send("Dummy: Here are the petgroups!");
-    }
+    /**
+     * @swagger
+     * /caretaker/accomplish-activity:
+     *   put:
+     *     tags: [Caretaker]
+     *     summary: Mark an activity as accomplished
+     *     description: Increments the 'timesCompleted' field for a specified activity by the caretaker.
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - activityID
+     *             properties:
+     *               activityID:
+     *                 type: string
+     *                 description: The unique identifier of the activity to update
+     *     responses:
+     *       200:
+     *         description: Activity accomplished successfully
+     *       400:
+     *         description: Missing required fields or no activity found
+     *       500:
+     *         description: Internal Server Error
+     */
+    async  accomplishActivity(req: Request, res: Response) {
+        try {
+            const { activityID } = req.body;
+    
+            if (!activityID) {
+                res.status(400).send("Missing required fields: activityID"); // BAD_REQUEST
+                return;
+            }
+    
+            // Busca la actividad y incrementa el contador 'timesCompleted'
+            const updatedActivity = await Activity.findOneAndUpdate(
+                { _id: activityID },
+                { $inc: { timesCompleted: 1 } },
+                { new: true, runValidators: true }
+            );
+    
+            if (!updatedActivity) {
+                res.status(404).send("No activity found with the provided ID"); // NOT_FOUND
+                return;
+            }
+    
+            // Encuentra la reserva asociada a la actividad
+            const reservation = await Reservation.findById(updatedActivity.reservationID);
+    
+            if (!reservation) {
+                res.status(404).send("No reservation found for this activity"); // NOT_FOUND
+                return;
+            }
+    
+            // Extrae el userID del owner de la reserva
+            const owner = await Owner.findById(reservation.ownerID);
+            
+            if (!owner) {
+                res.status(404).send("No owner found for this reservation"); // NOT_FOUND
+                return;
+            }
 
-    async getPetGroup(req: Request, res: Response) {
-        // The caretaker will get the details of a petgroup
-        res.status(ResponseCodes.SUCCESS).send("Dummy: Here is the single petgroup!");
-    }
+            const ownerName = owner.id;
+            //console.log('Owner ID:', ownerName);
 
-    async accomplishActivity(req: Request, res: Response) {
-        // The caretaker will increse the 'timesCompleted' field of an activity when it is accomplished
-        /**
-         * Expected request
-         * {
-         *     "activityID": "5f7b1b7b4b3b4b3b4b3b4b3b"
-         * }
-         */
-        res.status(ResponseCodes.SUCCESS).send("Dummy: You accomplished the activity one more time!");
-    }
+            const Server = getIo();
+            console.log('Server:', Server.sockets.adapter.rooms)
 
+
+            console.log('DEntro de funcion de acomplish activity OwnerID:', ownerName);
+            // Encuentra el socket para el ownerID
+            Server.to(ownerName).emit('accomplishActivity', updatedActivity);
+
+    
+            res.status(200).send(`Activity ${updatedActivity.title} accomplished. Times completed: ${updatedActivity.timesCompleted}`); // SUCCESS
+        } catch (error) {
+            console.error('ERROR:', error);
+            res.status(500).send("Internal Server Error"); // SERVER_ERROR
+        }
+    }
 
 }
 

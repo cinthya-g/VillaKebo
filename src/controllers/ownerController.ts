@@ -10,6 +10,7 @@ import Reservation from "../models/reservation";
 import Activity from "../models/activity";
 import PetGroup from "../models/petgroup";
 import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
+import { userSockets } from "../models/userSockets";
 
 
 class OwnerController{
@@ -79,6 +80,7 @@ class OwnerController{
                     user: owner
                 }
             );
+           userSockets.set(owner.username, req.body.socket);
         }
         catch (error) {
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
