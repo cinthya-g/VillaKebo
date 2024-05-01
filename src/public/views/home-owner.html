@@ -14,13 +14,10 @@
 
     <!-- CSS here -->
     <link rel="stylesheet" href="../css/bootstrap.min.css">
-    <link rel="stylesheet" href="../css/owl.carousel.min.css">
     <link rel="stylesheet" href="../css/magnific-popup.css">
     <link rel="stylesheet" href="../css/font-awesome.min.css">
     <link rel="stylesheet" href="../css/themify-icons.css">
     <link rel="stylesheet" href="../css/nice-select.css">
-    <link rel="stylesheet" href="../css/flaticon.css">
-    <link rel="stylesheet" href="../css/gijgo.css">
     <link rel="stylesheet" href="../css/animate.css">
     <link rel="stylesheet" href="../css/slicknav.css">
     <link rel="stylesheet" href="../css/style.css">
@@ -63,7 +60,6 @@
                             <div class="main-menu  d-none d-lg-block">
                                 <nav>
                                     <ul id="navigation">
-                                        <li><a>Nombre de usuario</a></li>
                                         <li><a href="#reservacionesTitle">Tus reservaciones</a></li>
                                         <li>
                                             <div class="notification-container">
@@ -174,12 +170,11 @@
                 <div class="card-pets">
                     <div class="card-body">
                         <h3 class="card-title">
-                            <btn class="btn boxed-btn-round-green mr-2" id="addPetBtn">
+                            <btn class="btn boxed-btn-round-green mr-2" id="addPetBtn" data-toggle="modal" data-target="#createPetModal">
                                 <i class="fa fa-plus" aria-hidden="true"></i>
                             </btn>
                             Mascotas 
                         </h3>
-                        
                         
                         
                         <div class="row" id="card-pet-section">
@@ -192,7 +187,8 @@
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item">Pug - 8 años</li>
                                             <li class="list-group-item">
-                                                <btn class="btn boxed-btn6"><i class="fa fa-upload" aria-hidden="true"></i>
+                                                <btn class="btn boxed-btn6" data-toggle="modal" data-target="#petRecordModal">
+                                                    <i class="fa fa-upload" aria-hidden="true"></i>
                                                     <a>Expediente</a></btn>
                                             </li>
                                             <li class="list-group-item">
@@ -208,6 +204,52 @@
                                 </div>
                             </div>
 
+                            <!-- Modal CREAR mascota -->
+                            <div class="modal" id="createPetModal" tabindex="-1" role="dialog" aria-labelledby="createPetModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h3 class="modal-title" id="createPetModalLabel">Registrar una nueva mascota</h3>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <!-- Left section for form inputs -->
+                                                <div class="col-md-8">
+                                                    <form>
+                                                        <div class="form-group">
+                                                            <h5 for="petName">Nombre</h5>
+                                                            <input type="text" class="form-control" id="petName" placeholder="<pet name>">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h5 for="petAge">Edad</h5>
+                                                            <input type="number" min="0" max="25" class="form-control" id="petAge" placeholder="<age>">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h5 for="petBreed">Raza</h5>
+                                                            <input type="text" class="form-control" id="petBreed" placeholder="<breed>">
+                                                        </div>
+                                                        
+                                                    </form>
+                                                </div>
+                                                <!-- Right section for profile picture -->
+                                                <div class="col-md-4 text-center">
+                                                    <img src="../img/no-pet-photo.png" alt="Pet Picture" class="img-fluid change-picture" >
+                                                    <btn class="btn boxed-btn5 mt-4" id="createPetPictureBtn">
+                                                        <i class="fa fa-picture-o" aria-hidden="true"></i>
+                                                        <a>Cambiar foto</a></btn>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
+                                            <button type="button" class="btn boxed-btn-round-accept">Registrar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                                 <!-- Modal Editar Mascota -->
                                 <div class="modal" id="editPetModal" tabindex="-1" role="dialog" aria-labelledby="editPetModalLabel" aria-hidden="true">
@@ -284,6 +326,42 @@
                                 </div>
 
 
+                                <!-- Modal EXPEDIENTE (record) de la mascota-->
+                                <div class="modal" id="petRecordModal" tabindex="-1" role="dialog" aria-labelledby="petRecordModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h3 class="modal-title" id="petRecordModalLabel">Expediente de la mascota</h3>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <!-- Left section for PDF viewer -->
+                                                    <div class="col-md-8">
+                                                        <iframe src="../test-file/test-record.pdf" style="width: 100%; height: 700px;" frameborder="0"></iframe>
+                                                    </div>
+                                                    <!-- Right section for upload new PDF -->
+                                                    <div class="col-md-4 text-center">
+                                                        <input type="file" id="newPdfInput" accept="application/pdf" style="display: none;">
+                                                        <button class="btn boxed-btn5 mt-4" onclick="document.getElementById('newPdfInput').click();">
+                                                            <i class="fa fa-upload" aria-hidden="true"></i>
+                                                            Actualizar
+                                                        </button>
+                                                    </div>
+                                                    
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
 
 
 
@@ -302,7 +380,7 @@
                 <div class="card-reservations">
                     <div class="card-body">
                         <h3 class="card-title" id="reservacionesTitle">
-                            <btn class="btn boxed-btn-round-green mr-2" id="addReservationBtn">
+                            <btn class="btn boxed-btn-round-green mr-2" id="addReservationBtn" data-toggle="modal" data-target="#createReservation">
                                 <i class="fa fa-plus" aria-hidden="true"></i>
                             </btn>
                             Reservaciones 
@@ -317,7 +395,7 @@
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item"><h5>23/04/24 - 05/05/24</h5></li>
                                             <li class="list-group-item">
-                                                <h4>Actividades:</h4>
+                                                <h4><b>Actividades:</b></h4>
                                                 <h5 class="list-group-item-activity">
                                                     1. Paseo diario
                                                 </h5>
@@ -330,6 +408,13 @@
 
                                             </li>
                                             <li class="list-group-item">
+                                                <h4><b>Cuidador: </b><i><h5>[nombre]</h5></i></h4>
+                                                <img class="little-picture mb-2" src="../img/caretaker.jpg" alt="Profile picture">
+                                                <h5><btn class="btn boxed-btn6"  data-toggle="modal" data-target="#caretakerProfilePreview">
+                                                    <i class="fa fa-user mr-2" aria-hidden="true"
+                                                    ></i>Perfil</btn></h5>
+                                            </li> 
+                                            <li class="list-group-item">
                                                 <btn class="btn boxed-btn-round-red" data-toggle="modal" data-target="#deleteReservation"
                                                 ><i class="fa fa-eraser" aria-hidden="true"></i>
                                                     <a></a></btn>
@@ -338,6 +423,88 @@
                                     </div>
                                 </div>
                             </div>
+
+
+                            <!-- Modal CREAR Reservación -->
+                            <div class="modal" id="createReservation" tabindex="-1" role="dialog" aria-labelledby="createReservationLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-l" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h3 class="modal-title" id="createReservationLabel">Crear reservación</h3>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <!-- Left section for form inputs -->
+                                                <div class="col-md-12">
+                                                    <form>
+                                                        <div class="form-group">
+                                                            <h5 for="ownerPetOptions">Selecciona a tu mascota:</h5>
+                                                            <select class="form-select" aria-label="petOptions" id="ownerPetOptions">
+                                                                <option value="1">Mascota 1</option>
+                                                                <option value="2">Mascota 2</option>
+                                                                <option value="3">Mascota 3</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6 form-group">
+                                                                <h5 for="newReservationStartDate">Fecha de inicio:</h5>
+                                                                <input type="date" class="form-control" id="newReservationStartDate" placeholder="Inicio">
+                                                            </div>
+                                                            <div class="col-md-6 form-group">
+                                                                <h5 for="newReservationEndDate">Fecha de fin:</h5>
+                                                                <input type="date" class="form-control" id="newReservationEndDate" placeholder="Fin">
+                                                            </div>
+                                                        </div>
+                                                        <h5>Al continuar, confirmarás la reservación y procederás a añadir las actividades de tu mascota.</h5>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cancelar</button>
+                                            <button type="button" class="btn boxed-btn-round-accept" data-dismiss="modal" data-toggle="modal" data-target="#addActivitiesModal"
+                                            >Confirmar y continuar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- Modal para AÑADIR ACTIVIDADES en una reservación confirmada -->
+                            <div class="modal fade" id="addActivitiesModal" tabindex="-1" role="dialog" aria-labelledby="addActivitiesModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h3 class="modal-title" id="addActivitiesModalLabel">Añadir actividades</h3>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="activitiesForm">
+                                                <!-- Área dinámica para actividades -->
+                                                <div id="activityList">
+                                                    <!-- Aquí se añadirán los campos de actividad dinámicamente -->
+                                                </div>
+                                                <button type="button" class="btn boxed-btn5" onclick="removeActivity()">Eliminar última</button>
+                                                <button type="button" class="btn boxed-btn6" onclick="addActivity()">Agregar otra</button>
+                                                <br><br>
+                                                <h5>Si cancelas, tu reservación se guardará sin actividades y esto no se puede editar. Tendrás que crear una nueva.</h5>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cancelar</button>
+                                            <button type="button" class="btn boxed-btn-round-accept onclick="submitActivities()">Guardar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+
+
+
 
                             <!-- Modal ELIMINAR Reservación -->
                                 <div class="modal" id="deleteReservation" tabindex="-1" role="dialog" aria-labelledby="deleteReservationLabel" aria-hidden="true">
@@ -360,6 +527,37 @@
                                             <div class="modal-footer">
                                                 <button type="button" class="btn boxed-btn-round-green" data-dismiss="modal">Cancelar</button>
                                                 <button type="button" class="btn boxed-btn-round-cancel">Eliminar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <!-- Modal VER PERFIL del cuidador -->
+                                <div class="modal" id="caretakerProfilePreview" tabindex="-1" role="dialog" aria-labelledby="caretakerProfilePreviewLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h3 class="modal-title" id="caretakerProfilePreviewLabel">Detalles del cuidador</h3>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-md-12 text-center vertical-center">
+                                                        <img class="caretaker-picture mb-3" src="../img/caretaker.jpg">
+                                                        <h5><b>Nombre:</b> [nombre]</h5>
+                                                        <h5><b>Contacto:</b> [email]</h5>
+                                                        <h5>[status]</h5>
+                                                        <br>
+                                                        <h5>Cuida a otras [count] mascotas</h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn boxed-btn-round-green" data-dismiss="modal">Cerrar</button>
                                             </div>
                                         </div>
                                     </div>
@@ -458,6 +656,20 @@
     // Update count and notifications periodically
     setInterval(simulateNotificationReceived, 5000); // Update count every 5 seconds
 
+
+    // Fechas
+    document.addEventListener('DOMContentLoaded', function () {
+        var today = new Date();
+        var nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+
+        var startDateInput = document.getElementById('newReservationStartDate');
+        var endDateInput = document.getElementById('newReservationEndDate');
+
+        startDateInput.min = today.toISOString().split('T')[0];
+        startDateInput.max = nextYear.toISOString().split('T')[0];
+        endDateInput.min = today.toISOString().split('T')[0];
+        endDateInput.max = nextYear.toISOString().split('T')[0];
+    });
     </script>     
 
 </body>
