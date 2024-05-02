@@ -9,7 +9,6 @@ import Pet from "../models/pet";
 import Reservation from "../models/reservation";
 import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
 import Activity from "../models/activity";
-import { userSockets } from "../models/userSockets";
 import Owner from "../models/owner";
 import {getIo} from '../utils/io';
 

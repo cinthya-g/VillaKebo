@@ -7,7 +7,6 @@ import { googleAuth } from './middleware/auth-google-middleware';
 
 //Socket.io
 import { Server as SocketIOServer } from 'socket.io'; // Import the Server class from the 'socket.io' module
-import { addSocket } from './controllers/socketController'; // Import the utility functions for managing sockets
 import routes from "./routes";
 import './db/db-connector'; // Ensures database connection on server start
 import swaggerJSDoc from 'swagger-jsdoc';

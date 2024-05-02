@@ -107,6 +107,7 @@
                 <div class="col-lg-6">
                     <div class="signup_form_inner section-padding">
                         <h2>Regístrate</h2>
+                        
                         <!-- TODO: Change the action for this form -->
                         <form class="row signup_form" id="signupForm" novalidate="novalidate">
                             <div class="col-md-12 form-group">
@@ -182,6 +183,42 @@
                 e.target.classList.add('fa-eye');
             }
         });
+
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    const userType = formData.get('userType');  // Guardamos userType para usar después en la redirección
+    const data = {
+        username: formData.get('username'),
+        email: formData.get('email'),
+        password: formData.get('password'),
+        isOwner: userType === 'owner'
+    };
+
+    fetch('/auth/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    }).then(data => {
+        console.log(data);
+        // Redirección condicional basada en el tipo de usuario
+        if (userType === 'owner') {
+            window.location.href = '/home-owner.html';  // Ruta al home de Owner
+        } else {
+            window.location.href = '/home-caretaker.html';  // Ruta al home de Caretaker
+        }
+    }).catch(error => {
+        console.error('Error:', error);
+        alert('Hubo un problema con tu solicitud de registro: ' + error.message);
+    });
+});
         </script>
         
 
