@@ -287,6 +287,24 @@ class CaretakerController{
     }
 
 
+    async getAssignedReservations(req: Request, res: Response) {
+        try {
+            const caretakerID = req.body.user.id;
+            if (!caretakerID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            const caretaker = await Caretaker.findOne({ _id: caretakerID });
+            const reservations = await Reservation.find({ _id: { $in: caretaker.assignedReservationsIDs } });
+            res.status(ResponseCodes.SUCCESS).send(reservations);
+
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+
     /**
      * @swagger
      * /caretaker/accomplish-activity:

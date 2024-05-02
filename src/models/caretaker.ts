@@ -48,9 +48,8 @@ const caretakerSchema = new Schema({
     password: { type: String, required: true },
     role: { type: String, default: Roles.CARETAKER },
     status: { type: String, default: "I <3 pets!"},
-    groupsIDs: [{ type: Schema.Types.ObjectId, ref: "petgroups" }],
+    assignedReservationsIDs: [{ type: Schema.Types.ObjectId, ref: "reservations" }],
     profilePicture: { type: String ,default: null},
-    //TODO DEFINE WHAT IS REQUIRED
 });
 
 export default model("caretakers", caretakerSchema);

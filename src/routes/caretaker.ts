@@ -83,6 +83,10 @@ router.post('/upload-photo', uploadPhoto.single('photo'), caretakerController.sa
  */
 router.get('/get-picture', caretakerController.getPicture);
 
+// Caretaker-Reservation actions
+
+router.get('/get-assigned-reservations', caretakerController.getAssignedReservations);
+
 // Caretaker-Reservation-Activity actions
 
 router.put('/accomplish-activity', caretakerController.accomplishActivity);

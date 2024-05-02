@@ -8,7 +8,7 @@ import Owner from "../models/owner";
 import Pet from "../models/pet";
 import Reservation from "../models/reservation";
 import Activity from "../models/activity";
-import PetGroup from "../models/petgroup";
+import Caretaker from "../models/caretaker";
 import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
 import { userSockets } from "../models/userSockets";
 
@@ -921,12 +921,12 @@ class OwnerController{
             // Check if the currentReservation pet field is null
             const pet = await Pet.findOne({ _id: petID });
             if(pet.currentReservation) {
-                res.status(ResponseCodes.UNAUTHORIZED).send("This pet already has an active reservation");
+                res.status(ResponseCodes.BAD_REQUEST).send("This pet already has an active reservation");
                 return;
             }
 
             // If not, then create it and add it to the Owner's array and the Pet's currentReservation field
-            const reservation = await Reservation.create(newReservation);
+            const reservation = await Reservation.create(newReservation); // unconfirmed reservation
             await Owner.findOneAndUpdate({ _id: ownerID }, { $push: { reservationsIDs: reservation._id } });
             pet.currentReservation = reservation._id.toString();
             await pet.save();
@@ -979,7 +979,6 @@ class OwnerController{
          and can't be changed or updated, just canceled
          */
 
-        // TODO: Develop the logic to add pets to certain GroupPets when a Reservation's confirmed
         try {
             let { reservationID } = req.body;
             
@@ -999,13 +998,36 @@ class OwnerController{
                 return;
             }
 
+            /*Assign the reservation ID to the caringPetsIDs array of a Caretaker.
+                Assignation parameters:
+                - if the Caretaker has less than 5 assigned pets, then a new pet may be assigned
+            */
+            // Get the existing Caretakers with less than 5 pets in their assignedReservationsIDs array
+            const availableCaretakers = await Caretaker.find({ "assignedReservationsIDs.4": { $exists: false } });
+            if (availableCaretakers.length === 0) {
+                res.status(ResponseCodes.UNAUTHORIZED).send("No available caretakers with less than 5 pets");
+                return;
+            }
+            console.log("listed caretakers:", availableCaretakers);
+            // get total count of those availableCaretakers
+            const caretakerCount = availableCaretakers.length;
+            // get a random index from the availableCaretakers array
+            const randomIndex = Math.floor(Math.random() * caretakerCount);
+            // get the Caretaker object at that random index
+            const caretaker = availableCaretakers[randomIndex];
+            // add the petID to the Caretaker's caringPetsIDs array
+            await Caretaker.findOneAndUpdate({ _id: caretaker._id }, { $push: { assignedReservationsIDs: reservationID } });
+
             reservation.confirmed = true;
             await reservation.save();
 
-            res.status(ResponseCodes.SUCCESS).send(reservation);
+            res.status(ResponseCodes.SUCCESS).send({
+                reservation,
+                caretaker: caretaker._id
+            });
         } catch(error) {
             console.log('ERROR:', error);
-            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error: ");
         }
     }
 
@@ -1063,6 +1085,8 @@ class OwnerController{
                 await Pet.findOneAndUpdate({ _id: petID },{ currentReservation: null} );
                 // Delete the activities associated with that reservationID
                 await Activity.deleteMany({ reservationID: reservationID });
+                // Delete the reservationID from the Caretaker's assignedReservationsIDs array
+                await Caretaker.findOneAndUpdate({ assignedReservationsIDs: reservationID },{ $pull: { assignedReservationsIDs: reservationID }});
                 
                 res.status(ResponseCodes.SUCCESS).send("Reservation deleted successfully");
             }
