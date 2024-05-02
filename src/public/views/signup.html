@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Villa Kebo: SignUp</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- <link rel="manifest" href="site.webmanifest"> -->
+    <link rel="shortcut icon" type="image/x-icon" href="../img/favicon.png">
+    <!-- Place favicon.ico in the root directory -->
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/owl.carousel.min.css">
+    <link rel="stylesheet" href="../css/magnific-popup.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/themify-icons.css">
+    <link rel="stylesheet" href="../css/nice-select.css">
+    <link rel="stylesheet" href="../css/flaticon.css">
+    <link rel="stylesheet" href="../css/gijgo.css">
+    <link rel="stylesheet" href="../css/animate.css">
+    <link rel="stylesheet" href="../css/slicknav.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+    <!-- <link rel="stylesheet" href="css/responsive.css"> -->
+</head>
+
+<body>
+    <!--[if lte IE 9]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+        <![endif]-->
+
+    <header>
+        <div class="header-area ">
+            <div class="header-top_area">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-8">
+                            <div class="short_contact_list">
+                                <ul>
+                                    <li><a href="#">Hotel para mascotas</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-4 ">
+                            <div class="social_media_links">
+                                <a href="#">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="sticky-header" class="main-header-area">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-xl-3 col-lg-3">
+                            <div class="logo">
+                                <a href="index.html">
+                                    <img src="../img/logo.png" alt="">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-xl-9 col-lg-9">
+                            <div class="main-menu  d-none d-lg-block">
+                                <nav>
+                                    <ul id="navigation">
+                                        <li><a  href="index.html">Home</a></li>
+                                        <li><a href="login.html">Iniciar sesión</a></li>
+                                        <li><a href="signup.html">Crear cuenta</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mobile_menu d-block d-lg-none"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- slider_area_start -->
+    <div class="slider_area">
+        <div class="single_slider longbanner_login d-flex align-items-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-5 col-md-6">
+                        <div class="slider_text">
+                            <h3>Si aún no la tienes, <br> <span>crea una cuenta</span></h3>
+                            <p>Únete a la familia de Villa Kebo con unos cuantos clicks.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="dog_thumb d-none d-lg-block">
+                    <img src="../img/index_resources/kebo-banner-3.png" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- slider_area_end -->
+
+    <div class="signup_form">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="signup_form_inner section-padding">
+                        <h2>Regístrate</h2>
+                        <!-- TODO: Change the action for this form -->
+                        <form class="row signup_form" id="signupForm" novalidate="novalidate">
+                            <div class="col-md-12 form-group">
+                                <!-- select if it is a Caretaker or Owner user-->
+                                <select class="form-control" id="userType" name="userType">
+                                    <option value="owner">Dueño</option>
+                                    <option value="caretaker">Cuidador</option>
+                                </select>
+
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="username" class="form-control" id="signupUsername" name="username" placeholder="Nombre de usuario" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Nombre de usuario'" required>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="email" class="form-control" id="signupEmail" name="email" placeholder="Correo electrónico" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Correo electrónico'" required>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="password" class="form-control" id="signupPassword" name="password" placeholder="Contraseña" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Contraseña'" 
+                                pattern="(?=.*\d)(?=.*[A-Z]).{8,}" required>
+                                <span toggle="#signupPassword" class="fa fa-fw fa-eye field-icon toggle-password"></span>                            </div>
+                            <div class="col-md-12 form-group">
+                                <button type="submit" value="submit" class="btn boxed-btn3 form-control mb-30">Crear cuenta</button>
+
+                                <p class="text-center mt-20">¿Ya tenías una cuenta? <a href="login.html">Inicia sesión</a></p>
+
+                            </div>
+                        
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- footer_start  -->
+    <footer class="footer">
+        <div class="footer_top">
+            <div class="container">
+                <div class="row justify-content-center">
+
+                        <div class="footer_widget">
+                            <!-- logo -->
+                            <div class="footer_logo">
+                                <a href="#">
+                                    <img src="../img/logo.png" alt="">
+                                </a>
+                                <a>Proyecto TDES - ITESO P2024</a>
+                            </div>
+
+                        </div>
+
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- footer_end  -->
+
+
+    <!-- JS here -->
+
+    <script>
+        document.querySelector('.toggle-password').addEventListener('click', function (e) {
+            // Alternar la visibilidad de la contraseña
+            var passwordInput = document.querySelector(e.target.getAttribute('toggle'));
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                e.target.classList.add('fa-eye-slash');  // Cambia el ícono a ojo cerrado
+                e.target.classList.remove('fa-eye');
+            } else {
+                passwordInput.type = 'password';
+                e.target.classList.remove('fa-eye-slash');  // Cambia el ícono a ojo abierto
+                e.target.classList.add('fa-eye');
+            }
+        });
+        </script>
+        
+
+</body>
+
+</html>
