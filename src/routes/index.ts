@@ -13,9 +13,6 @@ import caretakerRouter from "./caretaker";
  */
 const router = Router();
 
-router.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "..", "public", "index.html"));
-});
 
 /**
  * @swagger
@@ -53,5 +50,10 @@ router.use("/caretaker", caretakerRouter);
  */
 router.use("/google-passport", googleRouter);
 
+router.get("/", (req, res) => {
+
+    console.log(path.join(__dirname, "..", "public", "index.html"));
+    res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+});
 
 export default router;
