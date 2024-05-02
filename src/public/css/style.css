@@ -1953,51 +1953,6 @@ h3 {
   z-index: 0;
 }
 
-/* line 7, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_prising.scss */
-.prising_area::after {
-  position: absolute;
-  left: 0;
-  top: 0;
-  content: '';
-  background-image: url(../img/banner/prise_bg.png);
-  height: 100%;
-  width: 100%;
-  opacity: .04;
-  z-index: -1;
-}
-
-/* line 19, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_prising.scss */
-.prising_area .prise_title h4 {
-  font-size: 25px;
-  color: #eb592d;
-  margin-bottom: 35px;
-}
-
-/* line 25, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_prising.scss */
-.prising_area .single_service {
-  margin-bottom: 50px;
-}
-
-/* line 29, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_prising.scss */
-.prising_area .single_service .service_inner .thumb img {
-  width: 60px;
-  height: 60px;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  border-radius: 50%;
-  overflow: hidden;
-}
-
-/* line 37, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_prising.scss */
-.prising_area .single_service .hair_style_info {
-  padding-left: 20px;
-}
-
-/* line 39, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_prising.scss */
-.prising_area .single_service .hair_style_info .prise {
-  margin-bottom: 5px;
-  position: relative;
-}
 
 /* line 42, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_prising.scss */
 .prising_area .single_service .hair_style_info .prise::before {
@@ -6616,8 +6571,27 @@ h6 {
   height: auto;
 }
 
+.card-caretaker {
+  background: #f3edd5;
+  border: 0;
+  border-radius: 20px; 
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  height: auto;
+}
+
 .card-pets {
   background: #f3edd5;
+  border: 0;
+  border-radius: 20px; 
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  padding-left: 5px;
+  height: auto;
+}
+
+.card-pets-caretaker {
+  background: #FFEFE2;
   border: 0;
   border-radius: 20px; 
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -6633,6 +6607,18 @@ h6 {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.102);
   margin-bottom: 30px;
   height: 450px;
+  width: auto;
+
+}
+
+.card-pet-caretaker {
+  background: #fffdfc;
+  border: 0;
+  border-radius: 20px; 
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.102);
+  margin-bottom: 30px;
+  height: auto;
+  width: auto;
 
 }
 
@@ -6666,18 +6652,50 @@ h6 {
   height: auto;
 }
 
+.card-reservations-caretaker {
+  background: #FFEFE2;
+  border: 0;
+  border-radius: 20px; 
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 50px;
+  padding-left: 5px;
+  height: auto;
+}
+
 .card-reservation {
   background: #fffdfc;
   border: 0;
   border-radius: 20px; 
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
+  margin-bottom: 25px;
   height: auto;
 }
 
 .list-group-item-activity {
   text-align: left;
+  margin-bottom: 2px;
+  border-radius: 10px;
 }
+
+.accomplishable {
+  background: #FBFBFB;
+  border-radius: 20px;
+  padding: 10px;
+  margin-bottom: 5px;
+}
+
+.accomplish-section {
+  align-items: center;
+  justify-content: center;
+  vertical-align: center;
+  display: flex;
+  
+}
+
+.accomplish-btn {
+  padding: 10px;
+}
+
 
 .modal-backdrop {
   z-index: 1040;

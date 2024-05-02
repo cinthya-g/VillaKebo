@@ -15,7 +15,6 @@
     <!-- CSS here -->
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/magnific-popup.css">
-    <link rel="stylesheet" href="../css/font-awesome.min.css">
     <link rel="stylesheet" href="../css/themify-icons.css">
     <link rel="stylesheet" href="../css/nice-select.css">
     <link rel="stylesheet" href="../css/animate.css">
@@ -458,7 +457,7 @@
                                                                 <input type="date" class="form-control" id="newReservationEndDate" placeholder="Fin">
                                                             </div>
                                                         </div>
-                                                        <h5>Al continuar, confirmarás la reservación y procederás a añadir las actividades de tu mascota.</h5>
+                                                        <h5>Al continuar, crearás la reservación y procederás a añadir las actividades de tu mascota.</h5>
                                                     </form>
                                                 </div>
                                             </div>
@@ -466,7 +465,7 @@
                                         <div class="modal-footer">
                                             <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cancelar</button>
                                             <button type="button" class="btn boxed-btn-round-accept" data-dismiss="modal" data-toggle="modal" data-target="#addActivitiesModal"
-                                            >Confirmar y continuar</button>
+                                            >Continuar</button>
                                         </div>
                                     </div>
                                 </div>
@@ -492,12 +491,12 @@
                                                 <button type="button" class="btn boxed-btn5" onclick="removeActivity()">Eliminar última</button>
                                                 <button type="button" class="btn boxed-btn6" onclick="addActivity()">Agregar otra</button>
                                                 <br><br>
-                                                <h5>Si cancelas, tu reservación se guardará sin actividades y esto no se puede editar. Tendrás que crear una nueva.</h5>
+                                                <h5>Si cancelas, tu reservación no se confirmará y tendrás que crear otra desde cero pues no se guardará ni se asignará un cuidador para tu mascota.</h5>
                                             </form>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cancelar</button>
-                                            <button type="button" class="btn boxed-btn-round-accept onclick="submitActivities()">Guardar</button>
+                                            <button type="button" class="btn boxed-btn-round-accept onclick="submitActivities()">Confirmar</button>
                                         </div>
                                     </div>
                                 </div>
@@ -547,7 +546,7 @@
                                             <div class="modal-body">
                                                 <div class="row">
                                                     <div class="col-md-12 text-center vertical-center">
-                                                        <img class="caretaker-picture mb-3" src="../img/caretaker.jpg">
+                                                        <img class="caretaker-picture mb-2" src="../img/caretaker.jpg">
                                                         <h5><b>Nombre:</b> [nombre]</h5>
                                                         <h5><b>Contacto:</b> [email]</h5>
                                                         <h5>[status]</h5>
