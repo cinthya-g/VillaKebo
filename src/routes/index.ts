@@ -1,4 +1,5 @@
 import { Router } from "express";
+import path from "path";
 import authRoutes from "./auth";
 import googleRouter from "./google-passport";
 import ownerRoutes from "./owner";
@@ -48,24 +49,5 @@ router.use("/caretaker", caretakerRouter);
  */
 router.use("/google-passport", googleRouter);
 
-/**
- * @swagger
- * /:
- *  get:
- *    summary: Root endpoint
- *    description: Returns a message indicating the API is working.
- *    tags: [API]
- *    responses:
- *      200:
- *        description: API is up and running
- *        content:
- *          text/plain:
- *            schema:
- *              type: string
- *              example: API works!
- */
-router.get("/", (req, res) => {
-    res.send('API works!');
-});
 
 export default router;

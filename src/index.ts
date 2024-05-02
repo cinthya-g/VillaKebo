@@ -1,3 +1,4 @@
+import path from "path";
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
@@ -20,7 +21,11 @@ import { set } from "mongoose";
 
 const app = express();
 app.use(express.json()); // Parses incoming JSON requests and puts the parsed data in req.body
-app.use(express.static(__dirname + '/public'));
+
+// Static routes to public resources
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public/views')));
+
 
 // Add the API routes to the Express server and use the Google Auth middleware
 googleAuth(app);
