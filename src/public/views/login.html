@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="../css/animate.css">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
 
     <!-- <link rel="stylesheet" href="css/responsive.css"> -->
 </head>
@@ -56,7 +58,7 @@
                     <div class="row align-items-center">
                         <div class="col-xl-3 col-lg-3">
                             <div class="logo">
-                                <a href="index.html">
+                                <a href="../index.html">
                                     <img src="../img/logo.png" alt="">
                                 </a>
                             </div>
@@ -65,7 +67,7 @@
                             <div class="main-menu  d-none d-lg-block">
                                 <nav>
                                     <ul id="navigation">
-                                        <li><a  href="index.html">Home</a></li>
+                                        <li><a  href="../index.html">Home</a></li>
                                         <li><a href="login.html">Iniciar sesión</a></li>
                                         <li><a href="signup.html">Crear cuenta</a></li>
                                     </ul>
@@ -107,31 +109,49 @@
                 <div class="col-lg-6">
                     <div class="login_form_inner section-padding">
                         <h2>Iniciar sesión</h2>
-                        <!-- TODO: Change the action for this form -->
-                        <form class="row login_form" action="home-owner.html" id="loginForm" novalidate="novalidate">
+                        <form class="row login_form needs-validation" id="loginForm">
                             <div class="col-md-12 form-group">
                                 <!-- select if it is a Caretaker or Owner user-->
-                                <select class="form-control" id="userType" name="userType">
+                                <select class="form-control" id="userType" name="userType" required>
+                                    <option value="" disabled selected>¿Cuidador o dueño?</option>
                                     <option value="owner">Dueño</option>
                                     <option value="caretaker">Cuidador</option>
                                 </select>
 
                             </div>
                             <div class="col-md-12 form-group">
-                                <input type="email" class="form-control" id="loginEmail" name="email" placeholder="Correo electrónico" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Correo electrónico'" required>
+                                <input type="email" class="form-control" id="loginEmail" name="email" placeholder="Correo electrónico" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Correo electrónico'" 
+                                pattern="[^@\s]+@[^@\s]+\.[^@\s]+" required>
                             </div>
                             <div class="col-md-12 form-group">
-                                <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Contraseña" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Contraseña'" required>
-                                <span toggle="#loginPassword" class="fa fa-fw fa-eye field-icon toggle-password"></span>                            </div>
+                                <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Contraseña" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Contraseña'" 
+                                pattern="(?=.*\d)(?=.*[A-Z]).{8,}" required>
+                                <span toggle="#loginPassword" class="fa fa-fw fa-eye field-icon toggle-password"></span>                            
+                                <div class="invalid-feedback"  id="errorMessage"></div>
+                            </div>
                             <div class="col-md-12 form-group">
-                                <button type="submit" value="submit" class="btn boxed-btn3 form-control mb-30" href="home-owner.html">Entrar</button>
-                                <p class="text-center">O entrar exclusivamente como dueño con:</p>
-                                <button value="GoogleSubmit" class="btn boxed-btn-google form-control">Google</button>
+                                <button type="submit" value="submit" class="btn boxed-btn3 form-control mb-20" >Entrar</button>
                                 <p class="text-center mt-30">¿No tienes cuenta? <a href="signup.html">Regístrate</a></p>
 
                             </div>
                         
                         </form>
+
+                    <div class="row">
+                            <div class="col-md-2">
+                                <hr>
+                            </div>
+                            <div class="col-md-8">
+                                <p class="text-center">O entrar exclusivamente como Dueño con:</p>
+                            </div>
+                            <div class="col-md-2">
+                                <hr>
+                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button id="googleLogin" value="GoogleSubmit" class="btn boxed-btn-google form-control">Google</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -164,6 +184,12 @@
 
 
     <!-- JS here -->
+    <!-- Bootstrap JavaScript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Añadir el archivo principal del cliente  -->
+    <script src="../js/login-client.js"></script>
 
     <script>
         document.querySelector('.toggle-password').addEventListener('click', function (e) {
@@ -171,14 +197,29 @@
             var passwordInput = document.querySelector(e.target.getAttribute('toggle'));
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
-                e.target.classList.add('fa-eye-slash');  // Cambia el ícono a ojo cerrado
+                e.target.classList.add('fa-eye-slash');
                 e.target.classList.remove('fa-eye');
             } else {
                 passwordInput.type = 'password';
-                e.target.classList.remove('fa-eye-slash');  // Cambia el ícono a ojo abierto
+                e.target.classList.remove('fa-eye-slash'); 
                 e.target.classList.add('fa-eye');
             }
         });
+
+            (function() {
+                'use strict';
+                window.addEventListener('load', function() {
+                    var form = document.getElementById('loginForm');
+                    form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                    }, false);
+                }, false);
+            })();
+
         </script>
         
 

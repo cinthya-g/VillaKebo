@@ -68,7 +68,7 @@ class RegisterController {
  */
 
     async registerUser(req: Request, res: Response) {       
-        console.log('Registering user:', req.body);
+        //console.log('Registering user:', req.body);
         try {
             const data = {
                 username: req.body.username,

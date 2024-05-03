@@ -43,7 +43,7 @@ const middleware = (req: Request, res: Response, next: NextFunction) => {
         }
     }
     else {
-        // TODO: Decide to either make a new route for this or to redirect to the owner-login page
+        console.log("Middleware: invalid!")
         res.redirect('/auth/owner-login');
     }
 }

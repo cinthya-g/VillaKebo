@@ -60,16 +60,17 @@ class OwnerController{
      */
     async loginOwner(req: Request, res: Response) {
         try {
+            console.log('Logging in owner:', req.body);
             let { email, password } = req.body;
 
             if (!email || !password) {
-                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                res.status(ResponseCodes.BAD_REQUEST).json({"message": "Missing required fields"});
                 return;
             }
 
             const owner = await Owner.findOne({ email: email.toLowerCase() });
             if (!owner || !comparePassword(password, owner.password)) {
-                res.status(ResponseCodes.UNAUTHENTICATED).send("Owner not found or incorrect password");
+                res.status(ResponseCodes.UNAUTHENTICATED).json({"message": "Owner not found or incorrect password"});
                 return;
             }
             

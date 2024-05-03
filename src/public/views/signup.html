@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="../css/animate.css">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
 
     <!-- <link rel="stylesheet" href="css/responsive.css"> -->
 </head>
@@ -56,7 +58,7 @@
                     <div class="row align-items-center">
                         <div class="col-xl-3 col-lg-3">
                             <div class="logo">
-                                <a href="index.html">
+                                <a href="../index.html">
                                     <img src="../img/logo.png" alt="">
                                 </a>
                             </div>
@@ -65,7 +67,7 @@
                             <div class="main-menu  d-none d-lg-block">
                                 <nav>
                                     <ul id="navigation">
-                                        <li><a  href="index.html">Home</a></li>
+                                        <li><a  href="../index.html">Home</a></li>
                                         <li><a href="login.html">Iniciar sesión</a></li>
                                         <li><a href="signup.html">Crear cuenta</a></li>
                                     </ul>
@@ -109,25 +111,33 @@
                         <h2>Regístrate</h2>
                         
                         <!-- TODO: Change the action for this form -->
-                        <form class="row signup_form" id="signupForm" novalidate="novalidate">
+                        <form class="row signup_form needs-validation" id="signupForm">
                             <div class="col-md-12 form-group">
                                 <!-- select if it is a Caretaker or Owner user-->
-                                <select class="form-control" id="userType" name="userType">
+                                <select class="form-control" id="userType" name="userType" required>
+                                    <option value="" disabled selected>¿Cuidador o dueño?</option>
                                     <option value="owner">Dueño</option>
                                     <option value="caretaker">Cuidador</option>
                                 </select>
-
+                                <div class="invalid-feedback">Por favor selecciona un rol.</div>
                             </div>
                             <div class="col-md-12 form-group">
-                                <input type="username" class="form-control" id="signupUsername" name="username" placeholder="Nombre de usuario" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Nombre de usuario'" required>
+                                <input type="username" class="form-control" id="signupUsername" name="username" placeholder="Nombre de usuario" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Nombre de usuario'" 
+                                pattern="[a-zA-Z0-9]{4,}" required>
+                                <div class="invalid-feedback">El nombre de usuario es requerido y debe tener más de 4 letras.</div>
                             </div>
                             <div class="col-md-12 form-group">
-                                <input type="email" class="form-control" id="signupEmail" name="email" placeholder="Correo electrónico" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Correo electrónico'" required>
+                                <input type="email" class="form-control" id="signupEmail" name="email" placeholder="Correo electrónico" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Correo electrónico'" 
+                                pattern="[^@\s]+@[^@\s]+\.[^@\s]+" required>
+                                <div class="invalid-feedback"  id="emailMessage">Por favor ingresa un correo electrónico válido.</div>
                             </div>
                             <div class="col-md-12 form-group">
                                 <input type="password" class="form-control" id="signupPassword" name="password" placeholder="Contraseña" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Contraseña'" 
                                 pattern="(?=.*\d)(?=.*[A-Z]).{8,}" required>
-                                <span toggle="#signupPassword" class="fa fa-fw fa-eye field-icon toggle-password"></span>                            </div>
+                                <span toggle="#signupPassword" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                <div class="invalid-feedback">
+                                    La contraseña debe tener al menos 8 caracteres, incluir un número y una letra mayúscula.</div>
+                                </div>
                             <div class="col-md-12 form-group">
                                 <button type="submit" value="submit" class="btn boxed-btn3 form-control mb-30">Crear cuenta</button>
 
@@ -168,6 +178,13 @@
 
 
     <!-- JS here -->
+    <!-- Bootstrap JavaScript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- Añadir el archivo principal del cliente  -->
+    <script src="../js/signup-client.js"></script>
 
     <script>
         document.querySelector('.toggle-password').addEventListener('click', function (e) {
@@ -184,42 +201,24 @@
             }
         });
 
-        document.getElementById('signupForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const formData = new FormData(this);
-    const userType = formData.get('userType');  // Guardamos userType para usar después en la redirección
-    const data = {
-        username: formData.get('username'),
-        email: formData.get('email'),
-        password: formData.get('password'),
-        isOwner: userType === 'owner'
-    };
 
-    fetch('/auth/register', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-    }).then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok: ' + response.statusText);
-        }
-        return response.json();
-    }).then(data => {
-        console.log(data);
-        // Redirección condicional basada en el tipo de usuario
-        if (userType === 'owner') {
-            window.location.href = '/home-owner.html';  // Ruta al home de Owner
-        } else {
-            window.location.href = '/home-caretaker.html';  // Ruta al home de Caretaker
-        }
-    }).catch(error => {
-        console.error('Error:', error);
-        alert('Hubo un problema con tu solicitud de registro: ' + error.message);
-    });
-});
-        </script>
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var form = document.getElementById('signupForm');
+                form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+                }, false);
+            }, false);
+        })();
+    </script>
+
+
+
         
 
 </body>
