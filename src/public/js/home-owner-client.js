@@ -1,3 +1,20 @@
+// --- GUARDAR EL TOKEN AUTOMÁTICAMENTE SI SE ENVIA DESDE PARAMS (GOOGLE) ---
+window.addEventListener('load', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    //console.log('Token from URL:', token)
+    if (token) {
+        localStorage.setItem('token', token);
+        removeTokenFromUrl();
+    }
+});
+
+function removeTokenFromUrl() {
+    const url = new URL(window.location);
+    url.searchParams.delete('token');
+    window.history.replaceState({}, document.title, url.pathname + url.search);
+}
+
 
 // Evento de prueba para cambiar imagen y probar previsualización
 document.getElementById('editPictureBtn').addEventListener('click', function() {

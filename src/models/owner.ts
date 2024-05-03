@@ -61,6 +61,7 @@ const ownerSchema = new Schema({
     petsIDs: [{ type: Schema.Types.ObjectId, ref: "pets" }],
     reservationsIDs: [{ type: Schema.Types.ObjectId, ref: "reservations" }],
     profilePicture: { type: String },
+    token: { type: String },
     //TODO DEFINE WHAT IS REQUIRED
 });
 

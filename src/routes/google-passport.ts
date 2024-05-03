@@ -26,7 +26,8 @@ router.get('/google/callback',
     }),
     (req: Request, res: Response) => {
         console.log("AFTER STRATEGY:", req.user);
-        res.redirect('/google-passport/'); 
+        //res.redirect('/google-passport/'); 
+        res.redirect('/home-owner.html?token=' + (req.user as User).token);
     }
 );
 
