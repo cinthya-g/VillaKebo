@@ -11,6 +11,8 @@ import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
 import Activity from "../models/activity";
 import Owner from "../models/owner";
 import {getIo} from '../utils/io';
+import Notifications from './notificationController';
+
 
 
 
@@ -148,18 +150,6 @@ class CaretakerController{
                 res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
                 return;
             }
-
-            /* Expected request
-                {
-                    (the user.id parameter comes from the authMiddleware already)
-                    "update": {
-                        "username": "bbccb",
-                        "email": "aaaff",
-                        "password": "5ccc"
-                        ...other fields if necessary...
-                    }
-                }
-            */
             
             const updatedCaretaker = await Caretaker.findOneAndUpdate({ _id: caretakerID }, update, options);
             res.status(ResponseCodes.SUCCESS).send(updatedCaretaker);
@@ -361,6 +351,9 @@ class CaretakerController{
                 res.status(404).send("No reservation found for this activity"); // NOT_FOUND
                 return;
             }
+            const petID = reservation.petID;
+            const caretakerID = req.body.user.id;
+            const activityTitle = updatedActivity.title;
     
             // Extrae el userID del owner de la reserva
             const owner = await Owner.findById(reservation.ownerID);
@@ -376,9 +369,8 @@ class CaretakerController{
             const Server = getIo();
             console.log('Server:', Server.sockets.adapter.rooms)
 
+            await Notifications.saveNotification(owner.id, caretakerID, petID, activityTitle, updatedActivity.timesCompleted);
 
-            console.log('DEntro de funcion de acomplish activity OwnerID:', ownerName);
-            // Encuentra el socket para el ownerID
             Server.to(ownerName).emit('accomplishActivity', updatedActivity);
 
     
