@@ -219,7 +219,12 @@ class CaretakerController{
             // Look for the previous photo on the S3 bucket and delete it 
             const caretaker = await Caretaker.findOne({ _id: caretakerID });
             if (caretaker.profilePicture) {
-                await deleteFileFromS3(process.env.PHOTOS_BUCKET_NAME, caretaker.profilePicture);
+
+                // If the photo is the 'no-user-photo.png', don't delete it from S3, just create a new one and update the caretaker
+                if (caretaker.profilePicture !== 'no-user-photo.png') {
+                    await deleteFileFromS3(process.env.PHOTOS_BUCKET_NAME, caretaker.profilePicture);
+                }
+
             }
 
             // Save the uploaded photo to the caretaker's profile

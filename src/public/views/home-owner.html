@@ -71,7 +71,7 @@
                                                     </ul>
                                                 </div>
                                             </div>                                                                                       
-                                        <li><a href="login.html">Cerrar sesión</a></li>
+                                        <li><a id="logoutBtn">Cerrar sesión</a></li>
                                     </ul>
                                 </nav>
                             </div>
@@ -221,26 +221,8 @@
                             <!-- Modal ELIMINAR Mascota -->
                             <div class="modal" id="deletePetModal" tabindex="-1" role="dialog" aria-labelledby="deletePetModalLabel" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h3 class="modal-title" id="deletePetModalLabel">¿Eliminar mascota?</h3>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <!-- Right section for profile picture -->
-                                                    <div class="col-md-12 text-center">
-                                                        <img src="../img/pug.png" alt="Pet Picture" class="img-fluid change-picture" >
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                
-                                                <button type="button" class="btn boxed-btn-round-green" data-dismiss="modal">Cancelar</button>
-                                                <button type="button" class="btn boxed-btn-round-cancel" >Eliminar</button>
-                                            </div>
+                                        <div class="modal-content" id="delete-pet-content">
+
                                         </div>
                                     </div>
                             </div>

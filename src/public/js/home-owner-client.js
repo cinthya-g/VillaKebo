@@ -1,4 +1,3 @@
-
 // Constantes
 PROFILE_PHOTO_S3 = "https://vk-profile-photos.s3.amazonaws.com/";
 
@@ -7,10 +6,12 @@ PROFILE_PHOTO_S3 = "https://vk-profile-photos.s3.amazonaws.com/";
 window.addEventListener('load', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
-    //console.log('Token from URL:', token)
     if (token) {
         localStorage.setItem('token', token);
+        localStorage.setItem('GoogleAccount', true);
         removeTokenFromUrl();
+    } else{
+        initApp();
     }
 });
 
@@ -18,16 +19,25 @@ function removeTokenFromUrl() {
     const url = new URL(window.location);
     url.searchParams.delete('token');
     window.history.replaceState({}, document.title, url.pathname + url.search);
+    initApp();
 }
 
 // --- Funciones de inicialización ---
-document.addEventListener('DOMContentLoaded', () => {
-    createOwnerCardBody(); 
-    createPetsCards();
-    // añadir carga de mascotas
-    // añadir carga de reservaciones
-    // notificaciones?
-});
+function initApp() {
+    if (localStorage.getItem('token')) {
+        createOwnerCardBody();
+        createPetsCards();
+    } else {
+        console.error('No hay token de autenticación');
+        window.location.href = 'login.html';
+    }
+    
+};
+
+// --- Obtener la foto de perfil correcta de acuerdo al tipo de cuenta ---
+function isItGoogleAccount(obj) {
+    return localStorage.getItem('GoogleAccount') ? obj.profilePicture : PROFILE_PHOTO_S3 + obj.profilePicture;
+};
 
 
 // --- Funciones API ---
@@ -101,7 +111,7 @@ async function uploadProfilePicture(file) {
         return response.json();
     }).then(data => {
         $('#editProfileModal').modal('hide');
-        document.getElementById('displayPicture').src = PROFILE_PHOTO_S3 + data.profilePicture; 
+        document.getElementById('displayPicture').src = isItGoogleAccount(data);
     }).catch(error => {
         console.error('Error:', error);
     });
@@ -205,6 +215,28 @@ async function uploadPetPicture(petID, file) {
     });
 };
 
+// Eliminar mascota por ID a través del modal
+async function deletePet(petID) {
+    console.log('Pet ID:', petID);
+    const token = localStorage.getItem('token');
+    fetch(`/owner/delete-pet/${petID}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    }).then(data => {
+        $('#deletePetModal').modal('hide');
+        createPetsCards();
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+};
+
 
 
 
@@ -216,9 +248,10 @@ async function createOwnerCardBody() {
         console.error('No se pudo obtener la información del dueño');
         return;
     }
+    
     const cardBody = `
     <div class="card-owner">
-        <img class="card-img-top" src="${PROFILE_PHOTO_S3 + ownerData.profilePicture}" alt="Profile picture" id="displayPicture">
+        <img class="card-img-top" src="${isItGoogleAccount(ownerData)}" alt="Profile picture" id="displayPicture">
         <div class="card-body">
             <h4 class="card-title" id="displayUsername"><b>${ownerData.username}</b></h4>
             <h5 class="card-text-status" id="displayStatus"><i>
@@ -240,8 +273,8 @@ async function createOwnerCardBody() {
 // Fabricar el contenido del MODAL DE EDITAR PERFIL ---
 async function createEditProfileModal() {
     const ownerData = await getOwnerData();
-    // Si el email termina con @gmail.com, no se puede editar
-    const emailDisabled = ownerData.email.endsWith('@gmail.com') ? 'disabled' : '';
+    // Si es cuenta de google, no se pued editar el mail ni la foto
+    const inputDisabled = localStorage.getItem('GoogleAccount') ? 'disabled' : '';
     const modalContent = `
     <div class="modal-body">
         <div class="row">
@@ -258,17 +291,17 @@ async function createEditProfileModal() {
                     </div>
                     <div class="form-group">
                         <h5 for="user-status">E-mail</h5>
-                        <input type="text" class="form-control" id="editedEmail" placeholder="${ownerData.email}" ${emailDisabled}>
+                        <input type="text" class="form-control" id="editedEmail" placeholder="${ownerData.email}" ${inputDisabled}>
                     </div>
                 </form>
             </div>
             <!-- Right section for profile picture -->
             <div class="col-md-4 text-center">
-                <img src="${PROFILE_PHOTO_S3 + ownerData.profilePicture}" alt="Profile Picture" class="img-fluid change-picture" id="profilePictureOwner">
+                <img src="${isItGoogleAccount(ownerData)}" alt="Profile Picture" class="img-fluid change-picture" id="profilePictureOwner">
                 <input type="file" id="imageInputOwner" accept="image/*" style="display: none;">
-                <btn class="btn boxed-btn5 mt-4" id="editPictureBtn">
+                <button class="btn boxed-btn5 mt-4" id="editPictureBtn" ${inputDisabled}>
                     <i class="fa fa-image" aria-hidden="true"></i>
-                    <a>Cambiar foto</a></btn>
+                    <a>Cambiar foto</a></button>
             </div>
         </div>
     </div>`;
@@ -318,7 +351,8 @@ async function createPetsCards() {
                                     data-target="#editPetModal" data-toggle="modal"
                                 ><i class="fa fa-edit" aria-hidden="true"></i>
                                     <a></a></btn>
-                                <btn class="btn boxed-btn-round-red ml-3" data-target="#deletePetModal" data-toggle="modal"
+                                <btn class="btn boxed-btn-round-red ml-3" onclick="createDeletePetModal('${pet._id}')"
+                                    data-target="#deletePetModal" data-toggle="modal"
                                 ><i class="fa fa-eraser" aria-hidden="true"></i>
                                     <a></a></btn>
                             </li>
@@ -337,7 +371,7 @@ async function createPetsCards() {
 async function createEditPetModal(petID) {
     const petData = await getPetData(petID);
     if (!petData) {
-        console.error('No se pudo obtener la información de la mascota: ', petID);
+        console.error('[Editar mascota] No se pudo obtener la información de la mascota: ', petID);
         return;
     }
     const modalContent = `
@@ -378,10 +412,49 @@ async function createEditPetModal(petID) {
 }
 
 
+// Función para crear el contenido del MODAL DE ELIMINAR MASCOTA
+async function createDeletePetModal(petID) {
+    const petData = await getPetData(petID);
+    if (!petData) {
+        console.error('[Eliminar mascota] No se pudo obtener la información de la mascota: ', petID);
+        return;
+    }
+    const modalContent = `
+    <div class="modal-header">
+        <h3 class="modal-title" id="deletePetModalLabel">¿Eliminar mascota?</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <!-- Right section for profile picture -->
+            <div class="col-md-12 text-center">
+                <img src="${PROFILE_PHOTO_S3 + petData.profilePicture}" alt="Pet Picture" class="img-fluid change-picture mb-2" >
+                <h5>Si eliminas a ${petData.name}, <br> sus reservaciones se cancelarán.</h5>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        
+        <button type="button" class="btn boxed-btn-round-green" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn boxed-btn-round-cancel" onclick="deletePet('${petData._id}')">Eliminar</button>
+    </div>
+    `;
+    document.getElementById('delete-pet-content').innerHTML = modalContent;
+};
+
 
 
 
 // --- Eventos DOM ---
+// TEMPORAL: Cerrar sesión (no-google)
+document.getElementById('logoutBtn').addEventListener('click', function() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('GoogleAccount');
+    window.location.href = '../index.html';
+});
+
 // Abrir modal de editar perfil
 document.addEventListener('DOMContentLoaded', function () {
     $('#editProfileModal').on('show.bs.modal', function () {
@@ -474,8 +547,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 // --- Eventos DOM onclick ---
-
-
 // Guardar los datos editados de la mascota por ID
 async function savePet(petID) {
     const editedPetName = document.getElementById('editedPetName').value;
@@ -506,6 +577,9 @@ async function savePet(petID) {
         }, 2000);
     }
 };
+
+
+
 
 
 // Expediente

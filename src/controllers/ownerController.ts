@@ -359,7 +359,7 @@ class OwnerController{
     async deletePet(req: Request, res: Response) {
         try {
             let ownerID = req.body.user.id;
-            let { petID } = req.body;
+            let petID = req.params.id;
             
             /* Expected request
                 {   
@@ -379,6 +379,9 @@ class OwnerController{
             } else {
                 // Delete pet from the Owner's petsIDs array
                 const owner = await Owner.findOneAndUpdate({ _id: ownerID }, {$pull: { petsIDs: petID }}, { new: true });
+                // Delete the reservation in the currentReservation field of the pet
+                const deletedReservation = await Reservation.findOneAndDelete({ _id: result.currentReservation });
+                // TODO: Finish logic for deleting: the Reservation's associated Activities, and the Caretaker's assignedReservationsIDs
                 res.status(ResponseCodes.SUCCESS).send(owner);
             }
 
@@ -511,7 +514,9 @@ class OwnerController{
             // Look for the previous photo on the S3 bucket and delete it 
             const owner = await Owner.findOne({ _id: ownerID });
             if (owner.profilePicture) {
-                await deleteFileFromS3(process.env.PHOTOS_BUCKET_NAME, owner.profilePicture);
+                if (owner.profilePicture !== 'no-user-photo.png') {
+                    await deleteFileFromS3(process.env.PHOTOS_BUCKET_NAME, owner.profilePicture);
+                }
             }
 
             // Save the uploaded photo to the owner's profile
@@ -642,7 +647,9 @@ class OwnerController{
             // Look for the previous pet photo on the S3 bucket and delete it
             const pet = await Pet.findOne({ _id: petID });
             if (pet.profilePicture) {
-                await deleteFileFromS3(process.env.PHOTOS_BUCKET_NAME, pet.profilePicture);
+                if (pet.profilePicture !== 'no-pet-photo.png') {
+                    await deleteFileFromS3(process.env.PHOTOS_BUCKET_NAME, pet.profilePicture);
+                }
             }
         
             // Save the uploaded photo to the pets's profile

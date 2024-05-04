@@ -211,7 +211,7 @@ router.get('/get-pet/:id', ownerController.getPet);
  *      500:
  *        description: Internal Server Error
  */
-router.delete('/delete-pet', ownerController.deletePet);
+router.delete('/delete-pet/:id', ownerController.deletePet);
 /**
  * @swagger
  * /owner/update-pet:
