@@ -161,6 +161,54 @@ class CaretakerController{
     }
     /**
      * @swagger
+     * /caretaker/get-caretaker:
+     *   post:
+     *     tags: [Caretaker]
+     *     summary: Get caretaker by ID
+     *     description: Retrieves the caretaker information based on the provided caretaker ID.
+     *     parameters:
+     *       - in: query
+     *         name: id
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: The ID of the caretaker to retrieve
+     *     responses:
+     *       200:
+     *         description: Caretaker retrieved successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Caretaker'
+     *       400:
+     *         description: Missing required fields
+     *       500:
+     *         description: Internal Server Error
+     */
+    async getCaretaker(req: Request, res: Response) {
+        try {
+            const caretakerID = req.body.user.id;
+
+            if (!caretakerID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            const caretaker = await Caretaker.findById(caretakerID);
+
+            if (!caretaker) {
+                res.status(ResponseCodes.NOT_FOUND).send("Caretaker not found");
+                return;
+            }
+
+            res.status(ResponseCodes.SUCCESS).json(caretaker);
+        } catch (error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+    /**
+     * @swagger
      * /caretaker/upload-photo:
      *   post:
      *     tags: [Caretaker]

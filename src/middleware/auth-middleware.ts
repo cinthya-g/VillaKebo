@@ -30,9 +30,13 @@ import { ResponseCodes } from "../utils/res-codes";
 
 
 const middleware = (req: Request, res: Response, next: NextFunction) => {
-    const token = req.query.token || req.body.token;
-    if (token) {  
+    const bearerHeader = req.headers['authorization'];
+    if (bearerHeader && typeof bearerHeader !== 'undefined') {
+        const bearer = bearerHeader.split(' '); 
+        const token = bearer[1]; 
         const decoded = verifyToken(token);
+        //console.log("User token: ", token);
+        console.log("Decoded token: ", decoded);
         if (decoded) {
             req.body.user = decoded;
             //console.log("AuthMiddleware: req body user: ", req.body.user);

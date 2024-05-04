@@ -47,6 +47,23 @@ router.put('/update-caretaker', caretakerController.updateCaretaker);
 
 /**
  * @swagger
+ * /get-caretaker:
+ *   get:
+ *     summary: Get the information of the caretaker
+ *     tags: [Caretaker]
+ *     responses:
+ *       200:
+ *         description: Picture retrieved successfully
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal server error
+ */
+
+router.get('/get-caretaker', caretakerController.getCaretaker);
+
+/**
+ * @swagger
  * /upload-photo:
  *   post:
  *     summary: Upload a photo for the caretaker
@@ -66,6 +83,8 @@ router.put('/update-caretaker', caretakerController.updateCaretaker);
  *         description: Internal server error
  */
 router.post('/upload-photo', uploadPhoto.single('photo'), caretakerController.saveUploadedPhoto);
+
+
 
 /**
  * @swagger
