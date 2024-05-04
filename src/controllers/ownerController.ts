@@ -432,6 +432,18 @@ class OwnerController{
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
         }
     }
+
+    async getPet(req: Request, res: Response) {
+        try {
+            let petID = req.params.id;
+            const pet = await Pet.findOne({
+                _id: petID
+            });
+            res.status(ResponseCodes.SUCCESS).send(pet);
+        } catch (error) {
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    };
     
     /**
      * @swagger

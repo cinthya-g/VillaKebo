@@ -48,7 +48,7 @@ const caretakerSchema = new Schema({
     email: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: String, default: Roles.CARETAKER },
-    status: { type: String, default: "I <3 pets!"},
+    status: { type: String, default: "Yo <3 a las mascotas!"},
     assignedReservationsIDs: [{ type: Schema.Types.ObjectId, ref: "reservations" }],
     profilePicture: { type: String , default: defaultPicture},
 });

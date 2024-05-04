@@ -23,6 +23,7 @@ function removeTokenFromUrl() {
 // --- Funciones de inicialización ---
 document.addEventListener('DOMContentLoaded', () => {
     createOwnerCardBody(); 
+    createPetsCards();
     // añadir carga de mascotas
     // añadir carga de reservaciones
     // notificaciones?
@@ -50,7 +51,7 @@ async function getOwnerData() {
     }
 }
 
-// Editar datos del usuario
+// Editar datos del dueño
 async function editOwnerData(data) {
     const token = localStorage.getItem('token');
     fetch('/owner/update-owner', {
@@ -73,8 +74,7 @@ async function editOwnerData(data) {
     });
 }
 
-
-// Cargar nueva foto de perfil
+// Cargar nueva foto de perfil del dueño
 async function uploadProfilePicture(file) {
     const token = localStorage.getItem('token');
     // Obtener el id del usuario
@@ -107,11 +107,109 @@ async function uploadProfilePicture(file) {
     });
 };
 
+// Función que recupera las mascotas del dueño
+async function getOwnerPets() {
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch('/owner/get-pets-by-owner', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    }
+    catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+};
+
+// Función que recupera los datos de una mascota por ID
+async function getPetData(petID) {
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch(`/owner/get-pet/${petID}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    }
+    catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+};
+
+// Editar datos de una mascota
+async function editPetData(petID, updateData) {
+    const token = localStorage.getItem('token');
+    fetch(`/owner/update-pet`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ petID: petID, update: updateData })
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    }).then(data => {
+        $('#editPetModal').modal('hide');
+        createPetsCards();
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+};
+
+// Editar foto de perfil de una mascota
+async function uploadPetPicture(petID, file) {
+    const token = localStorage.getItem('token');
+
+    const ownerData = await getOwnerData();
+    const ownerID = ownerData._id;
+
+    const formData = new FormData();
+    formData.append('ownerID', ownerID);
+    formData.append('petID', petID);
+    formData.append('photo', file);
+
+    fetch('/owner/upload-pet-photo', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        body: formData
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    }).then(data => {
+        $('#editPetModal').modal('hide');
+        createPetsCards();
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+};
+
 
 
 
 // --- Funciones de DOM ---
-// --- Función para crear el cuerpo de la tarjeta del Dueño ---
+// Función para crear el cuerpo de la tarjeta del Dueño ---
 async function createOwnerCardBody() {
     const ownerData = await getOwnerData();
     if (!ownerData) {
@@ -139,7 +237,7 @@ async function createOwnerCardBody() {
     document.getElementById('card-owner-section').innerHTML = cardBody;
 };
 
-// --- Fabricar el contenido del MODAL DE EDITAR PERFIL ---
+// Fabricar el contenido del MODAL DE EDITAR PERFIL ---
 async function createEditProfileModal() {
     const ownerData = await getOwnerData();
     // Si el email termina con @gmail.com, no se puede editar
@@ -169,7 +267,7 @@ async function createEditProfileModal() {
                 <img src="${PROFILE_PHOTO_S3 + ownerData.profilePicture}" alt="Profile Picture" class="img-fluid change-picture" id="profilePictureOwner">
                 <input type="file" id="imageInputOwner" accept="image/*" style="display: none;">
                 <btn class="btn boxed-btn5 mt-4" id="editPictureBtn">
-                    <i class="fa fa-picture-o" aria-hidden="true"></i>
+                    <i class="fa fa-image" aria-hidden="true"></i>
                     <a>Cambiar foto</a></btn>
             </div>
         </div>
@@ -177,6 +275,109 @@ async function createEditProfileModal() {
     document.getElementById('editProfileModalContent').innerHTML = modalContent;
 
 };
+
+// Fabricar las tarjetas de mascotas dependiendo de los datos obtenidos
+async function createPetsCards() {
+    const petsData = await getOwnerPets();
+    if (!petsData) {
+        console.error('No se pudo obtener la información de las mascotas');
+        return;
+    }
+    const petsSection = document.getElementById('card-pet-section');
+    let cards = '';
+    if (petsData.length === 0) {
+        cards = `
+        <div class="col-md-12">
+            <div class="card-pet">
+                <div class="card-body">
+                    <h4 class="card-title"><b>No tienes mascotas registradas</b></h4>
+                    <ul class="list-group
+                    list-group-flush">
+                    </ul>
+                </div>
+            </div>
+        </div>
+        `;
+    } else {
+        petsData.forEach(pet => {
+            cards += `
+            <div class="col-md-4">
+                <div class="card-pet">
+                    <img class="card-img-top" src="${PROFILE_PHOTO_S3 + pet.profilePicture}" alt="Profile picture">
+                    <div class="card-body">
+                        <h4 class="card-title"><b>${pet.name}</b></h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">${pet.breed} de ${pet.age} años</li>
+                            <li class="list-group-item">
+                                <btn class="btn boxed-btn6" data-toggle="modal" data-target="#petRecordModal">
+                                    <i class="fa fa-upload" aria-hidden="true"></i>
+                                    <a>Expediente</a></btn>
+                            </li>
+                            <li class="list-group-item">
+                                <btn class="btn boxed-btn-round-green mr-3" onclick="createEditPetModal('${pet._id}')"
+                                    data-target="#editPetModal" data-toggle="modal"
+                                ><i class="fa fa-edit" aria-hidden="true"></i>
+                                    <a></a></btn>
+                                <btn class="btn boxed-btn-round-red ml-3" data-target="#deletePetModal" data-toggle="modal"
+                                ><i class="fa fa-eraser" aria-hidden="true"></i>
+                                    <a></a></btn>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            `;
+        });
+}
+
+    petsSection.innerHTML = cards;
+};
+
+// Función para crear el contenido del MODAL DE EDITAR MASCOTA
+async function createEditPetModal(petID) {
+    const petData = await getPetData(petID);
+    if (!petData) {
+        console.error('No se pudo obtener la información de la mascota: ', petID);
+        return;
+    }
+    const modalContent = `
+    <div class="modal-body">
+        <div class="row">
+            <!-- Left section for form inputs -->
+            <div class="col-md-8">
+                <form>
+                    <div class="form-group">
+                        <h5 for="editedPetName">Nombre</h5>
+                        <input type="text" class="form-control" id="editedPetName" placeholder="${petData.name}">
+                    </div>
+                    <div class="form-group">
+                        <h5 for="editedAge">Edad</h5>
+                        <input type="number" min="0" max="25" class="form-control" id="editedAge" placeholder="${petData.age}">
+                    </div>
+                    <div class="form-group">
+                        <h5 for="editedBreed">Raza</h5>
+                        <input type="text" class="form-control" id="editedBreed" placeholder="${petData.breed}">
+                    </div>
+                    
+                </form>
+            </div>
+            <!-- Right section for profile picture -->
+            <div class="col-md-4 text-center">
+                <img src="${PROFILE_PHOTO_S3 + petData.profilePicture}" alt="Pet Picture" class="img-fluid change-picture" id="profilePicturePet">
+                <input type="file" id="imageInputPet" accept="image/*" style="display: none;">
+                <btn class="btn boxed-btn5 mt-4" id="editPetPictureBtn">
+                    <i class="fa fa-picture-o" aria-hidden="true"></i>
+                    <a>Cambiar foto</a></btn>
+            </div>
+        </div>
+    </div>
+    `;
+    document.getElementById('edit-pet-body-modal').innerHTML = modalContent;
+    const saveBtn = `<button type="button" class="btn boxed-btn-round-accept" onclick="savePet('${petData._id}')">Guardar cambios</button>`;
+    document.getElementById('saveModifiedPetBtn').innerHTML = saveBtn;
+}
+
+
 
 
 
@@ -247,30 +448,65 @@ document.getElementById('saveChangesProfileBtn').addEventListener('click', async
     }
 });
 
-function updateCardOwnerData(data) {
-    // Actualiza los elementos del DOM (texto) con los nuevos datos
-    document.getElementById('displayUsername').innerHTML = `<b>${data.username}</b>`; 
-    document.getElementById('displayStatus').innerHTML = `<i>${data.status}</i>`; 
-}
-
-
-// Evento de prueba para cambiar imagen y probar previsualización
-/*
-document.getElementById('editPictureBtn').addEventListener('click', function() {
-    document.getElementById('imageInputOwner').click(); // Activar el input oculto
-});
-
-
-document.getElementById('imageInputOwner').addEventListener('change', function() {
-    if (this.files && this.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('profilePictureOwner').src = e.target.result; // actualizar vista previa
+// EVENT DELEGATION: Subir nueva imagen de perfil de mascota
+document.addEventListener('DOMContentLoaded', function () {
+    const container = document.getElementById('edit-pet-body-modal');
+    container.addEventListener('click', function (event) {
+        // Verifica si el elemento que disparó el evento es el de "Cambiar foto"
+        if (event.target.id === 'editPetPictureBtn' || event.target.closest('#editPetPictureBtn')) {
+            // Obtener la fotografía seleccionada
+            document.getElementById('imageInputPet').click();
+            // Cambiarla en la vista previa
+            document.getElementById('imageInputPet').addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.getElementById('profilePicturePet').src = e.target.result; // actualizar vista previa
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+            
         }
-        reader.readAsDataURL(this.files[0]); 
-    }
+    });
 });
-*/
+
+
+
+// --- Eventos DOM onclick ---
+
+
+// Guardar los datos editados de la mascota por ID
+async function savePet(petID) {
+    const editedPetName = document.getElementById('editedPetName').value;
+    const editedAge = document.getElementById('editedAge').value;
+    const editedBreed = document.getElementById('editedBreed').value;
+    const editedPicture = document.getElementById('imageInputPet').files[0];
+
+    let updateData = {};
+
+    if (editedPetName.trim() !== '') updateData.name = editedPetName;
+    if (editedAge.trim() !== '') updateData.age = editedAge;
+    if (editedBreed.trim() !== '') updateData.breed = editedBreed;
+
+    if (Object.keys(updateData).length > 0) {
+        await editPetData(petID, updateData);
+    } 
+    if (editedPicture) {
+        await uploadPetPicture(petID, editedPicture);
+    }
+    else {
+        document.getElementById('noPetChangesAlert').innerHTML = `
+        <div class="alert alert-secondary" role="alert">
+            No hay datos por actualizar
+        </div>
+        `;
+        setTimeout(() => {
+            document.getElementById('noPetChangesAlert').innerHTML = '';
+        }, 2000);
+    }
+};
+
 
 // Expediente
 document.getElementById('newPdfInput').addEventListener('change', function() {

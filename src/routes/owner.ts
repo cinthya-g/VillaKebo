@@ -162,6 +162,26 @@ router.get('/get-picture', ownerController.getPicture);
  *        description: Internal Server Error
  */
 router.post('/create-pet', ownerController.createPet);
+
+/**
+ * @swagger
+ * /owner/get-pet:
+ *  get:
+ *    tags: [Owner]
+ *    summary: Get an owner's pet
+ *    description: Retrieves a pet associated with the owner's account. Requires 'owner' or 'admin' role.
+ *    security:
+ *      - bearerAuth: []
+ *    responses:
+ *      200:
+ *        description: Pet retrieved successfully
+ *      400:
+ *        description: Missing required fields or invalid pet ID
+ *      500:
+ *        description: Internal Server Error
+ */
+router.get('/get-pet/:id', ownerController.getPet);
+
 /**
  * @swagger
  * /owner/delete-pet:
