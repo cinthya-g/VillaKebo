@@ -269,6 +269,15 @@ h3 {
   }
 }
 
+.btn.disabled, .btn.disabled a {
+  pointer-events: none; /* Evita que el botón reciba eventos de clic */
+  color: gray; /* Cambia el color del texto a gris */
+  opacity: 0.5; /* Hace el botón semitransparente */
+}
+
+
+
+
 /* line 1, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_btn.scss */
 .boxed-btn {
   background: #dab493;
@@ -433,6 +442,8 @@ h3 {
 .boxed-btn6:focus {
   outline: none;
 }
+
+
 
 .boxed-btn-round-green {
   background: #c69164;
@@ -2740,7 +2751,7 @@ h6 {
   border-radius: 20px; 
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.102);
   margin-bottom: 30px;
-  height: 450px;
+  height: auto;
   width: auto;
 
 }

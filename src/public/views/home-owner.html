@@ -71,7 +71,7 @@
                                                     </ul>
                                                 </div>
                                             </div>                                                                                       
-                                        <li><a href="login.html">Cerrar sesión</a></li>
+                                        <li><a id="logoutBtn">Cerrar sesión</a></li>
                                     </ul>
                                 </nav>
                             </div>
@@ -85,7 +85,7 @@
         </div>
     </header>
 
-    <!-- Section with the user's info, photo -->
+    <!-- Card del Dueño -->
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -96,28 +96,12 @@
         </div>
         <div class="row">
             <div class="col-lg-3" id="card-owner-section">
-                <div class="card-owner">
-                    <img class="card-img-top" src="../img/keroppi.jpg" alt="Profile picture">
-                    <div class="card-body">
-                        <h4 class="card-title"><b>Sontia</b></h4>
-                        <h5 class="card-text-status"><i>
-                            Este es el estado del usuario.
-                        </i></h5>
-                        <br>
-                        <div class="card-body-bottom">
-                            <btn class="btn boxed-btn5" id="editProfileBtn" data-toggle="modal" data-target="#editProfileModal">
-                                <i class="fa fa-pencil-alt" aria-hidden="true"></i>
-                                <a>Editar perfil</a></btn>
-                            <br>
-                        </div>
-
-                    </div> 
-                  </div>
+                <!-- Contenido dinámico (createOwnerCardBody)-->
             </div>
 
     <!-- Modal Editar Perfil -->
     <div class="modal" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-lg" role="document" >
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 class="modal-title" id="editProfileModalLabel">Editar perfil</h3>
@@ -125,38 +109,15 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <!-- Left section for form inputs -->
-                        <div class="col-md-8">
-                            <form>
-                                <div class="form-group">
-                                    <h5 for="editedUsername">Nombre de usuario</h5>
-                                    <input type="text" class="form-control" id="editedUsername" placeholder="<username>">
-                                </div>
-                                <div class="form-group">
-                                    <h5 for="user-status">Estado</h5>
-                                    <textarea class="form-control" id="editedStatus" rows="2" maxlength="250" placeholder="<current status>" style="resize: none;"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <h5 for="user-status">E-mail</h5>
-                                    <input type="text" class="form-control" id="editedEmail" placeholder="<email>">
-                                </div>
-                            </form>
-                        </div>
-                        <!-- Right section for profile picture -->
-                        <div class="col-md-4 text-center">
-                            <img src="../img/keroppi.jpg" alt="Profile Picture" class="img-fluid change-picture" id="profilePictureOwner">
-                            <input type="file" id="imageInputOwner" accept="image/*" style="display: none;">
-                            <btn class="btn boxed-btn5 mt-4" id="editPictureBtn">
-                                <i class="fa fa-picture-o" aria-hidden="true"></i>
-                                <a>Cambiar foto</a></btn>
-                        </div>
-                    </div>
+                <div id="editProfileModalContent">
+                    <!-- Contenido dinámico (createEditProfileModal) -->
                 </div>
                 <div class="modal-footer">
+                    <div id="noChangesAlert">
+                        <!-- Alerta dinámica -->
+                    </div>
                     <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn boxed-btn-round-accept">Guardar cambios</button>
+                    <button type="button" class="btn boxed-btn-round-accept" id="saveChangesProfileBtn">Guardar cambios</button>
                 </div>
             </div>
         </div>
@@ -176,32 +137,13 @@
                         
                         
                         <div class="row" id="card-pet-section">
-                            
-                            <div class="col-md-4">
-                                <div class="card-pet">
-                                    <img class="card-img-top" src="../img/pug.png" alt="Profile picture">
-                                    <div class="card-body">
-                                        <h4 class="card-title"><b>Kebo</b></h4>
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item">Pug - 8 años</li>
-                                            <li class="list-group-item">
-                                                <btn class="btn boxed-btn6" data-toggle="modal" data-target="#petRecordModal">
-                                                    <i class="fa fa-upload" aria-hidden="true"></i>
-                                                    <a>Expediente</a></btn>
-                                            </li>
-                                            <li class="list-group-item">
-                                                <btn class="btn boxed-btn-round-green mr-3" data-target="#editPetModal" data-toggle="modal"
-                                                ><i class="fa fa-edit" aria-hidden="true"></i>
-                                                    <a></a></btn>
-                                                <btn class="btn boxed-btn-round-red ml-3" data-target="#deletePetModal" data-toggle="modal"
-                                                ><i class="fa fa-eraser" aria-hidden="true"></i>
-                                                    <a></a></btn>
-                                            </li>
-                                          </ul>
-                                    </div>
-                                </div>
-                            </div>
+                            <!-- Contenido dinámico de las mascotas del Dueño -->
 
+                        </div>  
+                    </div>
+                </div>
+            </div>
+        
                             <!-- Modal CREAR mascota -->
                             <div class="modal" id="createPetModal" tabindex="-1" role="dialog" aria-labelledby="createPetModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-lg" role="document">
@@ -219,15 +161,15 @@
                                                     <form>
                                                         <div class="form-group">
                                                             <h5 for="petName">Nombre</h5>
-                                                            <input type="text" class="form-control" id="petName" placeholder="<pet name>">
+                                                            <input type="text" class="form-control" id="petName" maxlength="40" placeholder="Escribe el nombre de tu mascota">
                                                         </div>
                                                         <div class="form-group">
                                                             <h5 for="petAge">Edad</h5>
-                                                            <input type="number" min="0" max="25" class="form-control" id="petAge" placeholder="<age>">
+                                                            <input type="number" min="0" max="25" class="form-control" id="petAge" placeholder="Indica su edad">
                                                         </div>
                                                         <div class="form-group">
                                                             <h5 for="petBreed">Raza</h5>
-                                                            <input type="text" class="form-control" id="petBreed" placeholder="<breed>">
+                                                            <input type="text" class="form-control" id="petBreed" placeholder="Indica su raza">
                                                         </div>
                                                         
                                                     </form>
@@ -236,8 +178,8 @@
                                                 <div class="col-md-4 text-center">
                                                     <img src="../img/no-pet-photo.png" alt="Pet Picture" class="img-fluid change-picture" >
                                                     <btn class="btn boxed-btn5 mt-4" id="createPetPictureBtn">
-                                                        <i class="fa fa-picture-o" aria-hidden="true"></i>
-                                                        <a>Cambiar foto</a></btn>
+                                                        <i class="fa fa-image" aria-hidden="true"></i>
+                                                        <a>Subir foto</a></btn>
                                                 </div>
                                             </div>
                                         </div>
@@ -249,8 +191,8 @@
                                 </div>
                             </div>
 
-                                <!-- Modal Editar Mascota -->
-                                <div class="modal" id="editPetModal" tabindex="-1" role="dialog" aria-labelledby="editPetModalLabel" aria-hidden="true">
+                            <!-- Modal Editar Mascota -->
+                            <div class="modal" id="editPetModal" tabindex="-1" role="dialog" aria-labelledby="editPetModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -259,73 +201,35 @@
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <!-- Left section for form inputs -->
-                                                    <div class="col-md-8">
-                                                        <form>
-                                                            <div class="form-group">
-                                                                <h5 for="editedPetName">Nombre</h5>
-                                                                <input type="text" class="form-control" id="editedPetName" placeholder="<pet name>">
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <h5 for="editedAge">Edad</h5>
-                                                                <input type="number" min="0" max="25" class="form-control" id="editedAge" placeholder="<age>">
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <h5 for="editedBreed">Raza</h5>
-                                                                <input type="text" class="form-control" id="editedBreed" placeholder="<breed>">
-                                                            </div>
-                                                            
-                                                        </form>
-                                                    </div>
-                                                    <!-- Right section for profile picture -->
-                                                    <div class="col-md-4 text-center">
-                                                        <img src="../img/pug.png" alt="Pet Picture" class="img-fluid change-picture" >
-                                                        <btn class="btn boxed-btn5 mt-4" id="editPetPictureBtn">
-                                                            <i class="fa fa-picture-o" aria-hidden="true"></i>
-                                                            <a>Cambiar foto</a></btn>
-                                                    </div>
-                                                </div>
+                                            <div id="edit-pet-body-modal">
+
                                             </div>
+
                                             <div class="modal-footer">
+                                                <div id="noPetChangesAlert">
+
+                                                </div>
                                                 <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
-                                                <button type="button" class="btn boxed-btn-round-accept">Guardar cambios</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                                <div id="saveModifiedPetBtn">
 
-                                <!-- Modal ELIMINAR Mascota -->
-                                <div class="modal" id="deletePetModal" tabindex="-1" role="dialog" aria-labelledby="deletePetModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h3 class="modal-title" id="deletePetModalLabel">¿Eliminar mascota?</h3>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <!-- Right section for profile picture -->
-                                                    <div class="col-md-12 text-center">
-                                                        <img src="../img/pug.png" alt="Pet Picture" class="img-fluid change-picture" >
-                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="modal-footer">
-                                                
-                                                <button type="button" class="btn boxed-btn-round-green" data-dismiss="modal">Cancelar</button>
-                                                <button type="button" class="btn boxed-btn-round-cancel" >Eliminar</button>
-                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                            </div>
+
+                            <!-- Modal ELIMINAR Mascota -->
+                            <div class="modal" id="deletePetModal" tabindex="-1" role="dialog" aria-labelledby="deletePetModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content" id="delete-pet-content">
+
+                                        </div>
+                                    </div>
+                            </div>
 
 
-                                <!-- Modal EXPEDIENTE (record) de la mascota-->
-                                <div class="modal" id="petRecordModal" tabindex="-1" role="dialog" aria-labelledby="petRecordModalLabel" aria-hidden="true">
+                            <!-- Modal EXPEDIENTE (record) de la mascota-->
+                            <div class="modal" id="petRecordModal" tabindex="-1" role="dialog" aria-labelledby="petRecordModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -356,22 +260,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-
-
-
-
-
-
-                        </div>  
-
-
-                    </div>
-                </div>
-            
-            </div>
-        
-            
+                            </div>        
             
             <div class="col-lg-12">
                 
@@ -597,6 +486,8 @@
         </div>
     </footer>
     <!-- footer_end  -->
+
+    
 
 
     <!-- JS here -->

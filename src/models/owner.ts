@@ -50,6 +50,7 @@ import { Roles } from "../utils/roles";
  *          description: URL to the profile picture of the Owner
  */
 
+const defaultPicture = "no-user-photo.png";
 
 const ownerSchema = new Schema({
     username: { type: String, required: true },
@@ -60,8 +61,7 @@ const ownerSchema = new Schema({
     status: { type: String, default: "¡Acabo de unirme a Villa Kebo!" },
     petsIDs: [{ type: Schema.Types.ObjectId, ref: "pets" }],
     reservationsIDs: [{ type: Schema.Types.ObjectId, ref: "reservations" }],
-    profilePicture: { type: String },
-    token: { type: String },
+    profilePicture: { type: String, default: defaultPicture },
     //TODO DEFINE WHAT IS REQUIRED
 });
 

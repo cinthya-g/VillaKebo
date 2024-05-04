@@ -7,14 +7,17 @@ import roleMiddleware from '../middleware/role-middleware';
 
 const router = Router();
 
+/*
 router.get('/', authMiddleware, (req: Request, res: Response) => {
     console.log("AFTER MIDDLEWARE:", req.body.user);
     res.send(`<h1>Bienvenido, ${req.body.user ? (req.body.user as User).username : 'Invitado'} !</h1>`);
 });
 
+
 router.get('/login', (req: Request, res: Response) => {
     res.send('<a href="/google-passport/google-auth">Iniciar sesion con Google</a>');
 })
+*/
 
 router.get('/google-auth', passport.authenticate('google', { 
     scope: ['profile', 'email'] 
