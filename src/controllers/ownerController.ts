@@ -699,25 +699,17 @@ class OwnerController{
      */
     async getPetPicture(req: Request, res: Response) {
         try {
-            const ownerID = req.body.user.id;
-            const { petID } = req.body;
+            const petID = req.params.id;
 
-            if (!ownerID || !petID) {
+            if (!petID) {
                 res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
-                return;
-            }
-
-            // Check that the pet belongs to the owner
-            const owner = await Owner.findOne({ _id: ownerID });
-            if (!owner.petsIDs.includes(petID)) {
-                res.status(ResponseCodes.UNAUTHORIZED).send("This pet does not belong to the owner");
                 return;
             }
 
             // Get the pet's profile picture
             const pet = await Pet.findOne({ _id: petID }, 'profilePicture');
             const pictureUrl = getS3Url(process.env.PHOTOS_BUCKET_NAME, pet.profilePicture);
-            res.status(ResponseCodes.SUCCESS).send(pictureUrl);
+            res.status(ResponseCodes.SUCCESS).json({url : pictureUrl});
 
         } catch(error) {
             console.log('ERROR:', error);
@@ -854,25 +846,17 @@ class OwnerController{
      */
     async getPetRecord(req: Request, res: Response) {
         try {
-            const ownerID = req.body.user.id;
-            const { petID } = req.body;
+            const petID = req.params.id;
 
-            if (!ownerID || !petID) {
+            if (!petID) {
                 res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
-                return;
-            }
-
-            // Check that the pet belongs to the owner
-            const owner = await Owner.findOne({ _id: ownerID });
-            if (!owner.petsIDs.includes(petID)) {
-                res.status(ResponseCodes.UNAUTHORIZED).send("This pet does not belong to the owner");
                 return;
             }
 
             // Get the pet's record
             const pet = await Pet.findOne({ _id: petID }, 'record');
             const recordUrl = getS3Url(process.env.FILES_BUCKET_NAME, pet.record);
-            res.status(ResponseCodes.SUCCESS).send(recordUrl);
+            res.status(ResponseCodes.SUCCESS).json({url: recordUrl});
 
         } catch(error) {
             console.log('ERROR:', error);

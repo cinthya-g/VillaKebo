@@ -259,6 +259,61 @@ async function createPet(data) {
     });
 };
 
+// Obtener el expediente de una mascota
+async function getPetRecord(petID) {
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch(`/owner/get-record/${petID}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    }
+    catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+};
+
+// Subir un nuevo expediente para la mascota
+async function uploadPetRecord(petID, file) {
+    const token = localStorage.getItem('token');
+
+    const ownerData = await getOwnerData();
+    const ownerID = ownerData._id;
+
+    const formData = new FormData();
+    formData.append('ownerID', ownerID);
+    formData.append('petID', petID);
+    formData.append('pdf', file);
+
+    console.log("formdata: ", formData);
+
+    fetch('/owner/upload-record', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        body: formData
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    }).then(data => {
+        $('#petRecordModal').modal('hide');
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+
+}
+
 
 
 
@@ -355,6 +410,7 @@ async function createPetsCards() {
         `;
     } else {
         petsData.forEach(pet => {
+           
             cards += `
             <div class="col-md-4">
                 <div class="card-pet">
@@ -364,8 +420,9 @@ async function createPetsCards() {
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">${pet.breed} de ${pet.age} años</li>
                             <li class="list-group-item">
-                                <btn class="btn boxed-btn6" data-toggle="modal" data-target="#petRecordModal">
-                                    <i class="fa fa-upload" aria-hidden="true"></i>
+                                <btn class="btn boxed-btn6" onclick="createRecordModal('${pet._id}')"
+                                     data-toggle="modal" data-target="#petRecordModal">
+                                <i class="fa fa-upload" aria-hidden="true"></i>
                                     <a>Expediente</a></btn>
                             </li>
                             <li class="list-group-item">
@@ -465,6 +522,70 @@ async function createDeletePetModal(petID) {
     document.getElementById('delete-pet-content').innerHTML = modalContent;
 };
 
+// Función para crear el contenido del MODAL DE EXPEDIENTE DE LA MASCOTA
+async function createRecordModal(petID) {
+    const petData = await getPetData(petID);
+    if (!petData) {
+        console.error('[Expediente] No se pudo obtener la información de la mascota: ', petID);
+        return;
+    }
+    const record = await getPetRecord(petID);
+    const recordURL = record.url;
+
+    let modalContent = '';
+    // Si el string de url termina en null, poner un div con un mensaje de que no hay expediente
+    if (recordURL.endsWith('null')) {
+        modalContent = `
+        <div class="row">
+            <div class="col-md-8">
+                <h5 id="noRecordMessage">Parece que no has subido ninguno aún.<h5>
+                <iframe id="recordFrame" style="width: 100%; height: 600px;" frameborder="0"></iframe>
+            </div>
+            <!-- Right section for upload new PDF -->
+            <div class="col-md-4 text-center">
+                <input type="file" id="newPdfInput" accept="application/pdf" style="display: none;">
+                <button class="btn boxed-btn5 mt-4" id="updateRecordBtn">
+                    <i class="fa fa-upload" aria-hidden="true"></i>
+                    Actualizar
+                </button>
+                <button class="btn boxed-btn-round-accept mt-4" id="saveRecordBtn" onclick="savePetRecord('${petData._id}')">
+                    <i class="fa fa-save" aria-hidden="true"></i>
+                    Guardar
+                </button>
+                <div id="noRecordAlert" class="mt-4">
+                <div>
+            </div>
+            
+        </div>
+        `;
+    } else {
+        modalContent = `
+        <div class="row">
+            <div class="col-md-8">
+                <iframe id="recordFrame" src="${recordURL}" style="width: 100%; height: 600px;" frameborder="0"></iframe>
+            </div>
+            <!-- Right section for upload new PDF -->
+            <div class="col-md-4 text-center">
+                <input type="file" id="newPdfInput" accept="application/pdf" style="display: none;">
+                <button class="btn boxed-btn5 mt-4" id="updateRecordBtn">
+                    <i class="fa fa-upload" aria-hidden="true"></i>
+                    Actualizar
+                </button>
+                <button class="btn boxed-btn-round-accept mt-4" id="saveRecordBtn" onclick="savePetRecord('${petData._id}')">
+                    <i class="fa fa-save" aria-hidden="true"></i>
+                    Guardar
+                </button>
+                <div id="noRecordAlert" class="mt-4">
+                <div>
+            </div>
+            
+        </div>
+        `;
+    }
+    
+    document.getElementById('record-modal-content').innerHTML = modalContent;
+}; 
+
 
 
 
@@ -560,7 +681,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     reader.readAsDataURL(this.files[0]);
                 }
             });
-            
         }
     });
 });
@@ -590,6 +710,30 @@ document.getElementById('createNewPetBtn').addEventListener('click', async funct
             document.getElementById('cantCreatePetAlert').innerHTML = '';
         }, 2000);
     }
+});
+
+// EVENT DELEGATION: Mostrar el expediente de la mascota en la previsualización
+document.addEventListener('DOMContentLoaded', function () {
+    const container = document.getElementById('record-modal-content');
+    container.addEventListener('click', function (event) {
+        if (event.target.id === 'updateRecordBtn' || event.target.closest('#updateRecordBtn')) {
+            document.getElementById('newPdfInput').click();
+            // Cambiarla en la vista previa
+            document.getElementById('newPdfInput').addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.getElementById('recordFrame').src = e.target.result;
+                        if (document.getElementById('noRecordMessage')) {
+                            document.getElementById('noRecordMessage').remove();
+                        }
+                    };
+                    reader.readAsDataURL(this.files[0]); 
+                }
+            });
+            
+        }
+    });
 });
 
 
@@ -634,10 +778,29 @@ document.getElementById('addPetBtn').addEventListener('click', function() {
     document.getElementById('petBreed').value = '';
 });
 
+// Guardar nuevo expediente
+async function savePetRecord(petID) {
+    const newRecord = document.getElementById('newPdfInput').files[0];
+    if (newRecord) {
+        console.log('petid: ', petID);
+        console.log('record: ', newRecord);
+        await uploadPetRecord(petID, newRecord);
+    } else {
+        document.getElementById('noRecordAlert').innerHTML = `
+        <div class="alert alert-secondary" role="alert">
+            No se ha seleccionado un archivo
+        </div>
+        `;
+        setTimeout(() => {
+            document.getElementById('noRecordAlert').innerHTML = '';
+        }, 2000);
+    }
+}
 
 
 
 // Expediente
+/*
 document.getElementById('newPdfInput').addEventListener('change', function() {
     if (this.files && this.files[0]) {
         var reader = new FileReader();
@@ -647,7 +810,7 @@ document.getElementById('newPdfInput').addEventListener('change', function() {
         reader.readAsDataURL(this.files[0]); // Lee el archivo seleccionado como URL
     }
 });
-
+*/
 
 // Actividades test
 document.addEventListener('DOMContentLoaded', function() {

@@ -310,7 +310,7 @@ router.post('/upload-pet-photo', uploadPhoto.single('photo'), ownerController.sa
  *         description: Internal Server Error
  */
 
-router.get('/get-pet-picture', ownerController.getPetPicture);
+router.get('/get-pet-picture/:id', ownerController.getPetPicture);
 /**
  * @swagger
  * /owner/upload-record:
@@ -361,7 +361,7 @@ router.post('/upload-record', uploadPDF.single('pdf'), ownerController.uploadPet
  *         description: Internal Server Error
  */
 
-router.get('/get-record', ownerController.getPetRecord);
+router.get('/get-record/:id', ownerController.getPetRecord);
 
 
 // Owner-Pet-Reservation  actions

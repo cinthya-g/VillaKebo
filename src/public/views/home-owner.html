@@ -225,7 +225,7 @@
                             <div class="modal" id="deletePetModal" tabindex="-1" role="dialog" aria-labelledby="deletePetModalLabel" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content" id="delete-pet-content">
-
+                                            <!-- Contenido dinámico (createDeletePetModal)-->
                                         </div>
                                     </div>
                             </div>
@@ -234,29 +234,15 @@
                             <!-- Modal EXPEDIENTE (record) de la mascota-->
                             <div class="modal" id="petRecordModal" tabindex="-1" role="dialog" aria-labelledby="petRecordModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
-                                        <div class="modal-content">
+                                        <div class="modal-content" >
                                             <div class="modal-header">
                                                 <h3 class="modal-title" id="petRecordModalLabel">Expediente de la mascota</h3>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <!-- Left section for PDF viewer -->
-                                                    <div class="col-md-8">
-                                                        <iframe src="../test-file/test-record.pdf" style="width: 100%; height: 700px;" frameborder="0"></iframe>
-                                                    </div>
-                                                    <!-- Right section for upload new PDF -->
-                                                    <div class="col-md-4 text-center">
-                                                        <input type="file" id="newPdfInput" accept="application/pdf" style="display: none;">
-                                                        <button class="btn boxed-btn5 mt-4" onclick="document.getElementById('newPdfInput').click();">
-                                                            <i class="fa fa-upload" aria-hidden="true"></i>
-                                                            Actualizar
-                                                        </button>
-                                                    </div>
-                                                    
-                                                </div>
+                                            <div class="modal-body" id="record-modal-content">
+
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>

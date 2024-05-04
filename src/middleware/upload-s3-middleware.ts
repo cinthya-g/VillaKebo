@@ -3,8 +3,6 @@ import multer, { FileFilterCallback } from 'multer';
 import multerS3 from 'multer-s3';
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 
-// TODO: fix the way Multer receives the Request (it erases the body fields)
-
 // Create new connection to S3
 const s3Conn = new S3Client({
     region: process.env.AWS_REGION,
@@ -222,6 +220,8 @@ const s3FileStorage = multerS3({
         cb(null, { ... file }) // metadata
     },
     acl: process.env.ACL_ACCESS, 
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    contentDisposition: 'inline',
     key: (req, file, cb) => {
         const dateTime = new Date().toISOString().replace(/:/g, '-');
         const newFilename = `${dateTime}.${file.mimetype.split('/')[1]}`;
