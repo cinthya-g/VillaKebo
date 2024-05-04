@@ -61,6 +61,7 @@ router.put('/update-caretaker', caretakerController.updateCaretaker);
  */
 
 router.get('/get-caretaker', caretakerController.getCaretaker);
+router.get('/get-caretaker-pets', caretakerController.getAssignedPets);
 
 /**
  * @swagger
@@ -105,6 +106,7 @@ router.get('/get-picture', caretakerController.getPicture);
 // Caretaker-Reservation actions
 
 router.get('/get-assigned-reservations', caretakerController.getAssignedReservations);
+router.get('/get-assigned-activities', caretakerController.getAssignedActivities);
 
 // Caretaker-Reservation-Activity actions
 

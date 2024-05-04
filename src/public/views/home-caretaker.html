@@ -86,53 +86,31 @@
             <div class="col-lg-3" id="card-caretaker-section">
                 <!-- Contenido dinámico (createCaretakerCardBody)-->
             </div>
+            
 
-    <!-- Modal Editar Perfil -->
-    <div class="modal" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="editProfileModalLabel">Editar perfil</h3>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+   <!-- Modal Editar Perfil -->
+   <div class="modal" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="editProfileModalLabel">Editar perfil</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="editProfileModalContent">
+                <!-- Contenido dinámico (createEditProfileModal) -->
+            </div>
+            <div class="modal-footer">
+                <div id="noChangesAlert">
+                    <!-- Alerta dinámica -->
                 </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <!-- Left section for form inputs -->
-                        <div class="col-md-8">
-                            <form>
-                                <div class="form-group">
-                                    <h5 for="editedUsername">Nombre de usuario</h5>
-                                    <input type="text" class="form-control" id="editedUsername" placeholder="<username>">
-                                </div>
-                                <div class="form-group">
-                                    <h5 for="user-status">Estado</h5>
-                                    <textarea class="form-control" id="editedStatus" rows="2" maxlength="250" placeholder="<current status>" style="resize: none;"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <h5 for="user-status">E-mail</h5>
-                                    <input type="text" class="form-control" id="editedEmail" placeholder="<email>">
-                                </div>
-                            </form>
-                        </div>
-                        <!-- Right section for profile picture -->
-                        <div class="col-md-4 text-center">
-                            <img src="../img/caretaker.jpg" alt="Profile Picture" class="img-fluid change-picture" id="profilePictureOwner">
-                            <input type="file" id="imageInputOwner" accept="image/*" style="display: none;">
-                            <btn class="btn boxed-btn5 mt-4" id="editPictureBtn">
-                                <i class="fa fa-picture-o" aria-hidden="true"></i>
-                                <a>Cambiar foto</a></btn>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn boxed-btn-round-accept">Guardar cambios</button>
-                </div>
+                <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn boxed-btn-round-accept" id="saveChangesProfileBtn">Guardar cambios</button>
             </div>
         </div>
     </div>
+</div>
 
             
             <div class="col-lg-9">
@@ -150,65 +128,6 @@
                         
                         <div class="row" id="card-pet-section">
                             
-                            <div class="col-md-3">
-                                <div class="card-pet-caretaker">
-                                    <img class="card-img-top" src="../img/pug.png" alt="Profile picture">
-                                    <div class="card-body">
-                                        <h4 class="card-title"><b>Kebo</b></h4>
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item">Bull Mastiff - 8 años</li>
-                                            <li class="list-group-item">
-                                                <btn class="btn boxed-btn6" data-toggle="modal" data-target="#petInfoModal">
-                                                    <i class="fa fa-plus mr-1" aria-hidden="true"></i>
-                                                    <a>Info</a></btn>
-                                            </li>
-                                          </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-
-
-
-                                <!-- Modal DETALLES (info) Mascota -->
-                                <div class="modal" id="petInfoModal" tabindex="-1" role="dialog" aria-labelledby="petInfoModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h3 class="modal-title" id="petInfoModalLabel">Detalles de la mascota</h3>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <!-- Left section for PDF viewer -->
-                                                    <div class="col-md-5 text-center vertical-center">
-                                                        <img class="caretaker-picture mb-2" src="../img/pug.png">
-                                                        <h5><b>Nombre: </b>[nombre]</h5>
-                                                        <h5><b>Raza: </b>[raza]</h5>
-                                                        <h5><b>Edad: </b>[edad]</h5>
-                                                    </div>
-                                                    <!-- Right section for upload new PDF -->
-                                                    <div class="col-md-7 text-center">
-                                                        <h4>Previsualización de expediente</h4>
-                                                        <div class="col-md-12">
-                                                            <iframe src="../test-file/test-record.pdf" style="width: 100%; height: 450px;" frameborder="0"></iframe>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-
-
 
                         </div>  
 
@@ -237,56 +156,7 @@
                             
                             <div class="col-md-12">
                                 <div class="card-reservation">
-                                    <div class="card-body">
-                                        <h3 class="card-title ml-2"><b>Kebo</b></h3>
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item"><h5>23/04/24 - 05/05/24</h5></li>
-                                            <li class="list-group-item">
-                                                <btn class="btn boxed-btn5" id="ownerProfileBtn" data-toggle="modal" data-target="#ownerProfilePreview">
-                                                    <i class="fa fa-address-card mr-2"  aria-hidden="true"></i>
-                                                    Perfil del dueño
-                                                </btn>
-                                            </li>
-                                            <li class="list-group-item">
-                                                <h4><b>Actividades a completar:</b></h4>
-
-                                                
-                                                <div class="list-group-item-activity" id="individualActivity">
-                                                    <div class="row accomplishable col-12">
-                                                        <div class="col-md-10">
-                                                            <h5><b>[#. Title]</b> <i>[frequency]</i></h5>
-                                                            <p>[Description: activity description]</p>
-                                                            <p style="font-size: small;">Ya se ha completado [count] veces</p>
-                                                        </div>
-                                                        <div class="col-md-2 accomplish-section ">
-                                                            <btn class="btn boxed-btn-round-green accomplish-btn" >
-                                                            <i class="fa fa-check mr-1" aria-hidden="true"></i>
-                                                            Completar 
-                                                        </btn>
-                                                    </div>
-                                                </div>
-
-                                                <div class="list-group-item-activity" id="individualActivity">
-                                                    <div class="row accomplishable col-12">
-                                                        <div class="col-md-10">
-                                                            <h5><b>[#. Title]</b> <i>[frequency]</i></h5>
-                                                            <p>[Description: activity description]</p>
-                                                            <p style="font-size: small;">Ya se ha completado [count] veces</p>
-                                                        </div>
-                                                        <div class="col-md-2 accomplish-section ">
-                                                            <btn class="btn boxed-btn-round-green accomplish-btn" >
-                                                            <i class="fa fa-check mr-1" aria-hidden="true"></i>
-                                                            Completar 
-                                                        </btn>
-                                                    </div>
-                                                </div>
-
-
-                                            
-                                            </li>
-                                          </ul>
-                                    </div>
-                                </div>
+                                    <!-- Dynamic card -->
                             </div>
 
 
