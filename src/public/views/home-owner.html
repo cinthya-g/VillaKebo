@@ -175,17 +175,20 @@
                                                     </form>
                                                 </div>
                                                 <!-- Right section for profile picture -->
-                                                <div class="col-md-4 text-center">
-                                                    <img src="../img/no-pet-photo.png" alt="Pet Picture" class="img-fluid change-picture" >
-                                                    <btn class="btn boxed-btn5 mt-4" id="createPetPictureBtn">
-                                                        <i class="fa fa-image" aria-hidden="true"></i>
-                                                        <a>Subir foto</a></btn>
+                                                <div class="col-md-4 text-center" id="newPetPicturePreview">
+                                                    <img src="https://vk-profile-photos.s3.amazonaws.com/no-pet-photo.png" alt="Pet Picture" class="img-fluid change-picture mb-2" id="newProfilePicturePet">
+                                                    <h6>
+                                                        Tu mascota tendrá esta foto por default, pero podrás cambiarla cuantas veces quieras presionando el ícono de editar de su tarjeta.
+                                                    </h6>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
+                                            <div id="cantCreatePetAlert">
+                                                <!-- Alerta dinámica sobre datos vacíos -->
+                                            </div>
                                             <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
-                                            <button type="button" class="btn boxed-btn-round-accept">Registrar</button>
+                                            <button type="button" class="btn boxed-btn-round-accept" id="createNewPetBtn">Registrar</button>
                                         </div>
                                     </div>
                                 </div>

@@ -217,7 +217,6 @@ async function uploadPetPicture(petID, file) {
 
 // Eliminar mascota por ID a través del modal
 async function deletePet(petID) {
-    console.log('Pet ID:', petID);
     const token = localStorage.getItem('token');
     fetch(`/owner/delete-pet/${petID}`, {
         method: 'DELETE',
@@ -231,6 +230,29 @@ async function deletePet(petID) {
         return response.json();
     }).then(data => {
         $('#deletePetModal').modal('hide');
+        createPetsCards();
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+};
+
+// Crear mascota
+async function createPet(data) {
+    const token = localStorage.getItem('token');
+    fetch('/owner/create-pet', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    }).then(data => {
+        $('#createPetModal').modal('hide');
         createPetsCards();
     }).catch(error => {
         console.error('Error:', error);
@@ -411,7 +433,6 @@ async function createEditPetModal(petID) {
     document.getElementById('saveModifiedPetBtn').innerHTML = saveBtn;
 }
 
-
 // Función para crear el contenido del MODAL DE ELIMINAR MASCOTA
 async function createDeletePetModal(petID) {
     const petData = await getPetData(petID);
@@ -544,6 +565,33 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+// Botón de añadir mascota
+document.getElementById('createNewPetBtn').addEventListener('click', async function() {
+    const newPetName = document.getElementById('petName').value;
+    const newPetAge = document.getElementById('petAge').value;
+    const newPetBreed = document.getElementById('petBreed').value;
+
+    let updateData = {};
+    if (newPetName.trim() !== '') updateData.name = newPetName;
+    if (newPetAge.trim() !== '') updateData.age = newPetAge;
+    if (newPetBreed.trim() !== '') updateData.breed = newPetBreed;
+
+    if (Object.keys(updateData).length > 2) {
+        await createPet(updateData);
+
+    }
+    else {
+        document.getElementById('cantCreatePetAlert').innerHTML = `
+        <div class="alert alert-secondary" role="alert">
+            Completa todos los campos
+        </div>
+        `;
+        setTimeout(() => {
+            document.getElementById('cantCreatePetAlert').innerHTML = '';
+        }, 2000);
+    }
+});
+
 
 
 // --- Eventos DOM onclick ---
@@ -578,6 +626,13 @@ async function savePet(petID) {
     }
 };
 
+
+// Limpiar campos del modal de AÑADIR MASCOTA al presionar el botón de añadir
+document.getElementById('addPetBtn').addEventListener('click', function() {
+    document.getElementById('petName').value = '';
+    document.getElementById('petAge').value = '';
+    document.getElementById('petBreed').value = '';
+});
 
 
 
