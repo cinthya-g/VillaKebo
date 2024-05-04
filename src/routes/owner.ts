@@ -23,6 +23,25 @@ router.get('', (req, res) => {
 // Owner-Owner actions
 /**
  * @swagger
+ * /owner/get-owner:
+ *   get:
+ *     tags: [Owner]
+ *     summary: Get owner's information
+ *     description: Retrieves the information of the owner. Requires authentication and appropriate authorization.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Owner's information retrieved successfully
+ *       401:
+ *         description: Unauthorized access
+ *       500:
+ *         description: Internal Server Error
+ */
+router.get('/get-owner', ownerController.getOwner);
+
+/**
+ * @swagger
  * /owner/update-owner:
  *   put:
  *     tags: [Owner]

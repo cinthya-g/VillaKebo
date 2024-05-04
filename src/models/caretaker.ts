@@ -41,6 +41,7 @@ import { Roles } from "../utils/roles";
  *          description: URL to the profile picture of the Caretaker
  */
 
+const defaultPicture = "no-user-photo.png";
 
 const caretakerSchema = new Schema({
     username: { type: String, required: true },
@@ -49,7 +50,7 @@ const caretakerSchema = new Schema({
     role: { type: String, default: Roles.CARETAKER },
     status: { type: String, default: "I <3 pets!"},
     assignedReservationsIDs: [{ type: Schema.Types.ObjectId, ref: "reservations" }],
-    profilePicture: { type: String ,default: null},
+    profilePicture: { type: String , default: defaultPicture},
 });
 
 export default model("caretakers", caretakerSchema);

@@ -41,6 +41,7 @@ import { Schema, model } from "mongoose";
  *          description: List of file URLs related to the pet (Medical records, etc.)
  */
 
+const defaultPicture = "no-pet-photo.png";
 
 const petSchema = new Schema({
     ownerID: { type: String, required: true},
@@ -48,9 +49,8 @@ const petSchema = new Schema({
     age: { type: Number, required: true },
     breed: { type: String, required: true },
     size: { type: String, default: 'M' },
-    weight: { type: Number },
-    profilePicture: { type: String },
-    record: { type: String }, 
+    profilePicture: { type: String, default: defaultPicture},
+    record: { type: String, default: null}, 
     currentReservation: { type: String, default: null }
 });
 

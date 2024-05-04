@@ -85,7 +85,7 @@
         </div>
     </header>
 
-    <!-- Section with the user's info, photo -->
+    <!-- Card del Dueño -->
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -96,28 +96,12 @@
         </div>
         <div class="row">
             <div class="col-lg-3" id="card-owner-section">
-                <div class="card-owner">
-                    <img class="card-img-top" src="../img/keroppi.jpg" alt="Profile picture">
-                    <div class="card-body">
-                        <h4 class="card-title"><b>Sontia</b></h4>
-                        <h5 class="card-text-status"><i>
-                            Este es el estado del usuario.
-                        </i></h5>
-                        <br>
-                        <div class="card-body-bottom">
-                            <btn class="btn boxed-btn5" id="editProfileBtn" data-toggle="modal" data-target="#editProfileModal">
-                                <i class="fa fa-pencil-alt" aria-hidden="true"></i>
-                                <a>Editar perfil</a></btn>
-                            <br>
-                        </div>
-
-                    </div> 
-                  </div>
+                <!-- Contenido dinámico (createOwnerCardBody)-->
             </div>
 
     <!-- Modal Editar Perfil -->
     <div class="modal" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-lg" role="document" >
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 class="modal-title" id="editProfileModalLabel">Editar perfil</h3>
@@ -125,38 +109,15 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <!-- Left section for form inputs -->
-                        <div class="col-md-8">
-                            <form>
-                                <div class="form-group">
-                                    <h5 for="editedUsername">Nombre de usuario</h5>
-                                    <input type="text" class="form-control" id="editedUsername" placeholder="<username>">
-                                </div>
-                                <div class="form-group">
-                                    <h5 for="user-status">Estado</h5>
-                                    <textarea class="form-control" id="editedStatus" rows="2" maxlength="250" placeholder="<current status>" style="resize: none;"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <h5 for="user-status">E-mail</h5>
-                                    <input type="text" class="form-control" id="editedEmail" placeholder="<email>">
-                                </div>
-                            </form>
-                        </div>
-                        <!-- Right section for profile picture -->
-                        <div class="col-md-4 text-center">
-                            <img src="../img/keroppi.jpg" alt="Profile Picture" class="img-fluid change-picture" id="profilePictureOwner">
-                            <input type="file" id="imageInputOwner" accept="image/*" style="display: none;">
-                            <btn class="btn boxed-btn5 mt-4" id="editPictureBtn">
-                                <i class="fa fa-picture-o" aria-hidden="true"></i>
-                                <a>Cambiar foto</a></btn>
-                        </div>
-                    </div>
+                <div id="editProfileModalContent">
+                    <!-- Contenido dinámico (createEditProfileModal) -->
                 </div>
                 <div class="modal-footer">
+                    <div id="noChangesAlert">
+                        <!-- Alerta dinámica -->
+                    </div>
                     <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn boxed-btn-round-accept">Guardar cambios</button>
+                    <button type="button" class="btn boxed-btn-round-accept" id="saveChangesProfileBtn">Guardar cambios</button>
                 </div>
             </div>
         </div>

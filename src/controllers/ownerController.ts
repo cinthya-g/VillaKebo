@@ -14,6 +14,17 @@ import { deleteFileFromS3, getS3Url } from "../middleware/upload-s3-middleware";
 
 
 class OwnerController{
+
+     async getOwner(req: Request, res: Response) {
+        try {
+            let ownerID = req.body.user.id;
+            const owner = await Owner.findOne({ _id: ownerID });
+            res.status(ResponseCodes.SUCCESS).send(owner);
+        } catch (error) {
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+     };
+
     /**
      * @swagger
      * /auth/owner-login:

@@ -31,6 +31,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         // Guardar el token en localStorage
         localStorage.setItem('token', data.token);
         
+        
         if (userType === 'owner') {
             window.location.href = '/home-owner.html';
         } else {
