@@ -1055,6 +1055,37 @@ class OwnerController{
         }
     }
 
+    //temp function to override the random caretaker
+    async changeCaretaker(req: Request, res: Response) {
+        try {
+            let { reservationID, caretakerID } = req.body;
+            
+            if (!reservationID || !caretakerID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            const reservation = await Reservation.findOne({ _id: reservationID });
+            if (!reservation) {
+                res.status(ResponseCodes.NOT_FOUND).send("No reservation found with that ID");
+                return;
+            }
+
+            // get the Caretaker object at that random index
+            const caretaker = await Caretaker.findOne({ _id: caretakerID });
+            // add the petID to the Caretaker's caringPetsIDs array
+            await Caretaker.findOneAndUpdate({ _id: caretaker._id }, { $push: { assignedReservationsIDs: reservationID } });
+
+            res.status(ResponseCodes.SUCCESS).send({
+                reservation,
+                caretaker: caretaker._id
+            });
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error: ");
+        }
+    }
+
     /**
      * @swagger
      * /owner/cancel-reservation:

@@ -477,6 +477,10 @@ router.put('/confirm-reservation', ownerController.confirmReservation);
  *         description: Internal Server Error
  */
 
+
+//temporary route
+router.put('/changecaretaker', ownerController.changeCaretaker)
+
 router.delete('/cancel-reservation/:reservationID', ownerController.cancelReservation);
 /**
  * @swagger

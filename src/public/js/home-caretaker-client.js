@@ -504,6 +504,13 @@ document.addEventListener('DOMContentLoaded', function () {
         createEditProfileModal();
     });
 });
+// Abrir modal de petInfoModal
+document.addEventListener('DOMContentLoaded', function () {
+    //El event listener esta escuchando a lo que pasa con el tag #petInfoModal
+    $('#petInfoModal').on('show.bs.modal', function () {
+        createInfoPetModal();
+    });
+});
 
 // EVENT DELEGATION: Subir nueva imagen de perfil
 document.addEventListener('DOMContentLoaded', function () {
