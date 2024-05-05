@@ -400,6 +400,85 @@ async function cancelReservation(reservationID) {
     });
 };
 
+// Crear una reservación nueva
+async function createReservation(data) {
+    const token = localStorage.getItem('token');
+    return fetch('/owner/create-reservation', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    }).then(data => {
+        return data;
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+};
+
+// Crear actividades individuales para una reservación a partir de un objeto de objetos
+async function uploadActivities(reservationID, activitiesObj) {
+    const token = localStorage.getItem('token');
+    const activitiesArray = Object.values(activitiesObj);
+
+    let promises = activitiesArray.map(activity => {
+        return fetch('/owner/create-activity', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                reservationID: reservationID,
+                title: activity.title,
+                description: activity.description,
+                frequency: activity.frequency
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            return data; // Return para seguir la cadena de promesas correctamente
+        });
+    });
+    // Esperar que todas las promesas se resuelvan antes de continuar
+    await Promise.all(promises);
+}
+
+
+// Función para confirmar la reservación y añadir un caretaker aleatorio
+async function confirmReservation(reservationID) {
+    const token = localStorage.getItem('token');
+    fetch('/owner/confirm-reservation', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ reservationID: reservationID })
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    }).then(data => {
+        $('#addActivitiesModal').modal('hide');
+        createReservationCards();
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+}
+
 
 
 // --- Funciones de DOM ---
@@ -788,6 +867,83 @@ async function createDeleteReservationModal(startDate, endDate, reservationID) {
 
 };
 
+// Función para crear el modal de crear reservación
+async function createNewReservationModal() {
+    const petsData = await getOwnerPets();
+    if (!petsData) {
+        console.error('No se pudo obtener la información de las mascotas');
+        return;
+    }
+    let petOptions = '';
+    // Sólo guardar los Pets cuya currentReservation sea null
+    petsData.forEach(pet => {
+        if (!pet.currentReservation) {
+            petOptions += `<option value="${pet._id}">${pet.name}</option>`;
+        }
+    });
+
+    const modalContent = `
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form>
+                    <div class="form-group">
+                        <h5 for="ownerPetOptions">Selecciona a tu mascota:</h5>
+                        <select class="form-select" aria-label="petOptions" id="ownerPetOptions">
+                            ${petOptions}
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <h5 for="newReservationStartDate">Fecha de inicio:</h5>
+                            <input type="date" class="form-control" id="newReservationStartDate" placeholder="Inicio">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <h5 for="newReservationEndDate">Fecha de fin:</h5>
+                            <input type="date" class="form-control" id="newReservationEndDate" placeholder="Fin">
+                        </div>
+                    </div>
+                    <h5>Al continuar, crearás la reservación y procederás a añadir las actividades de tu mascota.</h5>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div id="noReservationAlert"></div>
+        <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn boxed-btn-round-accept" onclick="checkReservationCreation()" 
+        >Continuar</button>
+    </div>
+    `;
+    document.getElementById('new-reservation-content').innerHTML = modalContent;
+};
+
+// Función para crear el modal de añadir actividades
+async function createNewActivitiesModal(reservationID) {
+    const modalContent = `
+    <div class="modal-body">
+        <form id="activitiesForm">
+            <!-- Área dinámica para actividades -->
+            <div id="activityList">
+                <!-- Aquí se añadirán los campos de actividad dinámicamente -->
+            </div>
+            <button type="button" class="btn boxed-btn5" onclick="removeActivity()">Eliminar última</button>
+            <button type="button" class="btn boxed-btn6" onclick="addActivity()">Agregar otra</button>
+            <br><br>
+            <h5>Si cancelas, tu reservación no se confirmará y tendrás que crear otra desde cero pues no se guardará ni se asignará un cuidador para tu mascota.</h5>
+        </form>
+    </div>
+    <div class="modal-footer">
+    <div id="noActivitiesAlert"></div>
+        <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn boxed-btn-round-accept" onclick="submitActivities('${reservationID}')">Confirmar</button>
+    </div>
+    `;
+    document.getElementById('news-activites-content').innerHTML = modalContent;
+    // Agregar un campo de actividad por defecto
+    addActivity();
+};
+
 
 
 
@@ -868,7 +1024,7 @@ document.getElementById('saveChangesProfileBtn').addEventListener('click', async
     }
 });
 
-
+// Actualizar los datos del dueño en el DOM
 function updateCardOwnerData(data) {
     // Actualiza los elementos del DOM (texto) con los nuevos datos
     document.getElementById('displayUsername').innerHTML = `<b>${data.username}</b>`; 
@@ -948,6 +1104,22 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+// Función que añade el máximo y mínimo de fechas seleccionables cuando se abre el modal createReservation
+document.getElementById('addReservationBtn').addEventListener('click', async function() {
+    // crear modal
+    await createNewReservationModal();
+    var today = new Date();
+    var nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+
+    var startDateInput = document.getElementById('newReservationStartDate');
+    var endDateInput = document.getElementById('newReservationEndDate');
+
+    startDateInput.min = today.toISOString().split('T')[0];
+    startDateInput.max = nextYear.toISOString().split('T')[0];
+    endDateInput.min = today.toISOString().split('T')[0];
+    endDateInput.max = nextYear.toISOString().split('T')[0];
+});
+
 
 
 // --- Eventos DOM onclick ---
@@ -1014,16 +1186,39 @@ async function deleteReservation(reservationID) {
     await cancelReservation(reservationID);
 };
 
+// Enviar los datos para ver si se puede crear una nueva reservación y abrir el modal de actividades
+async function checkReservationCreation() {
+    // Obtener datos de cada campo
+    const petID = document.getElementById('ownerPetOptions').value;
+    const startDate = document.getElementById('newReservationStartDate').value;
+    const endDate = document.getElementById('newReservationEndDate').value;
+    // Verificar que los campos no estén vacíos
+    if (petID && startDate && endDate) {
+        // Crear la reservación
+        const newReservation = await createReservation({ petID, startDate, endDate });
+        // Abrir el modal de actividades y ocultar el actual
+        $('#createReservation').modal('hide');
+        $('#addActivitiesModal').modal('show');
+        // Cargar su contenido
+        createNewActivitiesModal(newReservation._id);
+    } else {
+        document.getElementById('noReservationAlert').innerHTML = `
+        <div class="alert alert-secondary" role="alert">
+            Completa todos los campos
+        </div>
+        `;
+        setTimeout(() => {
+            document.getElementById('noReservationAlert').innerHTML = '';
+        }, 2000);
+    }
 
-// Actividades test
-document.addEventListener('DOMContentLoaded', function() {
-    addActivity(); // Añade la primera actividad por defecto al cargar el modal
-});
+};
 
+// Añadir un nuevo div de actividad al presionar el botón
 function addActivity() {
     const activityList = document.getElementById('activityList');
     const activityDiv = document.createElement('div');
-    activityDiv.className = "activity-entry"; // Añadimos una clase para facilitar la identificación
+    activityDiv.className = "activity-entry"; 
     activityDiv.innerHTML = `
         <div class="form-group">
             <h5>Título</h5>
@@ -1035,15 +1230,14 @@ function addActivity() {
         </div>
         <div class="form-group">
             <h5>Frecuencia</h5>
-            <select class="form-control" size="4">
-                <option value="op1">1 vez al día</option>
-                <option value="op2">2 veces al día</option>
-                <option value="op3">3 veces al día</option>
-                <option value="op4">Alternando días</option>
-                <option value="op5">Cada semana</option>
-                <option value="op6">De 2 a 4 veces a la semana</option>
-                <option value="op7">Cuando sea necesario</option>
-                <option value="op8">Revisar expediente</option>
+            <select class="form-control" size="3">
+                <option value="1 vez al día">1 vez al día</option>
+                <option value="2 veces al día">2 veces al día</option>
+                <option value="3 veces al día">3 veces al día</option>
+                <option value="Alternando días">Alternando días</option>
+                <option value="Cada semana">Cada semana</option>
+                <option value="Cuando sea necesario">Cuando sea necesario</option>
+                <option value="Revisar expediente">Revisar expediente</option>
 
             </select>
         </div>
@@ -1052,6 +1246,7 @@ function addActivity() {
     activityList.appendChild(activityDiv);
 }
 
+// Remover el último campo de actividad agregado
 function removeActivity() {
     const activities = document.querySelectorAll('.activity-entry');
     if (activities.length > 1) { // Asegurarse de dejar al menos una actividad
@@ -1059,9 +1254,40 @@ function removeActivity() {
     }
 }
 
-function submitActivities() {
-    // Recopila datos de todas las actividades y haz algo con ellos (enviar al servidor, procesar, etc.)
-    console.log('Enviar actividades');
+// Enviar las actividades al servidor y confirmar la reservación ya que regresa todas las promesas
+async function submitActivities(reservationID) {
+    const activities = document.querySelectorAll('.activity-entry');
+    const activitiesData = {};
+    // Recopila todas las actividades creadas
+    activities.forEach((activity, index) => {
+        const title = activity.querySelector('input[placeholder="Título de la actividad"]').value;
+        const description = activity.querySelector('input[placeholder="Describe brevemente la actividad"]').value;
+        const frequency = activity.querySelector('select').value;
+        
+        activitiesData[index] = {
+            title,
+            description,
+            frequency
+        };
+    });
+    // Impide que haya menos de una actividad
+    if (Object.keys(activitiesData).length === 1 && (activitiesData[0].title === '' || activitiesData[0].description === '' || activitiesData[0].frequency === '')) {
+        document.getElementById('noActivitiesAlert').innerHTML = `
+        <div class="alert alert-secondary" role="alert">
+            Agrega al menos una actividad válida
+        </div>
+        `;
+        setTimeout(() => {
+            document.getElementById('noActivitiesAlert').innerHTML = '';
+        }, 2000);
+    } else {
+        try {
+            await uploadActivities(reservationID, activitiesData);
+            await confirmReservation(reservationID);
+        } catch (error) {
+            console.error('Error during activity upload or reservation confirmation:', error);
+        }
+    }
 }
 async function getOwnerNotifications() {
 

@@ -285,38 +285,8 @@
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <!-- Left section for form inputs -->
-                                                <div class="col-md-12">
-                                                    <form>
-                                                        <div class="form-group">
-                                                            <h5 for="ownerPetOptions">Selecciona a tu mascota:</h5>
-                                                            <select class="form-select" aria-label="petOptions" id="ownerPetOptions">
-                                                                <option value="1">Mascota 1</option>
-                                                                <option value="2">Mascota 2</option>
-                                                                <option value="3">Mascota 3</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-md-6 form-group">
-                                                                <h5 for="newReservationStartDate">Fecha de inicio:</h5>
-                                                                <input type="date" class="form-control" id="newReservationStartDate" placeholder="Inicio">
-                                                            </div>
-                                                            <div class="col-md-6 form-group">
-                                                                <h5 for="newReservationEndDate">Fecha de fin:</h5>
-                                                                <input type="date" class="form-control" id="newReservationEndDate" placeholder="Fin">
-                                                            </div>
-                                                        </div>
-                                                        <h5>Al continuar, crearás la reservación y procederás a añadir las actividades de tu mascota.</h5>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cancelar</button>
-                                            <button type="button" class="btn boxed-btn-round-accept" data-dismiss="modal" data-toggle="modal" data-target="#addActivitiesModal"
-                                            >Continuar</button>
+                                        <div id="new-reservation-content">
+                                            <!-- Contenido dinámico de creación de reservación (createNewReservationModal)-->
                                         </div>
                                     </div>
                                 </div>
@@ -333,21 +303,8 @@
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
-                                        <div class="modal-body">
-                                            <form id="activitiesForm">
-                                                <!-- Área dinámica para actividades -->
-                                                <div id="activityList">
-                                                    <!-- Aquí se añadirán los campos de actividad dinámicamente -->
-                                                </div>
-                                                <button type="button" class="btn boxed-btn5" onclick="removeActivity()">Eliminar última</button>
-                                                <button type="button" class="btn boxed-btn6" onclick="addActivity()">Agregar otra</button>
-                                                <br><br>
-                                                <h5>Si cancelas, tu reservación no se confirmará y tendrás que crear otra desde cero pues no se guardará ni se asignará un cuidador para tu mascota.</h5>
-                                            </form>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cancelar</button>
-                                            <button type="button" class="btn boxed-btn-round-accept onclick="submitActivities()">Confirmar</button>
+                                        <div id="news-activites-content">
+                                            <!-- Contenido dinámico de la creación de actividades (createNewActivitiesModal)-->
                                         </div>
                                     </div>
                                 </div>

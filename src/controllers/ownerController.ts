@@ -1004,7 +1004,9 @@ class OwnerController{
          */
 
         try {
+            console.log("Confirmando reservacion");
             let { reservationID } = req.body;
+            console.log("reservationID:", reservationID);
             
             if (!reservationID) {
                 res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
