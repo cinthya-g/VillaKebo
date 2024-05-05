@@ -362,9 +362,9 @@ class OwnerController{
             let petID = req.params.id;
             
             /* Expected request
+            params: id
                 {   
                     (the user.id parameter comes from the authMiddleware already)
-                    "petID": "66100027b52a931e19a6035d"
                 }
             */
 
@@ -377,11 +377,21 @@ class OwnerController{
             if (!result) {
                 res.status(ResponseCodes.NOT_FOUND).send("No pet found with that ID");
             } else {
-                // Delete pet from the Owner's petsIDs array
+                // Save the currentReservation from the deleted pet
+                const reservationID = result.currentReservation; 
+                // Delete pet from the Owner's petsIDs array and the reservation ID from the reservationsIDs
                 const owner = await Owner.findOneAndUpdate({ _id: ownerID }, {$pull: { petsIDs: petID }}, { new: true });
-                // Delete the reservation in the currentReservation field of the pet
-                const deletedReservation = await Reservation.findOneAndDelete({ _id: result.currentReservation });
-                // TODO: Finish logic for deleting: the Reservation's associated Activities, and the Caretaker's assignedReservationsIDs
+                const reservation = await Reservation.findOneAndDelete({ _id: reservationID });
+                // Get the activitiesIDs from the deleted reservation
+                const activitiesIDs = reservation.activitiesIDs;
+                // Delete the activities from the activities collection
+                await Activity.deleteMany({ _id: { $in: activitiesIDs } });
+                // Find the caretaker with the assigned reservation in their assignedReservationsIDs
+                const caretaker = await Caretaker.findOne({ assignedReservationsIDs: reservationID });
+                // Delete the id from the array
+                await Caretaker.findOneAndUpdate({ _id: caretaker._id }, {$pull: { assignedReservationsIDs: reservationID }}, { new: true });
+
+
                 res.status(ResponseCodes.SUCCESS).send(owner);
             }
 
@@ -1398,7 +1408,7 @@ class OwnerController{
      */
     async getReservationActivities(req: Request, res: Response) {
         try {
-            let { reservationID } = req.body;
+            let reservationID = req.params.id;
 
             if (!reservationID) {
                 res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");

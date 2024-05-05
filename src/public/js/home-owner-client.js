@@ -27,6 +27,7 @@ function initApp() {
     if (localStorage.getItem('token')) {
         createOwnerCardBody();
         createPetsCards();
+        createReservationCards();
     } else {
         console.error('No hay token de autenticación');
         window.location.href = 'login.html';
@@ -314,6 +315,49 @@ async function uploadPetRecord(petID, file) {
 
 }
 
+// Obtener las reservaciones del dueño
+async function getOwnerReservations() {
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch('/owner/get-reservations-by-owner', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    }
+    catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+};
+
+// Obtener las actividades de una reservación
+async function getReservationActivities(reservationID) {
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch(`/owner/get-activities-by-reservation/${reservationID}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    }
+    catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+};
 
 
 
@@ -586,6 +630,82 @@ async function createRecordModal(petID) {
     document.getElementById('record-modal-content').innerHTML = modalContent;
 }; 
 
+// Función para crear las tarjetas de las reservaciones
+async function createReservationCards() {
+    const reservationsData = await getOwnerReservations();
+    console.log('reservationsData: ', reservationsData);
+    if (!reservationsData) {
+        console.error('No se pudo obtener la información de las reservaciones');
+        return;
+    }
+    const reservationsSection = document.getElementById('reservation-cards-body');
+    let cards = '';
+    if (reservationsData.length <= 0) {
+        cards = `<p>Sin reservaciones</p>`;
+
+    } else {
+        for(const reservation of reservationsData) {
+
+            const petData = await getPetData(reservation.petID);
+            const activitiesSection = await createActivitiesSection(reservation);
+            cards += `
+            <h3 class="card-title"><b>${petData.name}</b></h3>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><h5>${formatDate(reservation.startDate)} - ${formatDate(reservation.endDate)}</h5></li>
+                <li class="list-group-item">
+                    <h4><b>Actividades:</b></h4>
+                    ${activitiesSection}
+                </li>
+                <li class="list-group-item">                                                
+                    <h5><btn class="btn boxed-btn6"  data-toggle="modal" data-target="#caretakerProfilePreview">
+                        <i class="fa fa-address-card mr-2" aria-hidden="true"
+                        ></i>Perfil del cuidador</btn></h5>
+                </li> 
+                <li class="list-group-item">
+                    <btn class="btn boxed-btn-round-red" data-toggle="modal" data-target="#deleteReservation"
+                    ><i class="fa fa-eraser" aria-hidden="true"></i>
+                        <a></a></btn>
+                </li>
+            </ul>
+            `;
+        };
+    }
+    reservationsSection.innerHTML = cards;   
+};
+
+// Función para crear las secciones de actividades de la reservación individual
+async function createActivitiesSection(reservationData) {
+    const allActivities = await getReservationActivities(reservationData._id);
+    console.log('allActivities: ', allActivities);
+    if (!allActivities) {
+        console.error('No se pudo obtener la información de las actividades');
+        return;
+    }
+
+    let activitiesSection = '';
+    let activityNumber = 1;
+    allActivities.forEach(activity => {
+        // Mostrar las primeras 10 palabras de la descripcion y añadir puntos suspensivos
+        const description = activity.description.split(' ').slice(0, 10).join(' ') + '...';
+        activitiesSection += `
+        <h5 class="list-group-item-activity">
+            <b>${activityNumber}. ${activity.title}:<b>
+            <h6>${description}</h6>
+        </h5>
+        `;
+        activityNumber++;
+    });
+
+    return activitiesSection;
+};
+
+// Función para formatear fechas traidas de mongo
+function formatDate(date) {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(date).toLocaleDateString('es-ES', options);
+};
+
+
 
 
 
@@ -797,20 +917,6 @@ async function savePetRecord(petID) {
     }
 }
 
-
-
-// Expediente
-/*
-document.getElementById('newPdfInput').addEventListener('change', function() {
-    if (this.files && this.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            document.querySelector('iframe').src = e.target.result; // Actualiza el src del iframe
-        };
-        reader.readAsDataURL(this.files[0]); // Lee el archivo seleccionado como URL
-    }
-});
-*/
 
 // Actividades test
 document.addEventListener('DOMContentLoaded', function() {

@@ -655,6 +655,6 @@ router.delete('/delete-activity', ownerController.deleteActivity);
  *         description: Internal Server Error
  */
 
-router.get('/get-activities-by-reservation', ownerController.getReservationActivities);
+router.get('/get-activities-by-reservation/:id', ownerController.getReservationActivities);
 
 export default router;
