@@ -1,11 +1,13 @@
-window.addEventListener('load', function() {
+const PROFILE_PHOTO_S3 = "https://vk-profile-photos.s3.amazonaws.com/";
+
+window.addEventListener('load', function () {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     //console.log('Token from URL:', token)
     if (token) {
         localStorage.setItem('token', token);
         removeTokenFromUrl();
-    } else{
+    } else {
         initApp();
     }
 });
@@ -35,8 +37,6 @@ function isItGoogleAccount(obj) {
 };
 
 // --- Funciones de API ---
-
-
 async function getCaretakerData() {
     const token = localStorage.getItem('token');
     console.log('Token from localStorage:', token);
@@ -213,7 +213,7 @@ async function getReservations() {
         console.error('Error:', error);
         return null;
     }
-}async function getActivities() {
+} async function getActivities() {
     const token = localStorage.getItem('token');
     try {
         const response = await fetch('/caretaker/get-assigned-activities', {
@@ -246,7 +246,7 @@ async function createCaretakerCardBody() {
         console.error('No se pudo obtener la información del cuidador');
         return;
     }
-    
+
     const cardBody = `
     <div class="card-caretaker">
         <img class="card-img-top" src="${caretakerData.profilePicture || '../img/caretaker.jpg'}" alt="Profile picture">
@@ -350,7 +350,7 @@ async function createPetsCards() {
             </div>
             `;
         });
-}
+    }
 
     petsSection.innerHTML = cards;
 };
@@ -451,11 +451,11 @@ async function createReservationsCards() {
                 </div>
             </div>
             `;
-            
+
             // Ciclo para mostrar las actividades de cada reserva
             activities.forEach(activity => {
 
-                    cards += `
+                cards += `
                     <div class="col-md-12">
                         <div class="card-reservation">
                             <div class="card-body">
@@ -478,23 +478,24 @@ async function createReservationsCards() {
                         </div>
                     </div>
                     `;
-                
+
             });
         });
     }
-    document.getElementById('card-reservation').innerHTML = cards;
+    if (document.getElementById('card-reservation')) {
+        document.getElementById('card-reservation').innerHTML = cards;
+    }
 }
-
-        
-
 
 // --- Eventos DOM ---
 // TEMPORAL: Cerrar sesión (no-google)
-document.getElementById('logoutBtn').addEventListener('click', function() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('GoogleAccount');
-    window.location.href = '../index.html';
-});
+if (document.getElementById('logoutBtn')) {
+    document.getElementById('logoutBtn').addEventListener('click', function () {
+        localStorage.removeItem('token');
+        localStorage.removeItem('GoogleAccount');
+        window.location.href = '../index.html';
+    });
+}
 
 // Abrir modal de editar perfil
 document.addEventListener('DOMContentLoaded', function () {
@@ -502,6 +503,7 @@ document.addEventListener('DOMContentLoaded', function () {
         createEditProfileModal();
     });
 });
+
 // EVENT DELEGATION: Subir nueva imagen de perfil
 document.addEventListener('DOMContentLoaded', function () {
     const container = document.getElementById('editProfileModalContent');
@@ -520,13 +522,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     reader.readAsDataURL(this.files[0]);
                 }
             });
-            
+
         }
     });
 });
 
 // Guardar datos editados del dueño
-document.getElementById('saveChangesProfileBtn').addEventListener('click', async function(event) {
+document.getElementById('saveChangesProfileBtn').addEventListener('click', async function (event) {
     event.preventDefault();
 
     const editedUsername = document.getElementById('editedUsername').value;
@@ -543,7 +545,7 @@ document.getElementById('saveChangesProfileBtn').addEventListener('click', async
     // Solo procede si hay algo que actualizar
     if (Object.keys(updateData).length > 0) {
         await editCaretakerData(updateData);
-    } 
+    }
     // Actualizar foto de perfil si se seleccionó una nueva
     if (editedPicture) {
         await uploadProfilePicture(editedPicture);
