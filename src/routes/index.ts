@@ -4,6 +4,7 @@ import authRoutes from "./auth";
 import googleRouter from "./google-passport";
 import ownerRoutes from "./owner";
 import caretakerRouter from "./caretaker";
+import notificationRouter from "./notification";
 
 /**
  * @swagger
@@ -40,6 +41,15 @@ router.use("/owner", ownerRoutes);
  *     description: Includes routes related to pet caretaker operations like managing pet groups and activities.
  */
 router.use("/caretaker", caretakerRouter);
+
+/**
+ * @swagger
+ * paths:
+ *   /notification:
+ *     summary: Notification routes
+ *     description: Includes routes related to notifications.
+ */
+router.use("/notification", notificationRouter);
 
 /**
  * @swagger

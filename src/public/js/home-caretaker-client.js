@@ -498,6 +498,7 @@ document.getElementById('logoutBtn').addEventListener('click', function() {
 
 // Abrir modal de editar perfil
 document.addEventListener('DOMContentLoaded', function () {
+    //El event listener esta escuchando a lo que pasa con el tag #editProfileModal
     $('#editProfileModal').on('show.bs.modal', function () {
         createEditProfileModal();
     });

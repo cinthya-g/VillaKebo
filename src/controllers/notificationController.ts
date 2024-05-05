@@ -1,18 +1,22 @@
+
 import Notification from '../models/notification';  // Asegúrate de usar la ruta correcta
 import { Request, Response } from 'express';  // Importar Request y Response de express
 
 
 class NotificationController {
     // Función para guardar una notificación
-    async saveNotification(ownerID:String, caretakerID:String, petID:String, activity:String, timesCompleted:Number) {
+    async saveNotification(ownerID:String, caretakerID:String, petID:String, activity:String, timesCompleted:Number, caretakername:String, petname:String,fecha:String,hora:String) {
         try {
             const newNotification = new Notification({
                 ownerID: ownerID,
                 caretakerID: caretakerID,
+                caretakerName: caretakername,
                 petID: petID,
+                petName: petname,
                 activity: activity,
                 timesCompleted: timesCompleted,
-                timestamp: Date.now()
+                date: fecha,
+                time: hora
             });
 
             const savedNotification = await newNotification.save();
@@ -22,16 +26,18 @@ class NotificationController {
             throw new Error('Error saving notification');
         }
     }
+
     async  getNotificationsByOwnerId(req:Request, res:Response) {
         try {
-            const ownerID = req.params.ownerID;  // Obtener el ownerID del parámetro de la URL
-    
-            const notifications = await Notification.find({ ownerID: ownerID });
+            const userid = req.params.ownerID  // Obtener el ownerID del parámetro de la URL
+            const notifications = await Notification.find({ userid: userid });
             
             if (!notifications || notifications.length === 0) {
                 res.status(404).send('No notifications found');
                 return;
             }
+            console.log('OwnerID:', userid);
+            console.log('Notifications:', notifications);
     
             res.status(200).json(notifications);
         } catch (error) {

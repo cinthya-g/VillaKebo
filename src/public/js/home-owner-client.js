@@ -27,6 +27,8 @@ function initApp() {
     if (localStorage.getItem('token')) {
         createOwnerCardBody();
         createPetsCards();
+        createNotificationCard();
+
     } else {
         console.error('No hay token de autenticación');
         window.location.href = 'login.html';
@@ -711,4 +713,76 @@ function submitActivities() {
     // Recopila datos de todas las actividades y haz algo con ellos (enviar al servidor, procesar, etc.)
     console.log('Enviar actividades');
 }
+
+async function getOwnerNotifications() {
+
+    const token = localStorage.getItem('token');
+    const ownerData = await getOwnerData();
+    if (!ownerData) {
+        console.error('No se pudo obtener la información del dueño');
+        return;
+    }
+    const userid = ownerData._id;
+
+    try {
+        const response = await fetch(`/notification/notification?id=${userid}`, {  // Utiliza la ruta correcta
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+}
+
+async function createNotificationCard(){
+
+    const notifications = await getOwnerNotifications();
+    console.log(notifications);
+    if(!notifications){
+        console.error('No se pudieron obtener las notificaciones');
+        return;
+    }
+    const notificationSection= document.getElementById('notification-list');
+    let notificationcards = '';
+    if(notifications.length === 0){
+        notificationcards = `
+        <div class="notification-card">
+            <h3>No tienes notificaciones</h3>
+        </div>
+        `;
+    }
+    else{
+        notifications.reverse();
+        notifications.forEach(notification => {
+            notificationcards += `
+            <li class="notification-item">
+    <div class="notification-content">
+        <span class="notification-text">${notification.caretakerName} completed ${notification.activity} a total of ${notification.timesCompleted}</span>
+        <span class="notification-date"> Completed on: ${notification.date} at ${notification.time}</span>
+    </div>
+</li>
+            `;
+    });
+
+    }
+    notificationSection.innerHTML = notificationcards;
+
+}
+function toggleNotifications() {
+    const menu = document.getElementById('notificationMenu');
+    if (menu.style.display === 'none') {
+        menu.style.display = 'block'; // Mostrar el menú de notificaciones
+        createNotificationCard(); // Cargar y mostrar las notificaciones
+    } else {
+        menu.style.display = 'none'; // Ocultar el menú de notificaciones
+    }
+}
+
 

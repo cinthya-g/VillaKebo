@@ -447,6 +447,9 @@ class CaretakerController{
             const petID = reservation.petID;
             const caretakerID = req.body.user.id;
             const activityTitle = updatedActivity.title;
+
+            const caretaker = await Caretaker.findById(caretakerID);
+            const pet = await Pet.findById(petID);
     
             // Extrae el userID del owner de la reserva
             const owner = await Owner.findById(reservation.ownerID);
@@ -461,8 +464,22 @@ class CaretakerController{
 
             const Server = getIo();
             console.log('Server:', Server.sockets.adapter.rooms)
+            // Obtener el timestamp actual
+            const timestamp = Date.now();
 
-            await Notifications.saveNotification(owner.id, caretakerID, petID, activityTitle, updatedActivity.timesCompleted);
+            // Crear un objeto de fecha a partir del timestamp
+            const fecha = new Date(timestamp);
+
+            // Obtener los componentes por separado
+            const anio = fecha.getFullYear();
+            const mes = fecha.getMonth() + 1; // Los meses van de 0 a 11, por eso se suma 1
+            const dia = fecha.getDate();
+            const hora = fecha.getHours();
+            const minutos = fecha.getMinutes();
+
+            const fechaFormateada = `${dia}/${mes}/${anio}`;
+            const horaFormateada = `${hora}:${minutos}`;
+            await Notifications.saveNotification(owner.id, caretakerID, petID, activityTitle, updatedActivity.timesCompleted,caretaker.username, pet.name, fechaFormateada, horaFormateada);
 
             Server.to(ownerName).emit('accomplishActivity', updatedActivity);
 
