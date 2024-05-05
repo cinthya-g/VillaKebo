@@ -2,16 +2,15 @@
 PROFILE_PHOTO_S3 = "https://vk-profile-photos.s3.amazonaws.com/";
 
 
- 
 // --- Funciones de token ---
-window.addEventListener('load', function () {
+window.addEventListener('load', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     if (token) {
         localStorage.setItem('token', token);
         localStorage.setItem('GoogleAccount', true);
         removeTokenFromUrl();
-    } else {
+    } else{
         initApp();
     }
 });
@@ -28,13 +27,12 @@ function initApp() {
     if (localStorage.getItem('token')) {
         createOwnerCardBody();
         createPetsCards();
-        createNotificationCard();
-
+        createReservationCards();
     } else {
         console.error('No hay token de autenticación');
         window.location.href = 'login.html';
     }
-
+    
 };
 
 // --- Obtener la foto de perfil correcta de acuerdo al tipo de cuenta ---
@@ -82,28 +80,6 @@ async function editOwnerData(data) {
     }).then(data => {
         $('#editProfileModal').modal('hide');
         updateCardOwnerData(data);
-    }).catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-async function createPet(data) {
-    const token = localStorage.getItem('token');
-    fetch('/owner/create-pet', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(data)
-    }).then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok: ' + response.statusText);
-        }
-        return response.json();
-    }).then(data => {
-        $('#createPetModal').modal('hide');
-        createPetsCards(data);
     }).catch(error => {
         console.error('Error:', error);
     });
@@ -242,7 +218,6 @@ async function uploadPetPicture(petID, file) {
 
 // Eliminar mascota por ID a través del modal
 async function deletePet(petID) {
-    console.log('Pet ID:', petID);
     const token = localStorage.getItem('token');
     fetch(`/owner/delete-pet/${petID}`, {
         method: 'DELETE',
@@ -262,6 +237,168 @@ async function deletePet(petID) {
     });
 };
 
+// Crear mascota
+async function createPet(data) {
+    const token = localStorage.getItem('token');
+    fetch('/owner/create-pet', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    }).then(data => {
+        $('#createPetModal').modal('hide');
+        createPetsCards();
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+};
+
+// Obtener el expediente de una mascota
+async function getPetRecord(petID) {
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch(`/owner/get-record/${petID}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    }
+    catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+};
+
+// Subir un nuevo expediente para la mascota
+async function uploadPetRecord(petID, file) {
+    const token = localStorage.getItem('token');
+
+    const ownerData = await getOwnerData();
+    const ownerID = ownerData._id;
+
+    const formData = new FormData();
+    formData.append('ownerID', ownerID);
+    formData.append('petID', petID);
+    formData.append('pdf', file);
+
+    fetch('/owner/upload-record', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        body: formData
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    }).then(data => {
+        $('#petRecordModal').modal('hide');
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+
+}
+
+// Obtener las reservaciones del dueño
+async function getOwnerReservations() {
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch('/owner/get-reservations-by-owner', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    }
+    catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+};
+
+// Obtener las actividades de una reservación
+async function getReservationActivities(reservationID) {
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch(`/owner/get-activities-by-reservation/${reservationID}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    }
+    catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+};
+
+// Obtener el perfil del cuidador por el ID de la reservacion
+async function getCaretakerProfile(reservationID) {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`/owner/get-assigned-caretaker/${reservationID}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+
+};
+
+// Cancelar reservación por ID
+async function cancelReservation(reservationID) {
+    const token = localStorage.getItem('token');
+    fetch(`/owner/cancel-reservation/${reservationID}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    }
+    ).then(data => {
+        $('#deleteReservation').modal('hide');
+        createReservationCards();
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+};
 
 
 
@@ -273,7 +410,7 @@ async function createOwnerCardBody() {
         console.error('No se pudo obtener la información del dueño');
         return;
     }
-
+    
     const cardBody = `
     <div class="card-owner">
         <img class="card-img-top" src="${isItGoogleAccount(ownerData)}" alt="Profile picture" id="displayPicture">
@@ -358,6 +495,7 @@ async function createPetsCards() {
         `;
     } else {
         petsData.forEach(pet => {
+           
             cards += `
             <div class="col-md-4">
                 <div class="card-pet">
@@ -367,8 +505,9 @@ async function createPetsCards() {
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">${pet.breed} de ${pet.age} años</li>
                             <li class="list-group-item">
-                                <btn class="btn boxed-btn6" data-toggle="modal" data-target="#petRecordModal">
-                                    <i class="fa fa-upload" aria-hidden="true"></i>
+                                <btn class="btn boxed-btn6" onclick="createRecordModal('${pet._id}')"
+                                     data-toggle="modal" data-target="#petRecordModal">
+                                <i class="fa fa-upload" aria-hidden="true"></i>
                                     <a>Expediente</a></btn>
                             </li>
                             <li class="list-group-item">
@@ -387,7 +526,7 @@ async function createPetsCards() {
             </div>
             `;
         });
-    }
+}
 
     petsSection.innerHTML = cards;
 };
@@ -436,7 +575,6 @@ async function createEditPetModal(petID) {
     document.getElementById('saveModifiedPetBtn').innerHTML = saveBtn;
 }
 
-
 // Función para crear el contenido del MODAL DE ELIMINAR MASCOTA
 async function createDeletePetModal(petID) {
     const petData = await getPetData(petID);
@@ -469,12 +607,193 @@ async function createDeletePetModal(petID) {
     document.getElementById('delete-pet-content').innerHTML = modalContent;
 };
 
+// Función para crear el contenido del MODAL DE EXPEDIENTE DE LA MASCOTA
+async function createRecordModal(petID) {
+    const petData = await getPetData(petID);
+    if (!petData) {
+        console.error('[Expediente] No se pudo obtener la información de la mascota: ', petID);
+        return;
+    }
+    const record = await getPetRecord(petID);
+    const recordURL = record.url;
+
+    let modalContent = '';
+    // Si el string de url termina en null, poner un div con un mensaje de que no hay expediente
+    if (recordURL.endsWith('null')) {
+        modalContent = `
+        <div class="row">
+            <div class="col-md-8">
+                <h5 id="noRecordMessage">Parece que no has subido ninguno aún.<h5>
+                <iframe id="recordFrame" style="width: 100%; height: 600px;" frameborder="0"></iframe>
+            </div>
+            <!-- Right section for upload new PDF -->
+            <div class="col-md-4 text-center">
+                <input type="file" id="newPdfInput" accept="application/pdf" style="display: none;">
+                <button class="btn boxed-btn5 mt-4" id="updateRecordBtn">
+                    <i class="fa fa-upload" aria-hidden="true"></i>
+                    Actualizar
+                </button>
+                <button class="btn boxed-btn-round-accept mt-4" id="saveRecordBtn" onclick="savePetRecord('${petData._id}')">
+                    <i class="fa fa-save" aria-hidden="true"></i>
+                    Guardar
+                </button>
+                <div id="noRecordAlert" class="mt-4">
+                <div>
+            </div>
+            
+        </div>
+        `;
+    } else {
+        modalContent = `
+        <div class="row">
+            <div class="col-md-8">
+                <iframe id="recordFrame" src="${recordURL}" style="width: 100%; height: 600px;" frameborder="0"></iframe>
+            </div>
+            <!-- Right section for upload new PDF -->
+            <div class="col-md-4 text-center">
+                <input type="file" id="newPdfInput" accept="application/pdf" style="display: none;">
+                <button class="btn boxed-btn5 mt-4" id="updateRecordBtn">
+                    <i class="fa fa-upload" aria-hidden="true"></i>
+                    Actualizar
+                </button>
+                <button class="btn boxed-btn-round-accept mt-4" id="saveRecordBtn" onclick="savePetRecord('${petData._id}')">
+                    <i class="fa fa-save" aria-hidden="true"></i>
+                    Guardar
+                </button>
+                <div id="noRecordAlert" class="mt-4">
+                <div>
+            </div>
+            
+        </div>
+        `;
+    }
+    
+    document.getElementById('record-modal-content').innerHTML = modalContent;
+}; 
+
+// Función para crear las tarjetas de las reservaciones
+async function createReservationCards() {
+    const reservationsData = await getOwnerReservations();
+    if (!reservationsData) {
+        console.error('No se pudo obtener la información de las reservaciones');
+        return;
+    }
+    const reservationsSection = document.getElementById('reservation-cards-body');
+    let cards = '';
+    if (reservationsData.length <= 0) {
+        cards = `
+        <h3><b>No tienes reservaciones activas</b></h3>
+        `;
+    } else {
+        for(const reservation of reservationsData) {
+
+            const petData = await getPetData(reservation.petID);
+            const activitiesSection = await createActivitiesSection(reservation);
+            cards += `
+            <h3 class="card-title"><b>${petData.name}</b></h3>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><h5>${formatDate(reservation.startDate)} - ${formatDate(reservation.endDate)}</h5></li>
+                <li class="list-group-item">
+                    <h4><b>Actividades:</b></h4>
+                    ${activitiesSection}
+                </li>
+                <li class="list-group-item">                                                
+                    <h5><btn class="btn boxed-btn6" onclick="createCaretakerProfileModal('${reservation._id}')"
+                        data-toggle="modal" data-target="#caretakerProfilePreview">
+                        <i class="fa fa-address-card mr-2" aria-hidden="true"
+                        ></i>Perfil del cuidador</btn></h5>
+                </li> 
+                <li class="list-group-item">
+                    <btn class="btn boxed-btn-round-red" 
+                        data-toggle="modal" data-target="#deleteReservation" onclick="createDeleteReservationModal('${reservation.startDate}', '${reservation.endDate}', '${reservation._id}')">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                    Cancelar
+                        <a></a>
+                    </btn>
+                </li>
+            </ul>
+            `;
+        };
+    }
+    reservationsSection.innerHTML = cards;   
+};
+
+// Función para crear las secciones de actividades de la reservación individual
+async function createActivitiesSection(reservationData) {
+    const allActivities = await getReservationActivities(reservationData._id);
+    if (!allActivities) {
+        console.error('No se pudo obtener la información de las actividades');
+        return;
+    }
+
+    let activitiesSection = '';
+    let activityNumber = 1;
+    allActivities.forEach(activity => {
+        // Mostrar las primeras 10 palabras de la descripcion y añadir puntos suspensivos
+        const description = activity.description.split(' ').slice(0, 10).join(' ') + '...';
+        activitiesSection += `
+        <h5 class="list-group-item-activity">
+            <b>${activityNumber}. ${activity.title}:<b>
+            <h6>${description}</h6>
+        </h5>
+        `;
+        activityNumber++;
+    });
+
+    return activitiesSection;
+};
+
+// Función para formatear fechas traidas de mongo
+function formatDate(date) {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(date).toLocaleDateString('es-ES', options);
+};
+
+// Función para crear el modal de perfil del cuidador
+async function createCaretakerProfileModal(reservationID) {
+    const caretakerData = await getCaretakerProfile(reservationID);
+    if (!caretakerData) {
+        console.error('No se pudo obtener la información del cuidador');
+        return;
+    }
+    const modalContent = `
+    <img class="caretaker-picture mb-2" src="${PROFILE_PHOTO_S3 + caretakerData.profilePicture}">
+    <h5><b>Nombre:</b> ${caretakerData.username}</h5>
+    <h5><b>Contacto:</b> ${caretakerData.email}</h5>
+    <h6><i>${caretakerData.status}</i></h6>
+    <br>
+    <h5>Cuida a otra(s) ${caretakerData.assignedReservationsIDs.length} mascota(s)</h5>
+    `;
+    document.getElementById('caretaker-details-modal').innerHTML = modalContent;
+};
+
+// Función para crear el modal de eliminar reservación
+async function createDeleteReservationModal(startDate, endDate, reservationID) {
+    const modalContent = `
+    <div class="row">
+        <div class="col-md-12 text-center">
+        <h5>Se eliminará esta reservación para los días:
+        <br>
+         <b>${formatDate(startDate)}</b> a <b>${formatDate(endDate)}</b> </h5>
+        </div>
+    </div>
+    `;
+    document.getElementById('delete-reservation-content').innerHTML = modalContent;
+    
+    const buttons = `
+    <button type="button" class="btn boxed-btn-round-green" data-dismiss="modal">Cancelar</button>
+    <button type="button" class="btn boxed-btn-round-cancel" onclick=deleteReservation('${reservationID}')>Eliminar</button>
+    `;
+    document.getElementById('delete-reservation-buttons').innerHTML = buttons;
+
+};
+
 
 
 
 // --- Eventos DOM ---
 // TEMPORAL: Cerrar sesión (no-google)
-document.getElementById('logoutBtn').addEventListener('click', function () {
+document.getElementById('logoutBtn').addEventListener('click', function() {
     localStorage.removeItem('token');
     localStorage.removeItem('GoogleAccount');
     window.location.href = '../index.html';
@@ -505,13 +824,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     reader.readAsDataURL(this.files[0]);
                 }
             });
-
+            
         }
     });
 });
 
 // Guardar datos editados del dueño
-document.getElementById('saveChangesProfileBtn').addEventListener('click', async function (event) {
+document.getElementById('saveChangesProfileBtn').addEventListener('click', async function(event) {
     event.preventDefault();
 
     const editedUsername = document.getElementById('editedUsername').value;
@@ -525,73 +844,36 @@ document.getElementById('saveChangesProfileBtn').addEventListener('click', async
     if (editedStatus.trim() !== '') updateData.status = editedStatus;
     if (editedEmail.trim() !== '') updateData.email = editedEmail;
 
-    // Solo procede si hay algo que actualizar
-    if (Object.keys(updateData).length > 0) {
-        await editOwnerData(updateData);
-        setTimeout(() => {
-            location.reload();
-        }, 500);
-    }
-    // Actualizar foto de perfil si se seleccionó una nueva
-    if (editedPicture) {
-        await uploadProfilePicture(editedPicture);
-        setTimeout(() => {
-            location.reload();
-        }, 500);
-    }
-    else {
+    // Verificar si hay algo que actualizar o una foto para subir
+    if (Object.keys(updateData).length > 0 || editedPicture) {
+        // Actualizar datos si es necesario
+        if (Object.keys(updateData).length > 0) {
+            await editOwnerData(updateData);
+        }
+        // Actualizar foto de perfil si se seleccionó una nueva
+        if (editedPicture) {
+            await uploadProfilePicture(editedPicture);
+        }
+    } else {
+        // Mostrar alerta si no hay nada que actualizar
         document.getElementById('noChangesAlert').innerHTML = `
         <div class="alert alert-secondary" role="alert">
             No hay datos por actualizar
         </div>
         `;
-        // Quitar el mensaje de alerta
+        // Quitar el mensaje de alerta después de un tiempo
         setTimeout(() => {
             document.getElementById('noChangesAlert').innerHTML = '';
         }, 2000);
     }
 });
 
-// Guardar datos editados del dueño
-document.getElementById('registerPetButton').addEventListener('click', async function (event) {
-    event.preventDefault();
 
-    const petName = document.getElementById('petName').value;
-    const petAge = document.getElementById('petAge').value;
-    const petBreed = document.getElementById('petBreed').value;
-    //const editedPicture = document.getElementById('imageInputOwner').files[0]; //TODO
-
-    let updateData = {};
-
-    if (petName.trim() !== '') updateData.name = petName;
-    if (petAge.trim() !== '') updateData.age = petAge;
-    if (petBreed.trim() !== '') updateData.breed = petBreed;
-
-    // Solo procede si hay algo que actualizar
-    if (Object.keys(updateData).length > 0) {
-        await createPet(updateData);
-    }
-    // Actualizar foto de mascota si se seleccionó una nueva
-    /*
-    if (editedPicture) { //TODO
-        await uploadProfilePicture(editedPicture);
-        location.reload();
-    }
-    */
-    else {
-        //TODO
-        console.log('No hay datos por actualizar');
-        document.getElementById('noChangesAlert').innerHTML = `
-        <div class="alert alert-secondary" role="alert">
-            No hay datos por actualizar
-        </div>
-        `;
-        // Quitar el mensaje de alerta
-        setTimeout(() => {
-            document.getElementById('noChangesAlert').innerHTML = '';
-        }, 2000);
-    }
-});
+function updateCardOwnerData(data) {
+    // Actualiza los elementos del DOM (texto) con los nuevos datos
+    document.getElementById('displayUsername').innerHTML = `<b>${data.username}</b>`; 
+    document.getElementById('displayStatus').innerHTML = `<i>${data.status}</i>`; 
+}
 
 // EVENT DELEGATION: Subir nueva imagen de perfil de mascota
 document.addEventListener('DOMContentLoaded', function () {
@@ -611,7 +893,57 @@ document.addEventListener('DOMContentLoaded', function () {
                     reader.readAsDataURL(this.files[0]);
                 }
             });
+        }
+    });
+});
 
+// Botón de añadir mascota
+document.getElementById('createNewPetBtn').addEventListener('click', async function() {
+    const newPetName = document.getElementById('petName').value;
+    const newPetAge = document.getElementById('petAge').value;
+    const newPetBreed = document.getElementById('petBreed').value;
+
+    let updateData = {};
+    if (newPetName.trim() !== '') updateData.name = newPetName;
+    if (newPetAge.trim() !== '') updateData.age = newPetAge;
+    if (newPetBreed.trim() !== '') updateData.breed = newPetBreed;
+
+    if (Object.keys(updateData).length > 2) {
+        await createPet(updateData);
+
+    }
+    else {
+        document.getElementById('cantCreatePetAlert').innerHTML = `
+        <div class="alert alert-secondary" role="alert">
+            Completa todos los campos
+        </div>
+        `;
+        setTimeout(() => {
+            document.getElementById('cantCreatePetAlert').innerHTML = '';
+        }, 2000);
+    }
+});
+
+// EVENT DELEGATION: Mostrar el expediente de la mascota en la previsualización
+document.addEventListener('DOMContentLoaded', function () {
+    const container = document.getElementById('record-modal-content');
+    container.addEventListener('click', function (event) {
+        if (event.target.id === 'updateRecordBtn' || event.target.closest('#updateRecordBtn')) {
+            document.getElementById('newPdfInput').click();
+            // Cambiarla en la vista previa
+            document.getElementById('newPdfInput').addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.getElementById('recordFrame').src = e.target.result;
+                        if (document.getElementById('noRecordMessage')) {
+                            document.getElementById('noRecordMessage').remove();
+                        }
+                    };
+                    reader.readAsDataURL(this.files[0]); 
+                }
+            });
+            
         }
     });
 });
@@ -632,12 +964,14 @@ async function savePet(petID) {
     if (editedAge.trim() !== '') updateData.age = editedAge;
     if (editedBreed.trim() !== '') updateData.breed = editedBreed;
 
-    if (Object.keys(updateData).length > 0) {
-        await editPetData(petID, updateData);
-    }
-    if (editedPicture) {
-        await uploadPetPicture(petID, editedPicture);
-    }
+    if (Object.keys(updateData).length > 0 || editedPicture) {
+        if (Object.keys(updateData).length > 0) {
+            await editPetData(petID, updateData);
+        }
+        if(editedPicture) {
+            await uploadPetPicture(petID, editedPicture);
+        }
+    } 
     else {
         document.getElementById('noPetChangesAlert').innerHTML = `
         <div class="alert alert-secondary" role="alert">
@@ -651,23 +985,38 @@ async function savePet(petID) {
 };
 
 
-
-
-
-// Expediente
-document.getElementById('newPdfInput').addEventListener('change', function () {
-    if (this.files && this.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-            document.querySelector('iframe').src = e.target.result; // Actualiza el src del iframe
-        };
-        reader.readAsDataURL(this.files[0]); // Lee el archivo seleccionado como URL
-    }
+// Limpiar campos del modal de AÑADIR MASCOTA al presionar el botón de añadir
+document.getElementById('addPetBtn').addEventListener('click', function() {
+    document.getElementById('petName').value = '';
+    document.getElementById('petAge').value = '';
+    document.getElementById('petBreed').value = '';
 });
+
+// Guardar nuevo expediente
+async function savePetRecord(petID) {
+    const newRecord = document.getElementById('newPdfInput').files[0];
+    if (newRecord) {
+        await uploadPetRecord(petID, newRecord);
+    } else {
+        document.getElementById('noRecordAlert').innerHTML = `
+        <div class="alert alert-secondary" role="alert">
+            No se ha seleccionado un archivo
+        </div>
+        `;
+        setTimeout(() => {
+            document.getElementById('noRecordAlert').innerHTML = '';
+        }, 2000);
+    }
+}
+
+// Eliminar reservación al presionar el botón
+async function deleteReservation(reservationID) {
+    await cancelReservation(reservationID);
+};
 
 
 // Actividades test
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     addActivity(); // Añade la primera actividad por defecto al cargar el modal
 });
 
@@ -714,7 +1063,6 @@ function submitActivities() {
     // Recopila datos de todas las actividades y haz algo con ellos (enviar al servidor, procesar, etc.)
     console.log('Enviar actividades');
 }
-
 async function getOwnerNotifications() {
 
     const token = localStorage.getItem('token');
