@@ -340,9 +340,11 @@ async function createPetsCards() {
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">${pet.breed} de ${pet.age} años</li>
                             <li class="list-group-item">
+
                             <btn class="btn boxed-btn6" data-toggle="modal" data-target="#petInfoModal">
                                 <i class="fa fa-plus mr-1" aria-hidden="true"></i>
                                 <a>Info</a></btn>
+                                
                         </li>
                         </ul>
                     </div>
@@ -357,50 +359,35 @@ async function createPetsCards() {
 
 // Función para crear el contenido del MODAL DE EDITAR MASCOTA
 async function createInfoPetModal(petID) {
+    const pets = await getCaretakerPets();
+
     const petData = await getPetData(petID);
     if (!petData) {
         console.error('[Editar mascota] No se pudo obtener la información de la mascota: ', petID);
         return;
     }
     const modalContent = `
-        <div class="modal" id="petInfoModal" tabindex="-1" role="dialog" aria-labelledby="petInfoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="petInfoModalLabel">Detalles de la mascota</h3>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <!-- Left section for PDF viewer -->
-                        <div class="col-md-5 text-center vertical-center">
-                            <img class="caretaker-picture mb-2" src="../img/pug.png">
-                            <h5><b>Nombre: </b>${pet.name}/h5>
-                            <h5><b>Raza: </b>${pet.breed}</h5>
-                            <h5><b>Edad: </b>${pet.age}</h5>
-                        </div>
-                        <!-- Right section for upload new PDF -->
-                        <div class="col-md-7 text-center">
-                            <h4>Previsualización de expediente</h4>
-                            <div class="col-md-12">
-                                <iframe src="../test-file/test-record.pdf" style="width: 100%; height: 450px;" frameborder="0"></iframe>
-                            </div>
-                        </div>
-                        
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
-                </div>
+    <div class="modal-body">
+    <div class="row">
+        <!-- Left section for PDF viewer -->
+        <div class="col-md-5 text-center vertical-center">
+            <img class="caretaker-picture mb-2" src="../img/pug.png">
+            <h5><b>Nombre: </b>${pet.name}/h5>
+            <h5><b>Raza: </b>${pet.breed}</h5>
+            <h5><b>Edad: </b>${pet.age}</h5>
+        </div>
+        <!-- Right section for upload new PDF -->
+        <div class="col-md-7 text-center">
+            <h4>Previsualización de expediente</h4>
+            <div class="col-md-12">
+                <iframe src="../test-file/test-record.pdf" style="width: 100%; height: 450px;" frameborder="0"></iframe>
             </div>
         </div>
+        
     </div>
+</div>
     `;
-    document.getElementById('edit-pet-body-modal').innerHTML = modalContent;
-    const saveBtn = `<button type="button" class="btn boxed-btn-round-accept" onclick="savePet('${petData._id}')">Guardar cambios</button>`;
-    document.getElementById('saveModifiedPetBtn').innerHTML = saveBtn;
+    document.getElementById('petInfoModalContent').innerHTML = modalContent;
 }
 
 
