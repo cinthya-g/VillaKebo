@@ -3,14 +3,14 @@ PROFILE_PHOTO_S3 = "https://vk-profile-photos.s3.amazonaws.com/";
 
 
 // --- Funciones de token ---
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     if (token) {
         localStorage.setItem('token', token);
         localStorage.setItem('GoogleAccount', true);
         removeTokenFromUrl();
-    } else{
+    } else {
         initApp();
     }
 });
@@ -31,7 +31,7 @@ function initApp() {
         console.error('No hay token de autenticación');
         window.location.href = 'login.html';
     }
-    
+
 };
 
 // --- Obtener la foto de perfil correcta de acuerdo al tipo de cuenta ---
@@ -79,6 +79,28 @@ async function editOwnerData(data) {
     }).then(data => {
         $('#editProfileModal').modal('hide');
         updateCardOwnerData(data);
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+async function createPet(data) {
+    const token = localStorage.getItem('token');
+    fetch('/owner/create-pet', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    }).then(data => {
+        $('#createPetModal').modal('hide');
+        createPetsCards(data);
     }).catch(error => {
         console.error('Error:', error);
     });
@@ -248,7 +270,7 @@ async function createOwnerCardBody() {
         console.error('No se pudo obtener la información del dueño');
         return;
     }
-    
+
     const cardBody = `
     <div class="card-owner">
         <img class="card-img-top" src="${isItGoogleAccount(ownerData)}" alt="Profile picture" id="displayPicture">
@@ -362,7 +384,7 @@ async function createPetsCards() {
             </div>
             `;
         });
-}
+    }
 
     petsSection.innerHTML = cards;
 };
@@ -449,7 +471,7 @@ async function createDeletePetModal(petID) {
 
 // --- Eventos DOM ---
 // TEMPORAL: Cerrar sesión (no-google)
-document.getElementById('logoutBtn').addEventListener('click', function() {
+document.getElementById('logoutBtn').addEventListener('click', function () {
     localStorage.removeItem('token');
     localStorage.removeItem('GoogleAccount');
     window.location.href = '../index.html';
@@ -480,13 +502,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     reader.readAsDataURL(this.files[0]);
                 }
             });
-            
+
         }
     });
 });
 
 // Guardar datos editados del dueño
-document.getElementById('saveChangesProfileBtn').addEventListener('click', async function(event) {
+document.getElementById('saveChangesProfileBtn').addEventListener('click', async function (event) {
     event.preventDefault();
 
     const editedUsername = document.getElementById('editedUsername').value;
@@ -503,12 +525,59 @@ document.getElementById('saveChangesProfileBtn').addEventListener('click', async
     // Solo procede si hay algo que actualizar
     if (Object.keys(updateData).length > 0) {
         await editOwnerData(updateData);
-    } 
+        setTimeout(() => {
+            location.reload();
+        }, 500);
+    }
     // Actualizar foto de perfil si se seleccionó una nueva
     if (editedPicture) {
         await uploadProfilePicture(editedPicture);
+        setTimeout(() => {
+            location.reload();
+        }, 500);
     }
     else {
+        document.getElementById('noChangesAlert').innerHTML = `
+        <div class="alert alert-secondary" role="alert">
+            No hay datos por actualizar
+        </div>
+        `;
+        // Quitar el mensaje de alerta
+        setTimeout(() => {
+            document.getElementById('noChangesAlert').innerHTML = '';
+        }, 2000);
+    }
+});
+
+// Guardar datos editados del dueño
+document.getElementById('registerPetButton').addEventListener('click', async function (event) {
+    event.preventDefault();
+
+    const petName = document.getElementById('petName').value;
+    const petAge = document.getElementById('petAge').value;
+    const petBreed = document.getElementById('petBreed').value;
+    //const editedPicture = document.getElementById('imageInputOwner').files[0]; //TODO
+
+    let updateData = {};
+
+    if (petName.trim() !== '') updateData.name = petName;
+    if (petAge.trim() !== '') updateData.age = petAge;
+    if (petBreed.trim() !== '') updateData.breed = petBreed;
+
+    // Solo procede si hay algo que actualizar
+    if (Object.keys(updateData).length > 0) {
+        await createPet(updateData);
+    }
+    // Actualizar foto de mascota si se seleccionó una nueva
+    /*
+    if (editedPicture) { //TODO
+        await uploadProfilePicture(editedPicture);
+        location.reload();
+    }
+    */
+    else {
+        //TODO
+        console.log('No hay datos por actualizar');
         document.getElementById('noChangesAlert').innerHTML = `
         <div class="alert alert-secondary" role="alert">
             No hay datos por actualizar
@@ -539,7 +608,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     reader.readAsDataURL(this.files[0]);
                 }
             });
-            
+
         }
     });
 });
@@ -562,7 +631,7 @@ async function savePet(petID) {
 
     if (Object.keys(updateData).length > 0) {
         await editPetData(petID, updateData);
-    } 
+    }
     if (editedPicture) {
         await uploadPetPicture(petID, editedPicture);
     }
@@ -583,10 +652,10 @@ async function savePet(petID) {
 
 
 // Expediente
-document.getElementById('newPdfInput').addEventListener('change', function() {
+document.getElementById('newPdfInput').addEventListener('change', function () {
     if (this.files && this.files[0]) {
         var reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             document.querySelector('iframe').src = e.target.result; // Actualiza el src del iframe
         };
         reader.readAsDataURL(this.files[0]); // Lee el archivo seleccionado como URL
@@ -595,7 +664,7 @@ document.getElementById('newPdfInput').addEventListener('change', function() {
 
 
 // Actividades test
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     addActivity(); // Añade la primera actividad por defecto al cargar el modal
 });
 
