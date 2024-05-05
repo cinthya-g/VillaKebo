@@ -359,6 +359,49 @@ async function getReservationActivities(reservationID) {
     }
 };
 
+// Obtener el perfil del cuidador por el ID de la reservacion
+async function getCaretakerProfile(reservationID) {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`/owner/get-assigned-caretaker/${reservationID}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+
+};
+
+// Cancelar reservación por ID
+async function cancelReservation(reservationID) {
+    const token = localStorage.getItem('token');
+    fetch(`/owner/cancel-reservation/${reservationID}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    }
+    ).then(data => {
+        $('#deleteReservation').modal('hide');
+        createReservationCards();
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+};
+
 
 
 // --- Funciones de DOM ---
@@ -633,7 +676,6 @@ async function createRecordModal(petID) {
 // Función para crear las tarjetas de las reservaciones
 async function createReservationCards() {
     const reservationsData = await getOwnerReservations();
-    console.log('reservationsData: ', reservationsData);
     if (!reservationsData) {
         console.error('No se pudo obtener la información de las reservaciones');
         return;
@@ -641,8 +683,9 @@ async function createReservationCards() {
     const reservationsSection = document.getElementById('reservation-cards-body');
     let cards = '';
     if (reservationsData.length <= 0) {
-        cards = `<p>Sin reservaciones</p>`;
-
+        cards = `
+        <h3><b>No tienes reservaciones activas</b></h3>
+        `;
     } else {
         for(const reservation of reservationsData) {
 
@@ -657,14 +700,18 @@ async function createReservationCards() {
                     ${activitiesSection}
                 </li>
                 <li class="list-group-item">                                                
-                    <h5><btn class="btn boxed-btn6"  data-toggle="modal" data-target="#caretakerProfilePreview">
+                    <h5><btn class="btn boxed-btn6" onclick="createCaretakerProfileModal('${reservation._id}')"
+                        data-toggle="modal" data-target="#caretakerProfilePreview">
                         <i class="fa fa-address-card mr-2" aria-hidden="true"
                         ></i>Perfil del cuidador</btn></h5>
                 </li> 
                 <li class="list-group-item">
-                    <btn class="btn boxed-btn-round-red" data-toggle="modal" data-target="#deleteReservation"
-                    ><i class="fa fa-eraser" aria-hidden="true"></i>
-                        <a></a></btn>
+                    <btn class="btn boxed-btn-round-red" 
+                        data-toggle="modal" data-target="#deleteReservation" onclick="createDeleteReservationModal('${reservation.startDate}', '${reservation.endDate}', '${reservation._id}')">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                    Cancelar
+                        <a></a>
+                    </btn>
                 </li>
             </ul>
             `;
@@ -676,7 +723,6 @@ async function createReservationCards() {
 // Función para crear las secciones de actividades de la reservación individual
 async function createActivitiesSection(reservationData) {
     const allActivities = await getReservationActivities(reservationData._id);
-    console.log('allActivities: ', allActivities);
     if (!allActivities) {
         console.error('No se pudo obtener la información de las actividades');
         return;
@@ -705,6 +751,44 @@ function formatDate(date) {
     return new Date(date).toLocaleDateString('es-ES', options);
 };
 
+// Función para crear el modal de perfil del cuidador
+async function createCaretakerProfileModal(reservationID) {
+    const caretakerData = await getCaretakerProfile(reservationID);
+    if (!caretakerData) {
+        console.error('No se pudo obtener la información del cuidador');
+        return;
+    }
+    const modalContent = `
+    <img class="caretaker-picture mb-2" src="${PROFILE_PHOTO_S3 + caretakerData.profilePicture}">
+    <h5><b>Nombre:</b> ${caretakerData.username}</h5>
+    <h5><b>Contacto:</b> ${caretakerData.email}</h5>
+    <h6><i>${caretakerData.status}</i></h6>
+    <br>
+    <h5>Cuida a otra(s) ${caretakerData.assignedReservationsIDs.length} mascota(s)</h5>
+    `;
+    document.getElementById('caretaker-details-modal').innerHTML = modalContent;
+};
+
+// Función para crear el modal de eliminar reservación
+async function createDeleteReservationModal(startDate, endDate, reservationID) {
+    const modalContent = `
+    <div class="row">
+        <div class="col-md-12 text-center">
+        <h5>Se eliminará esta reservación para los días:
+        <br>
+         <b>${formatDate(startDate)}</b> a <b>${formatDate(endDate)}</b> </h5>
+        </div>
+    </div>
+    `;
+    document.getElementById('delete-reservation-content').innerHTML = modalContent;
+    
+    const buttons = `
+    <button type="button" class="btn boxed-btn-round-green" data-dismiss="modal">Cancelar</button>
+    <button type="button" class="btn boxed-btn-round-cancel" onclick=deleteReservation('${reservationID}')>Eliminar</button>
+    `;
+    document.getElementById('delete-reservation-buttons').innerHTML = buttons;
+
+};
 
 
 
@@ -928,6 +1012,11 @@ async function savePetRecord(petID) {
         }, 2000);
     }
 }
+
+// Eliminar reservación al presionar el botón
+async function deleteReservation(reservationID) {
+    await cancelReservation(reservationID);
+};
 
 
 // Actividades test

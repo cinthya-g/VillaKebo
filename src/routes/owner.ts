@@ -477,7 +477,7 @@ router.put('/confirm-reservation', ownerController.confirmReservation);
  *         description: Internal Server Error
  */
 
-router.delete('/cancel-reservation', ownerController.cancelReservation);
+router.delete('/cancel-reservation/:reservationID', ownerController.cancelReservation);
 /**
  * @swagger
  * /owner/get-reservations-by-owner:
@@ -503,6 +503,8 @@ router.delete('/cancel-reservation', ownerController.cancelReservation);
  */
 
 router.get('/get-reservations-by-owner', ownerController.getOwnerReservations);
+
+router.get('/get-assigned-caretaker/:reservationID', ownerController.getReservationCaretaker);
 
 
 // Owner-Pet-Activity actions

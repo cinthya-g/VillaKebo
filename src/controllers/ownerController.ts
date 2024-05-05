@@ -1090,7 +1090,7 @@ class OwnerController{
         // Delete the created reservation
         try {
             let ownerID = req.body.user.id;
-            let { reservationID } = req.body;
+            let reservationID = req.params.reservationID;
             
             if (!reservationID || !ownerID) {
                 res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
@@ -1112,7 +1112,7 @@ class OwnerController{
                 // Delete the reservationID from the Caretaker's assignedReservationsIDs array
                 await Caretaker.findOneAndUpdate({ assignedReservationsIDs: reservationID },{ $pull: { assignedReservationsIDs: reservationID }});
                 
-                res.status(ResponseCodes.SUCCESS).send("Reservation deleted successfully");
+                res.status(ResponseCodes.SUCCESS).json({deletedID : reservationID});
             }
 
         } catch(error) {
@@ -1417,6 +1417,23 @@ class OwnerController{
 
             const activities = await Activity.find({ reservationID: reservationID });
             res.status(ResponseCodes.SUCCESS).send(activities);
+
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+
+    async getReservationCaretaker(req: Request, res: Response) {
+        // Get the assigned caretaker for a reservation
+        try {
+            let reservationID = req.params.reservationID;
+            if (!reservationID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+            const caretaker = await Caretaker.findOne({ assignedReservationsIDs: reservationID });
+            res.status(ResponseCodes.SUCCESS).send(caretaker);
 
         } catch(error) {
             console.log('ERROR:', error);
