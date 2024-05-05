@@ -2,6 +2,7 @@
 PROFILE_PHOTO_S3 = "https://vk-profile-photos.s3.amazonaws.com/";
 
 
+ 
 // --- Funciones de token ---
 window.addEventListener('load', function () {
     const urlParams = new URLSearchParams(window.location.search);
@@ -744,7 +745,7 @@ async function getOwnerNotifications() {
 async function createNotificationCard(){
 
     const notifications = await getOwnerNotifications();
-    console.log(notifications);
+    //console.log(notifications);
     if(!notifications){
         console.error('No se pudieron obtener las notificaciones');
         return;

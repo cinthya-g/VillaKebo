@@ -126,6 +126,7 @@ export function getUserIDFromToken(token: string): string | null {
         const decoded = jwt.verify(token, process.env.TOKEN_KEY) as jwt.JwtPayload;
 
         // Asume que el payload del token incluye el 'id' del usuario
+        console.log("Decoded token  from  getUserIDFromToken:", decoded);
         return decoded.id;
     } catch (error) {
         console.error("Error verifying token:", error);

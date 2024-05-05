@@ -22,6 +22,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
     <!-- <link rel="stylesheet" href="css/responsive.css"> -->
+    <!-- Load the Socket.io Client library -->
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
@@ -467,6 +469,7 @@
 
 
 
+
     <!-- footer_start  -->
     <footer class="footer">
         <div class="footer_top">
@@ -501,82 +504,13 @@
     <!-- Bootstrap JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <script>
-        
-    // function toggleNotifications() {
-    //     const menu = document.querySelector('.notification-menu');
-    //     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    //     //document.querySelector('.notification-count').textContent = '0';
-    // }
+<script>
+    const socket = io();
+        socket.on('AccomplishActivity', (event) => {
+            alert(`Activity Accomplished: ${event._id}`);
+        });	
 
-    // function updateNotificationCount(count) {
-    //     const notificationElement = document.querySelector('.notification-count');
-    //     notificationElement.textContent = count;
-    // }
-
-    // function addNotificationToMenu(notification) {
-    // const list = document.getElementById('notification-list');
-    // const item = document.createElement('li');
-
-    // const icon = document.createElement('span');
-    // icon.className = 'notification-icon';
-
-    // const text = document.createElement('span');
-    // text.className = 'notification-text';
-    // text.textContent = notification;
-
-    // item.appendChild(text);
-    // list.appendChild(item);
-    // }
-
-
-    // // Example of receiving notifications
-    // function simulateNotificationReceived() {
-    //     const newCount = 10; // Random count for example
-    //     updateNotificationCount(newCount);
-        
-    //     // Clear existing notifications
-    //     document.getElementById('notification-list').innerHTML = '';
-        
-    //     // Add new notifications
-    //     for (let i = 0; i < newCount; i++) {
-    //         addNotificationToMenu(`[cuidador] completó [actividad] para [pet] ${i + 1}`);
-    //     }
-    // }
-
-    // // Update count and notifications periodically
-    // setInterval(simulateNotificationReceived, 5000); // Update count every 5 seconds
-
-
-    // // Fechas
-    // document.addEventListener('DOMContentLoaded', function () {
-    //     var today = new Date();
-    //     var nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
-
-    //     var startDateInput = document.getElementById('newReservationStartDate');
-    //     var endDateInput = document.getElementById('newReservationEndDate');
-
-    //     startDateInput.min = today.toISOString().split('T')[0];
-    //     startDateInput.max = nextYear.toISOString().split('T')[0];
-    //     endDateInput.min = today.toISOString().split('T')[0];
-    //     endDateInput.max = nextYear.toISOString().split('T')[0];
-    // });
-    
-    </script>
-    <script>
-        async function testFunctions() {
-            const ownerData = await getOwnerData();
-            console.log('Datos del propietario:', ownerData);
-    
-            const notifications = await getOwnerNotifications();
-            console.log('Notificaciones:', notifications);
-    
-            await createNotificationCard();
-            console.log('Tarjetas de notificación creadas');
-        }
-    
-        testFunctions(); // Llama a la función de prueba directamente
-    </script>     
+</script>
 
 </body>
 

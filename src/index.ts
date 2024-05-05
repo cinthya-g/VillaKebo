@@ -51,9 +51,10 @@ io.on('connection', (socket) => {
     console.log('A client connected with socketId:', socket.id);
 
     socket.on('login',  (token) => {
+            console.log('Token received:', token);
             // Verificar el token y extraer el userID
             const userId =  getUserIDFromToken(token); // Esta función debe extraer el userID del token
-            console.log('Desde Onlogin User ID:', userId);
+            //console.log('Desde Onlogin User ID:', userId);
             if (userId) {
                 socket.join(userId); // Unirse a la sala correspondiente al userID
         
@@ -62,7 +63,7 @@ io.on('connection', (socket) => {
 
     socket.on('accomplishActivity',(data)=>{
         console.log('Activity accomplished:',data);
-        socket.emit('accomplishActivity',data)
+        socket.emit('AccomplishActivity',data)
     });
 
 });
