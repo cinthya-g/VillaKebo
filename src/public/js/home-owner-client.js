@@ -294,8 +294,6 @@ async function uploadPetRecord(petID, file) {
     formData.append('petID', petID);
     formData.append('pdf', file);
 
-    console.log("formdata: ", formData);
-
     fetch('/owner/upload-record', {
         method: 'POST',
         headers: {
@@ -998,8 +996,6 @@ document.getElementById('addPetBtn').addEventListener('click', function() {
 async function savePetRecord(petID) {
     const newRecord = document.getElementById('newPdfInput').files[0];
     if (newRecord) {
-        console.log('petid: ', petID);
-        console.log('record: ', newRecord);
         await uploadPetRecord(petID, newRecord);
     } else {
         document.getElementById('noRecordAlert').innerHTML = `

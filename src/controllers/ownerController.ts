@@ -1148,6 +1148,7 @@ class OwnerController{
      */
     async getOwnerReservations(req: Request, res: Response) {
         // Return the confirmed:true reservations made by the owner
+        // Also, those whose endDate is greater or equal than the current day
         try {
             let ownerID = req.body.user.id;
 
@@ -1157,7 +1158,12 @@ class OwnerController{
             }
 
             const reservations = await Reservation.find({ ownerID: ownerID, confirmed: true });
-            res.status(ResponseCodes.SUCCESS).send(reservations);
+
+            // Filter those reservations which its endDate is greater or equal than the current day
+            const today = new Date();
+            const filteredReservations = reservations.filter(reservation => new Date(reservation.endDate) >= today);
+            
+            res.status(ResponseCodes.SUCCESS).send(filteredReservations);
         } catch(error) {
             console.log('ERROR:', error);
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
