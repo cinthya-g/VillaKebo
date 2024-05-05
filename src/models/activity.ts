@@ -29,9 +29,9 @@ import {Schema, model} from "mongoose";
 
 const activitySchema = new Schema({
     reservationID: { type: String, required: true },
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    frequency: { type: String, required: true },
+    title: { type: String, required: true, default: "Paseo"},
+    description: { type: String, required: true, default: "Pasear al menos media hora" },
+    frequency: { type: String, required: true, default: "1 vez al día"},
     timesCompleted: { type: Number, default: 0 },
 });
 

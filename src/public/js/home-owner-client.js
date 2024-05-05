@@ -426,34 +426,37 @@ async function createReservation(data) {
 async function uploadActivities(reservationID, activitiesObj) {
     const token = localStorage.getItem('token');
     const activitiesArray = Object.values(activitiesObj);
-    // El endpoint funciona al enviar una actividad individual entonces se itera el arreglo
-    activitiesArray.forEach(activity => {
-        fetch('/owner/create-activity', {
+
+    let promises = activitiesArray.map(activity => {
+        return fetch('/owner/create-activity', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 reservationID: reservationID,
                 title: activity.title,
                 description: activity.description,
                 frequency: activity.frequency
             })
-        }).then(response => {
+        })
+        .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok: ' + response.statusText);
             }
             return response.json();
-        }).then(data => {
-            console.log("Activity saved:",  data);
-        }).catch(error => {
-            console.error('Error:', error);
+        })
+        .then(data => {
+            return data; // Return para seguir la cadena de promesas correctamente
         });
     });
-    console.log('Activities uploaded');
 
-};
+    // Esperar que todas las promesas se resuelvan antes de continuar
+    await Promise.all(promises);
+    console.log('Activities uploaded');
+}
+
 
 // Función para confirmar la reservación y añadir un caretaker aleatorio
 async function confirmReservation(reservationID) {
@@ -1260,11 +1263,9 @@ function removeActivity() {
 }
 
 async function submitActivities(reservationID) {
-    // Recopila datos de todas las actividades creadas
-
     const activities = document.querySelectorAll('.activity-entry');
     const activitiesData = {};
-
+    // Recopila todas las actividades creadas
     activities.forEach((activity, index) => {
         const title = activity.querySelector('input[placeholder="Título de la actividad"]').value;
         const description = activity.querySelector('input[placeholder="Describe brevemente la actividad"]').value;
@@ -1276,10 +1277,8 @@ async function submitActivities(reservationID) {
             frequency
         };
     });
-
-    // Si hay una sola actividad y sus campos están vacíos, no se envía nada
-    if (Object.keys(activitiesData).length === 1 && (activitiesData[0].title === '' || activitiesData[0].description === '' || activitiesData[0].frequency === '') ){
-        // Mostrar noActivitiesAlert
+    // Impide que haya menos de una actividad
+    if (Object.keys(activitiesData).length === 1 && (activitiesData[0].title === '' || activitiesData[0].description === '' || activitiesData[0].frequency === '')) {
         document.getElementById('noActivitiesAlert').innerHTML = `
         <div class="alert alert-secondary" role="alert">
             Agrega al menos una actividad válida
@@ -1289,20 +1288,13 @@ async function submitActivities(reservationID) {
             document.getElementById('noActivitiesAlert').innerHTML = '';
         }, 2000);
     } else {
-        console.log(activitiesData);
         try {
             await uploadActivities(reservationID, activitiesData);
-
+            await confirmReservation(reservationID);
         } catch (error) {
             console.error('Error during activity upload or reservation confirmation:', error);
         }
-        try{
-            await confirmReservation(reservationID);
-        } catch (error){
-            console.error("Error al confirmar: ", error);
-
-        }
     }
-
 }
+
 
