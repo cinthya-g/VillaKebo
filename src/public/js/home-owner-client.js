@@ -762,26 +762,36 @@ document.getElementById('saveChangesProfileBtn').addEventListener('click', async
     if (editedStatus.trim() !== '') updateData.status = editedStatus;
     if (editedEmail.trim() !== '') updateData.email = editedEmail;
 
-    // Solo procede si hay algo que actualizar
-    if (Object.keys(updateData).length > 0) {
-        await editOwnerData(updateData);
-    } 
-    // Actualizar foto de perfil si se seleccionó una nueva
-    if (editedPicture) {
-        await uploadProfilePicture(editedPicture);
-    }
-    else {
+    // Verificar si hay algo que actualizar o una foto para subir
+    if (Object.keys(updateData).length > 0 || editedPicture) {
+        // Actualizar datos si es necesario
+        if (Object.keys(updateData).length > 0) {
+            await editOwnerData(updateData);
+        }
+        // Actualizar foto de perfil si se seleccionó una nueva
+        if (editedPicture) {
+            await uploadProfilePicture(editedPicture);
+        }
+    } else {
+        // Mostrar alerta si no hay nada que actualizar
         document.getElementById('noChangesAlert').innerHTML = `
         <div class="alert alert-secondary" role="alert">
             No hay datos por actualizar
         </div>
         `;
-        // Quitar el mensaje de alerta
+        // Quitar el mensaje de alerta después de un tiempo
         setTimeout(() => {
             document.getElementById('noChangesAlert').innerHTML = '';
         }, 2000);
     }
 });
+
+
+function updateCardOwnerData(data) {
+    // Actualiza los elementos del DOM (texto) con los nuevos datos
+    document.getElementById('displayUsername').innerHTML = `<b>${data.username}</b>`; 
+    document.getElementById('displayStatus').innerHTML = `<i>${data.status}</i>`; 
+}
 
 // EVENT DELEGATION: Subir nueva imagen de perfil de mascota
 document.addEventListener('DOMContentLoaded', function () {
@@ -872,12 +882,14 @@ async function savePet(petID) {
     if (editedAge.trim() !== '') updateData.age = editedAge;
     if (editedBreed.trim() !== '') updateData.breed = editedBreed;
 
-    if (Object.keys(updateData).length > 0) {
-        await editPetData(petID, updateData);
+    if (Object.keys(updateData).length > 0 || editedPicture) {
+        if (Object.keys(updateData).length > 0) {
+            await editPetData(petID, updateData);
+        }
+        if(editedPicture) {
+            await uploadPetPicture(petID, editedPicture);
+        }
     } 
-    if (editedPicture) {
-        await uploadPetPicture(petID, editedPicture);
-    }
     else {
         document.getElementById('noPetChangesAlert').innerHTML = `
         <div class="alert alert-secondary" role="alert">
