@@ -451,10 +451,8 @@ async function uploadActivities(reservationID, activitiesObj) {
             return data; // Return para seguir la cadena de promesas correctamente
         });
     });
-
     // Esperar que todas las promesas se resuelvan antes de continuar
     await Promise.all(promises);
-    console.log('Activities uploaded');
 }
 
 
@@ -480,9 +478,6 @@ async function confirmReservation(reservationID) {
         console.error('Error:', error);
     });
 }
-
-
-
 
 
 
@@ -1219,11 +1214,7 @@ async function checkReservationCreation() {
 
 };
 
-
-// ---------test
-// Actividades test
-
-
+// Añadir un nuevo div de actividad al presionar el botón
 function addActivity() {
     const activityList = document.getElementById('activityList');
     const activityDiv = document.createElement('div');
@@ -1255,6 +1246,7 @@ function addActivity() {
     activityList.appendChild(activityDiv);
 }
 
+// Remover el último campo de actividad agregado
 function removeActivity() {
     const activities = document.querySelectorAll('.activity-entry');
     if (activities.length > 1) { // Asegurarse de dejar al menos una actividad
@@ -1262,6 +1254,7 @@ function removeActivity() {
     }
 }
 
+// Enviar las actividades al servidor y confirmar la reservación ya que regresa todas las promesas
 async function submitActivities(reservationID) {
     const activities = document.querySelectorAll('.activity-entry');
     const activitiesData = {};
@@ -1296,5 +1289,3 @@ async function submitActivities(reservationID) {
         }
     }
 }
-
-
