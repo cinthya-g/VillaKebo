@@ -177,20 +177,20 @@
                                                     </form>
                                                 </div>
                                                 <!-- Right section for profile picture -->
-                                                <div class="col-md-4 text-center">
-                                                    <img src="../img/no-pet-photo.png" alt="Pet Picture" class="img-fluid change-picture" >
-                                                    <btn class="btn boxed-btn5 mt-4" id="createPetPictureBtn">
-                                                        <i class="fa fa-image" aria-hidden="true"></i>
-                                                        <a>Subir foto</a></btn>
+                                                <div class="col-md-4 text-center" id="newPetPicturePreview">
+                                                    <img src="https://vk-profile-photos.s3.amazonaws.com/no-pet-photo.png" alt="Pet Picture" class="img-fluid change-picture mb-2" id="newProfilePicturePet">
+                                                    <h6>
+                                                        Tu mascota tendrá esta foto por default, pero podrás cambiarla cuantas veces quieras presionando el ícono de editar de su tarjeta.
+                                                    </h6>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <div id="noChangesAlert">
-                                                <!-- Alerta dinámica -->
+                                            <div id="cantCreatePetAlert">
+                                                <!-- Alerta dinámica sobre datos vacíos -->
                                             </div>
                                             <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
-                                            <button id="registerPetButton" type="button" class="btn boxed-btn-round-accept">Registrar</button>
+                                            <button type="button" class="btn boxed-btn-round-accept" id="createNewPetBtn">Registrar</button>
                                         </div>
                                     </div>
                                 </div>
@@ -227,7 +227,7 @@
                             <div class="modal" id="deletePetModal" tabindex="-1" role="dialog" aria-labelledby="deletePetModalLabel" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content" id="delete-pet-content">
-
+                                            <!-- Contenido dinámico (createDeletePetModal)-->
                                         </div>
                                     </div>
                             </div>
@@ -236,29 +236,15 @@
                             <!-- Modal EXPEDIENTE (record) de la mascota-->
                             <div class="modal" id="petRecordModal" tabindex="-1" role="dialog" aria-labelledby="petRecordModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
-                                        <div class="modal-content">
+                                        <div class="modal-content" >
                                             <div class="modal-header">
                                                 <h3 class="modal-title" id="petRecordModalLabel">Expediente de la mascota</h3>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <!-- Left section for PDF viewer -->
-                                                    <div class="col-md-8">
-                                                        <iframe src="../test-file/test-record.pdf" style="width: 100%; height: 700px;" frameborder="0"></iframe>
-                                                    </div>
-                                                    <!-- Right section for upload new PDF -->
-                                                    <div class="col-md-4 text-center">
-                                                        <input type="file" id="newPdfInput" accept="application/pdf" style="display: none;">
-                                                        <button class="btn boxed-btn5 mt-4" onclick="document.getElementById('newPdfInput').click();">
-                                                            <i class="fa fa-upload" aria-hidden="true"></i>
-                                                            Actualizar
-                                                        </button>
-                                                    </div>
-                                                    
-                                                </div>
+                                            <div class="modal-body" id="record-modal-content">
+
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
@@ -280,36 +266,10 @@
                         
                         <div class="row" id="card-reservation-section">
                             
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="card-reservation">
-                                    <div class="card-body">
-                                        <h3 class="card-title"><b>Kebo</b></h3>
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item"><h5>23/04/24 - 05/05/24</h5></li>
-                                            <li class="list-group-item">
-                                                <h4><b>Actividades:</b></h4>
-                                                <h5 class="list-group-item-activity">
-                                                    1. Paseo diario
-                                                </h5>
-                                                <h5 class="list-group-item-activity">
-                                                    2. Un solo baño
-                                                </h5>
-                                                <h5 class="list-group-item-activity">
-                                                    3. Dar medicina a las 10 p.m. y 11 p.m.
-                                                </h5>
-
-                                            </li>
-                                            <li class="list-group-item">                                                
-                                                <h5><btn class="btn boxed-btn6"  data-toggle="modal" data-target="#caretakerProfilePreview">
-                                                    <i class="fa fa-address-card mr-2" aria-hidden="true"
-                                                    ></i>Perfil del cuidador</btn></h5>
-                                            </li> 
-                                            <li class="list-group-item">
-                                                <btn class="btn boxed-btn-round-red" data-toggle="modal" data-target="#deleteReservation"
-                                                ><i class="fa fa-eraser" aria-hidden="true"></i>
-                                                    <a></a></btn>
-                                            </li>
-                                          </ul>
+                                    <div class="card-body" id="reservation-cards-body">
+                                        <!-- Contenido dinámico de las reservaciones (createReservationCards) -->
                                     </div>
                                 </div>
                             </div>
@@ -406,17 +366,11 @@
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <!-- Right section for profile picture -->
-                                                    <div class="col-md-12 text-center">
-                                                        <h5>Se eliminará la reservación de [nombre mascota] para los días [fecha de inicio - fecha de fin]. </h5>
-                                                    </div>
-                                                </div>
+                                            <div class="modal-body" id="delete-reservation-content">
+                                                <!-- Contenido dinámico (createDeleteReservationModal)-->
                                             </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn boxed-btn-round-green" data-dismiss="modal">Cancelar</button>
-                                                <button type="button" class="btn boxed-btn-round-cancel">Eliminar</button>
+                                            <div class="modal-footer" id="delete-reservation-buttons">
+                                                <!-- Contenido dinámico (createDeleteReservationModal)-->
                                             </div>
                                         </div>
                                     </div>
@@ -436,13 +390,8 @@
                                             </div>
                                             <div class="modal-body">
                                                 <div class="row">
-                                                    <div class="col-md-12 text-center vertical-center">
-                                                        <img class="caretaker-picture mb-2" src="../img/caretaker.jpg">
-                                                        <h5><b>Nombre:</b> [nombre]</h5>
-                                                        <h5><b>Contacto:</b> [email]</h5>
-                                                        <h5>[status]</h5>
-                                                        <br>
-                                                        <h5>Cuida a otras [count] mascotas</h5>
+                                                    <div class="col-md-12 text-center vertical-center" id="caretaker-details-modal">
+                                                        <!-- Contenido dinámico del perfil del cuidador (createCaretakerProfileModal)-->
                                                     </div>
                                                 </div>
                                             </div>

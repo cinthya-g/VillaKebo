@@ -362,9 +362,9 @@ class OwnerController{
             let petID = req.params.id;
             
             /* Expected request
+            params: id
                 {   
                     (the user.id parameter comes from the authMiddleware already)
-                    "petID": "66100027b52a931e19a6035d"
                 }
             */
 
@@ -377,11 +377,21 @@ class OwnerController{
             if (!result) {
                 res.status(ResponseCodes.NOT_FOUND).send("No pet found with that ID");
             } else {
-                // Delete pet from the Owner's petsIDs array
+                // Save the currentReservation from the deleted pet
+                const reservationID = result.currentReservation; 
+                // Delete pet from the Owner's petsIDs array and the reservation ID from the reservationsIDs
                 const owner = await Owner.findOneAndUpdate({ _id: ownerID }, {$pull: { petsIDs: petID }}, { new: true });
-                // Delete the reservation in the currentReservation field of the pet
-                const deletedReservation = await Reservation.findOneAndDelete({ _id: result.currentReservation });
-                // TODO: Finish logic for deleting: the Reservation's associated Activities, and the Caretaker's assignedReservationsIDs
+                const reservation = await Reservation.findOneAndDelete({ _id: reservationID });
+                // Get the activitiesIDs from the deleted reservation
+                const activitiesIDs = reservation.activitiesIDs;
+                // Delete the activities from the activities collection
+                await Activity.deleteMany({ _id: { $in: activitiesIDs } });
+                // Find the caretaker with the assigned reservation in their assignedReservationsIDs
+                const caretaker = await Caretaker.findOne({ assignedReservationsIDs: reservationID });
+                // Delete the id from the array
+                await Caretaker.findOneAndUpdate({ _id: caretaker._id }, {$pull: { assignedReservationsIDs: reservationID }}, { new: true });
+
+
                 res.status(ResponseCodes.SUCCESS).send(owner);
             }
 
@@ -699,25 +709,17 @@ class OwnerController{
      */
     async getPetPicture(req: Request, res: Response) {
         try {
-            const ownerID = req.body.user.id;
-            const { petID } = req.body;
+            const petID = req.params.id;
 
-            if (!ownerID || !petID) {
+            if (!petID) {
                 res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
-                return;
-            }
-
-            // Check that the pet belongs to the owner
-            const owner = await Owner.findOne({ _id: ownerID });
-            if (!owner.petsIDs.includes(petID)) {
-                res.status(ResponseCodes.UNAUTHORIZED).send("This pet does not belong to the owner");
                 return;
             }
 
             // Get the pet's profile picture
             const pet = await Pet.findOne({ _id: petID }, 'profilePicture');
             const pictureUrl = getS3Url(process.env.PHOTOS_BUCKET_NAME, pet.profilePicture);
-            res.status(ResponseCodes.SUCCESS).send(pictureUrl);
+            res.status(ResponseCodes.SUCCESS).json({url : pictureUrl});
 
         } catch(error) {
             console.log('ERROR:', error);
@@ -854,25 +856,17 @@ class OwnerController{
      */
     async getPetRecord(req: Request, res: Response) {
         try {
-            const ownerID = req.body.user.id;
-            const { petID } = req.body;
+            const petID = req.params.id;
 
-            if (!ownerID || !petID) {
+            if (!petID) {
                 res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
-                return;
-            }
-
-            // Check that the pet belongs to the owner
-            const owner = await Owner.findOne({ _id: ownerID });
-            if (!owner.petsIDs.includes(petID)) {
-                res.status(ResponseCodes.UNAUTHORIZED).send("This pet does not belong to the owner");
                 return;
             }
 
             // Get the pet's record
             const pet = await Pet.findOne({ _id: petID }, 'record');
             const recordUrl = getS3Url(process.env.FILES_BUCKET_NAME, pet.record);
-            res.status(ResponseCodes.SUCCESS).send(recordUrl);
+            res.status(ResponseCodes.SUCCESS).json({url: recordUrl});
 
         } catch(error) {
             console.log('ERROR:', error);
@@ -1096,7 +1090,7 @@ class OwnerController{
         // Delete the created reservation
         try {
             let ownerID = req.body.user.id;
-            let { reservationID } = req.body;
+            let reservationID = req.params.reservationID;
             
             if (!reservationID || !ownerID) {
                 res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
@@ -1118,7 +1112,7 @@ class OwnerController{
                 // Delete the reservationID from the Caretaker's assignedReservationsIDs array
                 await Caretaker.findOneAndUpdate({ assignedReservationsIDs: reservationID },{ $pull: { assignedReservationsIDs: reservationID }});
                 
-                res.status(ResponseCodes.SUCCESS).send("Reservation deleted successfully");
+                res.status(ResponseCodes.SUCCESS).json({deletedID : reservationID});
             }
 
         } catch(error) {
@@ -1154,6 +1148,7 @@ class OwnerController{
      */
     async getOwnerReservations(req: Request, res: Response) {
         // Return the confirmed:true reservations made by the owner
+        // Also, those whose endDate is greater or equal than the current day
         try {
             let ownerID = req.body.user.id;
 
@@ -1163,7 +1158,12 @@ class OwnerController{
             }
 
             const reservations = await Reservation.find({ ownerID: ownerID, confirmed: true });
-            res.status(ResponseCodes.SUCCESS).send(reservations);
+
+            // Filter those reservations which its endDate is greater or equal than the current day
+            const today = new Date();
+            const filteredReservations = reservations.filter(reservation => new Date(reservation.endDate) >= today);
+            
+            res.status(ResponseCodes.SUCCESS).send(filteredReservations);
         } catch(error) {
             console.log('ERROR:', error);
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
@@ -1414,7 +1414,7 @@ class OwnerController{
      */
     async getReservationActivities(req: Request, res: Response) {
         try {
-            let { reservationID } = req.body;
+            let reservationID = req.params.id;
 
             if (!reservationID) {
                 res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
@@ -1423,6 +1423,23 @@ class OwnerController{
 
             const activities = await Activity.find({ reservationID: reservationID });
             res.status(ResponseCodes.SUCCESS).send(activities);
+
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+
+    async getReservationCaretaker(req: Request, res: Response) {
+        // Get the assigned caretaker for a reservation
+        try {
+            let reservationID = req.params.reservationID;
+            if (!reservationID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+            const caretaker = await Caretaker.findOne({ assignedReservationsIDs: reservationID });
+            res.status(ResponseCodes.SUCCESS).send(caretaker);
 
         } catch(error) {
             console.log('ERROR:', error);

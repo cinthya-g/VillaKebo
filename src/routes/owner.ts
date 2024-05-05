@@ -310,7 +310,7 @@ router.post('/upload-pet-photo', uploadPhoto.single('photo'), ownerController.sa
  *         description: Internal Server Error
  */
 
-router.get('/get-pet-picture', ownerController.getPetPicture);
+router.get('/get-pet-picture/:id', ownerController.getPetPicture);
 /**
  * @swagger
  * /owner/upload-record:
@@ -361,7 +361,7 @@ router.post('/upload-record', uploadPDF.single('pdf'), ownerController.uploadPet
  *         description: Internal Server Error
  */
 
-router.get('/get-record', ownerController.getPetRecord);
+router.get('/get-record/:id', ownerController.getPetRecord);
 
 
 // Owner-Pet-Reservation  actions
@@ -477,7 +477,7 @@ router.put('/confirm-reservation', ownerController.confirmReservation);
  *         description: Internal Server Error
  */
 
-router.delete('/cancel-reservation', ownerController.cancelReservation);
+router.delete('/cancel-reservation/:reservationID', ownerController.cancelReservation);
 /**
  * @swagger
  * /owner/get-reservations-by-owner:
@@ -503,6 +503,8 @@ router.delete('/cancel-reservation', ownerController.cancelReservation);
  */
 
 router.get('/get-reservations-by-owner', ownerController.getOwnerReservations);
+
+router.get('/get-assigned-caretaker/:reservationID', ownerController.getReservationCaretaker);
 
 
 // Owner-Pet-Activity actions
@@ -655,6 +657,6 @@ router.delete('/delete-activity', ownerController.deleteActivity);
  *         description: Internal Server Error
  */
 
-router.get('/get-activities-by-reservation', ownerController.getReservationActivities);
+router.get('/get-activities-by-reservation/:id', ownerController.getReservationActivities);
 
 export default router;

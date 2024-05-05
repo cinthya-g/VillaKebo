@@ -785,5 +785,3 @@ function toggleNotifications() {
         menu.style.display = 'none'; // Ocultar el menú de notificaciones
     }
 }
-
-
