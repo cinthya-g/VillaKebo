@@ -201,6 +201,27 @@ async function getPetData(petId) {
         console.error('ERROR:', error);
     }
 }
+// Obtener el expediente de una mascota
+async function getPetRecord(petID) {
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch(`/caretaker/get-record/${petID}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    }
+    catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+};
 // async function getReservations() {
 //     const token = localStorage.getItem('token');
 //     try {
@@ -367,6 +388,8 @@ async function createPetsCards() {
 // Función para crear el contenido del MODAL DE EDITAR MASCOTA
 async function createInfoPetModal(petID) {
     const pet2 = await getPetData(petID);
+    const record = await getPetRecord(petID);
+    console.log('Pet data:', pet2);
 
     
     
@@ -384,7 +407,7 @@ async function createInfoPetModal(petID) {
         <div class="col-md-7 text-center">
             <h4>Previsualización de expediente</h4>
             <div class="col-md-12">
-                <iframe src="../test-file/test-record.pdf" style="width: 100%; height: 450px;" frameborder="0"></iframe>
+                <iframe src="${record.url}" style="width: 100%; height: 450px;" frameborder="0"></iframe>
             </div>
         </div>
         

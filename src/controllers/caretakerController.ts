@@ -401,6 +401,61 @@ class CaretakerController{
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
         }
     }
+    /**
+     * @swagger
+     * /owner/get-record:
+     *   get:
+     *     tags: [Owner]
+     *     summary: Get the pet's medical record
+     *     description: Retrieves the URL of the pet's medical record file stored in S3. Validates if the pet belongs to the owner before proceeding.
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - petID
+     *             properties:
+     *               petID:
+     *                 type: string
+     *                 description: The pet's unique identifier
+     *     responses:
+     *       200:
+     *         description: URL of the pet's medical record retrieved successfully
+     *         content:
+     *           text/plain:
+     *             schema:
+     *               type: string
+     *       400:
+     *         description: Missing required fields, such as pet ID
+     *       401:
+     *         description: Unauthorized access or pet does not belong to the owner
+     *       500:
+     *         description: Internal Server Error
+     */
+    async getPetRecord(req: Request, res: Response) {
+        try {
+            const petID = req.params.id;
+
+            if (!petID) {
+                res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
+                return;
+            }
+
+            // Get the pet's record
+            const pet = await Pet.findOne({ _id: petID }, 'record');
+            const recordUrl = getS3Url(process.env.FILES_BUCKET_NAME, pet.record);
+            res.status(ResponseCodes.SUCCESS).json({url: recordUrl});
+
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+
+    }
 
     /**
      * @swagger
