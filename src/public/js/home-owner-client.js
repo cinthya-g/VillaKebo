@@ -1,10 +1,19 @@
 // Constantes
 PROFILE_PHOTO_S3 = "https://vk-profile-photos.s3.amazonaws.com/";
-
 const socket = io();
+
+
+function initSocket() {
+
+const token = localStorage.getItem('token');
+socket.emit('login', token);	
+
 socket.on('AccomplishActivity', (event) => {
     alert(`Activity Accomplished: ${event._id}`);
 });	
+}
+
+
 
 // --- Funciones de token ---
 window.addEventListener('load', function() {
@@ -16,6 +25,7 @@ window.addEventListener('load', function() {
         removeTokenFromUrl();
     } else{
         initApp();
+        initSocket();
     }
 });
 
@@ -24,6 +34,7 @@ function removeTokenFromUrl() {
     url.searchParams.delete('token');
     window.history.replaceState({}, document.title, url.pathname + url.search);
     initApp();
+
 }
 
 // --- Funciones de inicialización ---
