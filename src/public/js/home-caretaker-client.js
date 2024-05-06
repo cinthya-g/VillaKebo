@@ -64,6 +64,26 @@ async function getCaretakerData() {
     }
 }
 
+async function accomplishActivity(activityId) {
+    const token = localStorage.getItem('token');
+    fetch('/caretaker/accomplish-activity', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ activityId })
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    }).then(data => {
+        location.reload();
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+}
 
 async function getCaretakerPets() {
     const token = localStorage.getItem('token');
@@ -110,7 +130,7 @@ async function editCaretakerData(data) {
         return response.json();
     }).then(data => {
         $('#editProfileModal').modal('hide');
-        updateCardOwnerData(data);
+        location.reload();
     }).catch(error => {
         console.error('Error:', error);
     });
@@ -195,6 +215,7 @@ async function getPetData(petId) {
         console.error('ERROR:', error);
     }
 }
+
 async function getReservations() {
     const token = localStorage.getItem('token');
     try {
@@ -213,7 +234,9 @@ async function getReservations() {
         console.error('Error:', error);
         return null;
     }
-} async function getActivities() {
+}
+
+async function getActivities() {
     const token = localStorage.getItem('token');
     try {
         const response = await fetch('/caretaker/get-assigned-activities', {
@@ -249,7 +272,7 @@ async function createCaretakerCardBody() {
 
     const cardBody = `
     <div class="card-caretaker">
-        <img class="card-img-top" src="${caretakerData.profilePicture || '../img/caretaker.jpg'}" alt="Profile picture">
+        <img class="card-img-top" src="${isItGoogleAccount(caretakerData)}" alt="Profile picture">
         <div class="card-body">
             <h4 class="card-title"><b>${caretakerData.username}</b></h4>
             <h5 class="card-text-status"><i>
@@ -270,7 +293,7 @@ async function createCaretakerCardBody() {
 
 // Fabricar el contenido del MODAL DE EDITAR PERFIL ---
 async function createEditProfileModal() {
-    const ownerData = await getCaretakerData();
+    const caretakerData = await getCaretakerData();
     // Si es cuenta de google, no se pued editar el mail ni la foto
     const inputDisabled = localStorage.getItem('GoogleAccount') ? 'disabled' : '';
     const modalContent = `
@@ -281,21 +304,21 @@ async function createEditProfileModal() {
                 <form>
                     <div class="form-group">
                         <h5 for="editedUsername">Nombre de usuario</h5>
-                        <input type="text" class="form-control" id="editedUsername" placeholder="${ownerData.username}">
+                        <input type="text" class="form-control" id="editedUsername" placeholder="${caretakerData.username}">
                     </div>
                     <div class="form-group">
                         <h5 for="user-status">Estado</h5>
-                        <textarea class="form-control" id="editedStatus" rows="2" maxlength="250" placeholder="${ownerData.status}" style="resize: none;"></textarea>
+                        <textarea class="form-control" id="editedStatus" rows="2" maxlength="250" placeholder="${caretakerData.status}" style="resize: none;"></textarea>
                     </div>
                     <div class="form-group">
                         <h5 for="user-status">E-mail</h5>
-                        <input type="text" class="form-control" id="editedEmail" placeholder="${ownerData.email}" ${inputDisabled}>
+                        <input type="text" class="form-control" id="editedEmail" placeholder="${caretakerData.email}" ${inputDisabled}>
                     </div>
                 </form>
             </div>
             <!-- Right section for profile picture -->
             <div class="col-md-4 text-center">
-                <img src="${isItGoogleAccount(ownerData)}" alt="Profile Picture" class="img-fluid change-picture" id="profilePictureOwner">
+                <img src="${isItGoogleAccount(caretakerData)}" alt="Profile Picture" class="img-fluid change-picture" id="profilePictureOwner">
                 <input type="file" id="imageInputOwner" accept="image/*" style="display: none;">
                 <button class="btn boxed-btn5 mt-4" id="editPictureBtn" ${inputDisabled}>
                     <i class="fa fa-image" aria-hidden="true"></i>
@@ -391,7 +414,13 @@ async function createInfoPetModal(petID) {
 }
 
 
-//Funcion para crear los divs de las reservaciones
+// Function to format the date in a shorter format
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+}
+
 async function createReservationsCards() {
     const reservations = await getReservations();
     const activities = await getActivities();
@@ -399,79 +428,78 @@ async function createReservationsCards() {
         console.error('No se pudo obtener la información de las reservaciones');
         return;
     }
-    const reservationsSection = document.getElementById('reservations-section');
+    const reservationsSection = document.getElementById('card-reservation-section');
     let cards = '';
     if (reservations.length === 0) {
         cards = `
         <div class="col-md-12">
             <div class="card-reservation">
                 <div class="card-body">
-                    <h4 class="card-title
-                    "><b>No tienes reservaciones asignadas</b></h4> 
-                    <ul class="list-group
-                    list-group-flush">
+                    <h4 class="card-title"><b>No tienes reservaciones asignadas</b></h4> 
+                    <ul class="list-group list-group-flush">
                     </ul>
                 </div>
             </div>
         </div>
         `;
     } else {
-        reservations.forEach(reservation => {
-            cards += `
+        reservations.forEach((reservation, index) => {
+            let reservationCard = `
             <div class="col-md-12">
                 <div class="card-reservation">
                     <div class="card-body">
-                        <h3 class="card-title ml-2"><b>${reservation.reservationName}</b></h3>
+                        <h3 class="card-title ml-2"><b>Reservation ${index + 1}</b></h3>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><h5>${reservation.startDate} - ${reservation.endDate}</h5></li>
+                            <li class="list-group-item"><h5>${formatDate(reservation.startDate)} - ${formatDate(reservation.endDate)}</h5></li>
                             <li class="list-group-item">
-                                <btn class="btn boxed-btn5" id="ownerProfileBtn" data-toggle="modal" data-target="#ownerProfilePreview">
-                                    <i class="fa fa-address-card mr-2"  aria-hidden="true"></i>
+                                <button class="btn boxed-btn5 owner-profile-btn" data-toggle="modal" data-target="#ownerProfilePreview">
+                                    <i class="fa fa-address-card mr-2" aria-hidden="true"></i>
                                     Perfil del dueño
-                                </btn>
+                                </button>
                             </li>
                             <li class="list-group-item">
                                 <h4><b>Actividades a completar:</b></h4>
+                                ${activities.map(activity => `
+                                    <div class="col-md-12">
+                                        <div class="card-reservation">
+                                            <div class="card-body">
+                                                <div class="list-group-item-activity">
+                                                    <div class="row accomplishable col-12">
+                                                        <div class="col-md-10">
+                                                            <h5><b>${activity.title}</b> <i>${activity.frequency}</i></i></h5>
+                                                            <p>${activity.description}</p>
+                                                            <p style="font-size: small;">Ya se ha completado ${activity.timesCompleted} veces</p>
+                                                        </div>
+                                                        <div class="col-md-2 accomplish-section">
+                                                            <button class="btn boxed-btn-round-green accomplish-btn" data-activity-id="${activity._id}">
+                                                                <i class="fa fa-check mr-1" aria-hidden="true"></i>
+                                                                Completar 
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
             `;
-
-            // Ciclo para mostrar las actividades de cada reserva
-            activities.forEach(activity => {
-
-                cards += `
-                    <div class="col-md-12">
-                        <div class="card-reservation">
-                            <div class="card-body">
-                                <div class="list-group-item-activity" id="individualActivity">
-                                    <div class="row accomplishable col-12">
-                                        <div class="col-md-10">
-                                            <h5><b>${activity.title}</b> <i>${activity.frequency}</i></h5>
-                                            <p>${activity.description}</p>
-                                            <p style="font-size: small;">Ya se ha completado ${activity.count} veces</p>
-                                        </div>
-                                        <div class="col-md-2 accomplish-section">
-                                            <btn class="btn boxed-btn-round-green accomplish-btn" >
-                                                <i class="fa fa-check mr-1" aria-hidden="true"></i>
-                                                Completar 
-                                            </btn>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    `;
-
-            });
+            cards += reservationCard;
         });
     }
-    if (document.getElementById('card-reservation')) {
-        document.getElementById('card-reservation').innerHTML = cards;
-    }
+    reservationsSection.innerHTML = cards;
+
+    // Attach click event listener to "Completar" buttons
+    document.querySelectorAll('.accomplish-btn').forEach(button => {
+        button.addEventListener('click', function (event) {
+            const activityId = event.target.getAttribute('data-activity-id');
+            accomplishActivity(activityId);
+        });
+    });
 }
 
 // --- Eventos DOM ---

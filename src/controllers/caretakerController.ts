@@ -403,9 +403,9 @@ class CaretakerController{
      *           schema:
      *             type: object
      *             required:
-     *               - activityID
+     *               - activityId
      *             properties:
-     *               activityID:
+     *               activityId:
      *                 type: string
      *                 description: The unique identifier of the activity to update
      *     responses:
@@ -416,18 +416,18 @@ class CaretakerController{
      *       500:
      *         description: Internal Server Error
      */
-    async  accomplishActivity(req: Request, res: Response) {
+    async accomplishActivity(req: Request, res: Response) {
         try {
-            const { activityID } = req.body;
+            const { activityId } = req.body;
     
-            if (!activityID) {
-                res.status(400).send("Missing required fields: activityID"); // BAD_REQUEST
+            if (!activityId) {
+                res.status(400).send("Missing required fields: activityId"); // BAD_REQUEST
                 return;
             }
     
             // Busca la actividad y incrementa el contador 'timesCompleted'
             const updatedActivity = await Activity.findOneAndUpdate(
-                { _id: activityID },
+                { _id: activityId },
                 { $inc: { timesCompleted: 1 } },
                 { new: true, runValidators: true }
             );
@@ -453,12 +453,11 @@ class CaretakerController{
     
             // Extrae el userID del owner de la reserva
             const owner = await Owner.findById(reservation.ownerID);
-            
+
             if (!owner) {
                 res.status(404).send("No owner found for this reservation"); // NOT_FOUND
                 return;
             }
-
             const ownerName = owner.id;
             //console.log('Owner ID:', ownerName);
 
