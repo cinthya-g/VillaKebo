@@ -260,7 +260,9 @@ async function getReservations() {
         console.error('Error:', error);
         return null;
     }
-} async function getActivities() {
+}
+
+async function getActivities() {
     const token = localStorage.getItem('token');
     try {
         const response = await fetch('/caretaker/get-assigned-activities', {

@@ -357,7 +357,7 @@ class CaretakerController{
 
             const caretaker = await Caretaker.findOne({ _id: caretakerID });
             const reservations = await Reservation.find({ _id: { $in: caretaker.assignedReservationsIDs } });
-            const activities = await Activity.find({ _id: { $in: reservations.map(reservation => reservation.activitiesIDs) }});
+            const activities = await Activity.find({ _id: { $in: reservations.map(reservation => reservation.activitiesIDs).flat() }});
 
             res.status(ResponseCodes.SUCCESS).send(activities);
 
