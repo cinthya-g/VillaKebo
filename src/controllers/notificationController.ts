@@ -29,15 +29,16 @@ class NotificationController {
 
     async  getNotificationsByOwnerId(req:Request, res:Response) {
         try {
-            const userid = req.params.ownerID  // Obtener el ownerID del parámetro de la URL
+            const userid = req.params.id  // Obtener el ownerID del parámetro de la URL
+
             const notifications = await Notification.find({ userid: userid });
             
             if (!notifications || notifications.length === 0) {
                 res.status(404).send('No notifications found');
                 return;
             }
-            //console.log('OwnerID:', userid);
-            //console.log('Notifications:', notifications);
+            console.log('OwnerID:', userid);
+            console.log('Notifications:', notifications);
     
             res.status(200).json(notifications);
         } catch (error) {

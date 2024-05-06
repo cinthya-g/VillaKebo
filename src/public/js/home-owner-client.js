@@ -1335,6 +1335,7 @@ async function getOwnerNotifications() {
         return;
     }
     const userid = ownerData._id;
+    console.log(userid);
 
     try {
         const response = await fetch(`/notification/notification?id=${userid}`, {  // Utiliza la ruta correcta
