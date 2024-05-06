@@ -1,6 +1,10 @@
 // Constantes
 PROFILE_PHOTO_S3 = "https://vk-profile-photos.s3.amazonaws.com/";
 
+const socket = io();
+socket.on('AccomplishActivity', (event) => {
+    alert(`Activity Accomplished: ${event._id}`);
+});	
 
 // --- Funciones de token ---
 window.addEventListener('load', function() {
@@ -1338,7 +1342,7 @@ async function getOwnerNotifications() {
     console.log(userid);
 
     try {
-        const response = await fetch(`/notification/notification?id=${userid}`, {  // Utiliza la ruta correcta
+        const response = await fetch(`/notification/notification/${userid}`, {  // Utiliza la ruta correcta
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -1347,7 +1351,9 @@ async function getOwnerNotifications() {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        return await response.json();
+        const data = await response.json();
+        console.log(data);
+        return data;
     } catch (error) {
         console.error('Error:', error);
         return null;

@@ -1,4 +1,6 @@
 const PROFILE_PHOTO_S3 = "https://vk-profile-photos.s3.amazonaws.com/";
+const socket = io();
+
 
 window.addEventListener('load', function () {
     const urlParams = new URLSearchParams(window.location.search);
@@ -57,7 +59,6 @@ async function getCaretakerData() {
         }
 
         const caretakerData = await response.json();
-        //console.log('Caretaker data:', caretakerData);
         return caretakerData;
     } catch (error) {
         console.error('ERROR:', error);
@@ -77,6 +78,8 @@ async function accomplishActivity(activityId) {
         if (!response.ok) {
             throw new Error('Network response was not ok: ' + response.statusText);
         }
+        const data = response.json();
+        socket.emit('accomplishActivity', data);
         return response.json();
     }).then(data => {
         location.reload();
@@ -500,6 +503,8 @@ async function createReservationsCards() {
     document.querySelectorAll('.accomplish-btn').forEach(button => {
         button.addEventListener('click', function (event) {
             const activityId = event.target.getAttribute('data-activity-id');
+
+            
             accomplishActivity(activityId);
         });
     });

@@ -553,7 +553,7 @@ class CaretakerController{
             const horaFormateada = `${hora}:${minutos}`;
             await Notifications.saveNotification(owner.id, caretakerID, petID, activityTitle, updatedActivity.timesCompleted,caretaker.username, pet.name, fechaFormateada, horaFormateada);
 
-            Server.to(ownerName).emit('accomplishActivity', updatedActivity);
+            Server.to(ownerName).emit('AccomplishActivity', updatedActivity);
 
     
             res.status(200).send(`Activity ${updatedActivity.title} accomplished. Times completed: ${updatedActivity.timesCompleted}`); // SUCCESS

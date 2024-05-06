@@ -1,4 +1,4 @@
-
+const socket = io();
 // --- LOG IN FORM ---
 document.getElementById('loginForm').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -30,6 +30,8 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     }).then(data => {
         // Guardar el token en localStorage
         localStorage.setItem('token', data.token);
+
+        socket.emit('login', data.token);	
         
         
         if (userType === 'owner') {
