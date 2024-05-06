@@ -753,49 +753,54 @@ async function createRecordModal(petID) {
 // Función para crear las tarjetas de las reservaciones
 async function createReservationCards() {
     const reservationsData = await getOwnerReservations();
-    if (!reservationsData) {
-        console.error('No se pudo obtener la información de las reservaciones');
+    const reservationsSection = document.getElementById('card-reservation-section');
+    
+    // Limpiar el contenido existente de manera segura
+    while (reservationsSection.firstChild) {
+        reservationsSection.removeChild(reservationsSection.firstChild);
+    }
+
+    if (!reservationsData || reservationsData.length === 0) {
+        reservationsSection.innerHTML = `<h3><b>No tienes reservaciones activas</b></h3>`;
         return;
     }
-    const reservationsSection = document.getElementById('reservation-cards-body');
-    let cards = '';
-    if (reservationsData.length <= 0) {
-        cards = `
-        <h3><b>No tienes reservaciones activas</b></h3>
-        `;
-    } else {
-        for(const reservation of reservationsData) {
 
-            const petData = await getPetData(reservation.petID);
-            const activitiesSection = await createActivitiesSection(reservation);
-            cards += `
-            <h3 class="card-title"><b>${petData.name}</b></h3>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><h5>${formatDate(reservation.startDate)} - ${formatDate(reservation.endDate)}</h5></li>
-                <li class="list-group-item">
-                    <h4><b>Actividades:</b></h4>
-                    ${activitiesSection}
-                </li>
-                <li class="list-group-item">                                                
-                    <h5><btn class="btn boxed-btn6" onclick="createCaretakerProfileModal('${reservation._id}')"
-                        data-toggle="modal" data-target="#caretakerProfilePreview">
-                        <i class="fa fa-address-card mr-2" aria-hidden="true"
-                        ></i>Perfil del cuidador</btn></h5>
-                </li> 
-                <li class="list-group-item">
-                    <btn class="btn boxed-btn-round-red" 
-                        data-toggle="modal" data-target="#deleteReservation" onclick="createDeleteReservationModal('${reservation.startDate}', '${reservation.endDate}', '${reservation._id}')">
-                        <i class="fa fa-times" aria-hidden="true"></i>
-                    Cancelar
-                        <a></a>
-                    </btn>
-                </li>
-            </ul>
-            `;
-        };
+    let cards = '';
+    for (const reservation of reservationsData) {
+        const petData = await getPetData(reservation.petID);
+        const activitiesSection = await createActivitiesSection(reservation);
+        cards += `
+        <div class="col-md-6">
+            <div class="card-reservation">
+                <div class="card-body" id="reservation-cards-body">
+                    <h3 class="card-title"><b>${petData.name}</b></h3>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><h5>${formatDate(reservation.startDate)} - ${formatDate(reservation.endDate)}</h5></li>
+                        <li class="list-group-item">
+                            <h4><b>Actividades:</b></h4>
+                            ${activitiesSection}
+                        </li>
+                        <li class="list-group-item">
+                            <btn class="btn boxed-btn6" onclick="createCaretakerProfileModal('${reservation._id}')" data-toggle="modal" data-target="#caretakerProfilePreview">
+                                <i class="fa fa-address-card mr-2" aria-hidden="true"></i>Perfil del cuidador
+                            </btn>
+                        </li>
+                        <li class="list-group-item">
+                            <btn class="btn boxed-btn-round-red" data-toggle="modal" data-target="#deleteReservation" onclick="createDeleteReservationModal('${reservation.startDate}', '${reservation.endDate}', '${reservation._id}')">
+                                <i class="fa fa-times mr-1" aria-hidden="true"></i>
+                                Cancelar
+                            </btn>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        `;
     }
-    reservationsSection.innerHTML = cards;   
-};
+    // Añadir nuevo contenido de forma segura
+    reservationsSection.innerHTML = cards;
+}
+
 
 // Función para crear las secciones de actividades de la reservación individual
 async function createActivitiesSection(reservationData) {
@@ -808,12 +813,10 @@ async function createActivitiesSection(reservationData) {
     let activitiesSection = '';
     let activityNumber = 1;
     allActivities.forEach(activity => {
-        // Mostrar las primeras 10 palabras de la descripcion y añadir puntos suspensivos
-        const description = activity.description.split(' ').slice(0, 10).join(' ') + '...';
         activitiesSection += `
         <h5 class="list-group-item-activity">
-            <b>${activityNumber}. ${activity.title}:<b>
-            <h6>${description}</h6>
+            <b>${activityNumber}. ${activity.title}:</b>
+            ${activity.description}
         </h5>
         `;
         activityNumber++;
