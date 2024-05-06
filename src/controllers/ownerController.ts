@@ -382,15 +382,19 @@ class OwnerController{
                 // Delete pet from the Owner's petsIDs array and the reservation ID from the reservationsIDs
                 const owner = await Owner.findOneAndUpdate({ _id: ownerID }, {$pull: { petsIDs: petID }}, { new: true });
                 const reservation = await Reservation.findOneAndDelete({ _id: reservationID });
-                // Get the activitiesIDs from the deleted reservation
-                const activitiesIDs = reservation.activitiesIDs;
-                // Delete the activities from the activities collection
-                await Activity.deleteMany({ _id: { $in: activitiesIDs } });
+                // If a reservation was found, delete the activities from the activities collection
+                if (reservation) {
+                    if (reservation.activitiesIDs.length > 0) {
+                        await Activity.deleteMany({ _id: { $in: reservation.activitiesIDs } });
+                    }
+                }
+
                 // Find the caretaker with the assigned reservation in their assignedReservationsIDs
                 const caretaker = await Caretaker.findOne({ assignedReservationsIDs: reservationID });
-                // Delete the id from the array
-                await Caretaker.findOneAndUpdate({ _id: caretaker._id }, {$pull: { assignedReservationsIDs: reservationID }}, { new: true });
-
+                // If a caretaker was found, delete the reservation from their assignedReservationsIDs
+                if (caretaker) {
+                    await Caretaker.findOneAndUpdate({ _id: caretaker._id }, {$pull: { assignedReservationsIDs: reservationID }}, { new: true });
+                }
 
                 res.status(ResponseCodes.SUCCESS).send(owner);
             }
@@ -1193,10 +1197,10 @@ class OwnerController{
             const reservations = await Reservation.find({ ownerID: ownerID, confirmed: true });
 
             // Filter those reservations which its endDate is greater or equal than the current day
-            const today = new Date();
-            const filteredReservations = reservations.filter(reservation => new Date(reservation.endDate) >= today);
+            //const today = new Date();
+            //const filteredReservations = reservations.filter(reservation => new Date(reservation.endDate) >= today);
             
-            res.status(ResponseCodes.SUCCESS).send(filteredReservations);
+            res.status(ResponseCodes.SUCCESS).send(reservations);
         } catch(error) {
             console.log('ERROR:', error);
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
