@@ -23,7 +23,7 @@ function initApp() {
         // Cargar datos del cuidador
         createCaretakerCardBody();
         createPetsCards();
-        createReservationsCards();
+        //createReservationsCards();
 
     } else {
         console.error('No hay token de autenticación');
@@ -39,7 +39,7 @@ function isItGoogleAccount(obj) {
 // --- Funciones de API ---
 async function getCaretakerData() {
     const token = localStorage.getItem('token');
-    console.log('Token from localStorage:', token);
+
     if (!token) {
         console.error('No hay token de autenticación');
         return;
@@ -57,7 +57,7 @@ async function getCaretakerData() {
         }
 
         const caretakerData = await response.json();
-        console.log('Caretaker data:', caretakerData);
+        //console.log('Caretaker data:', caretakerData);
         return caretakerData;
     } catch (error) {
         console.error('ERROR:', error);
@@ -67,7 +67,7 @@ async function getCaretakerData() {
 
 async function getCaretakerPets() {
     const token = localStorage.getItem('token');
-    console.log('Token from localStorage:', token);
+    //console.log('Token from localStorage:', token);
     if (!token) {
         console.error('No hay token de autenticación');
         return;
@@ -85,7 +85,7 @@ async function getCaretakerPets() {
         }
 
         const petsData = await response.json();
-        console.log('Pets data:', petsData);
+        //console.log('Pets data:', petsData);
         return petsData;
     } catch (error) {
         console.error('ERROR:', error);
@@ -152,8 +152,12 @@ async function uploadProfilePicture(file) {
 async function getCaretakerPets() {
     const token = localStorage.getItem('token');
 
+    const caretakerData = await getCaretakerData();
+    const caretakerId = caretakerData._id;
+    //console.log('Caretaker ID:', caretakerId);
+
     try {
-        const response = await fetch('/caretaker/get-caretaker-pets', {
+        const response = await fetch(`/caretaker/get-caretaker-pets/${caretakerId}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -162,7 +166,9 @@ async function getCaretakerPets() {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        return await response.json();
+        const petData = await response.json();
+        //console.log('Pet data:', petData);
+        return petData;
     }
     catch (error) {
         console.error('Error:', error);
@@ -177,7 +183,7 @@ async function getPetData(petId) {
         return;
     }
     try {
-        const response = await fetch(`/caretaker/get-caretaker-pets/${petId}`, {
+        const response = await fetch(`/caretaker/get-caretaker-pets-by-id/${petId}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -189,49 +195,49 @@ async function getPetData(petId) {
         }
 
         const petData = await response.json();
-        console.log('Pet data:', petData);
+        //console.log('Pet data:', petData);
         return petData;
     } catch (error) {
         console.error('ERROR:', error);
     }
 }
-async function getReservations() {
-    const token = localStorage.getItem('token');
-    try {
-        const response = await fetch('/caretaker/get-assigned-reservations', {
-            method: 'GET',
-            headers: {
-                'content-type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-        });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('Error:', error);
-        return null;
-    }
-} async function getActivities() {
-    const token = localStorage.getItem('token');
-    try {
-        const response = await fetch('/caretaker/get-assigned-activities', {
-            method: 'GET',
-            headers: {
-                'content-type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-        });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('Error:', error);
-        return null;
-    }
-}
+// async function getReservations() {
+//     const token = localStorage.getItem('token');
+//     try {
+//         const response = await fetch('/caretaker/get-assigned-reservations', {
+//             method: 'GET',
+//             headers: {
+//                 'content-type': 'application/json',
+//                 'Authorization': `Bearer ${token}`
+//             },
+//         });
+//         if (!response.ok) {
+//             throw new Error('Network response was not ok');
+//         }
+//         return await response.json();
+//     } catch (error) {
+//         console.error('Error:', error);
+//         return null;
+//     }
+// } async function getActivities() {
+//     const token = localStorage.getItem('token');
+//     try {
+//         const response = await fetch('/caretaker/get-assigned-activities', {
+//             method: 'GET',
+//             headers: {
+//                 'content-type': 'application/json',
+//                 'Authorization': `Bearer ${token}`
+//             },
+//         });
+//         if (!response.ok) {
+//             throw new Error('Network response was not ok');
+//         }
+//         return await response.json();
+//     } catch (error) {
+//         console.error('Error:', error);
+//         return null;
+//     }
+// }
 
 
 
@@ -310,6 +316,7 @@ async function createEditProfileModal() {
 // Fabricar las tarjetas de mascotas dependiendo de los datos obtenidos
 async function createPetsCards() {
     const petsData = await getCaretakerPets();
+    //console.log('Pets data in createpetscard:', petsData);
     if (!petsData) {
         console.error('No se pudo obtener la información de las mascotas');
         return;
@@ -341,7 +348,7 @@ async function createPetsCards() {
                             <li class="list-group-item">${pet.breed} de ${pet.age} años</li>
                             <li class="list-group-item">
 
-                            <btn class="btn boxed-btn6" data-toggle="modal" data-target="#petInfoModal">
+                            <btn class="btn boxed-btn6" data-toggle="modal" data-target="#petInfoModal" onclick="createInfoPetModal('${pet._id}')">
                                 <i class="fa fa-plus mr-1" aria-hidden="true"></i>
                                 <a>Info</a></btn>
                                 
@@ -359,22 +366,19 @@ async function createPetsCards() {
 
 // Función para crear el contenido del MODAL DE EDITAR MASCOTA
 async function createInfoPetModal(petID) {
-    const pets = await getCaretakerPets();
+    const pet2 = await getPetData(petID);
 
-    const petData = await getPetData(petID);
-    if (!petData) {
-        console.error('[Editar mascota] No se pudo obtener la información de la mascota: ', petID);
-        return;
-    }
+    
+    
     const modalContent = `
     <div class="modal-body">
     <div class="row">
         <!-- Left section for PDF viewer -->
         <div class="col-md-5 text-center vertical-center">
-            <img class="caretaker-picture mb-2" src="../img/pug.png">
-            <h5><b>Nombre: </b>${pet.name}/h5>
-            <h5><b>Raza: </b>${pet.breed}</h5>
-            <h5><b>Edad: </b>${pet.age}</h5>
+            <img class="caretaker-picture mb-2" src="${PROFILE_PHOTO_S3+pet2.profilePicture}">
+            <h5><b>Nombre: </b>${pet2.name}</h5>
+            <h5><b>Raza: </b>${pet2.breed}</h5>
+            <h5><b>Edad: </b>${pet2.age}</h5>
         </div>
         <!-- Right section for upload new PDF -->
         <div class="col-md-7 text-center">
@@ -392,87 +396,87 @@ async function createInfoPetModal(petID) {
 
 
 //Funcion para crear los divs de las reservaciones
-async function createReservationsCards() {
-    const reservations = await getReservations();
-    const activities = await getActivities();
-    if (!reservations) {
-        console.error('No se pudo obtener la información de las reservaciones');
-        return;
-    }
-    const reservationsSection = document.getElementById('reservations-section');
-    let cards = '';
-    if (reservations.length === 0) {
-        cards = `
-        <div class="col-md-12">
-            <div class="card-reservation">
-                <div class="card-body">
-                    <h4 class="card-title
-                    "><b>No tienes reservaciones asignadas</b></h4> 
-                    <ul class="list-group
-                    list-group-flush">
-                    </ul>
-                </div>
-            </div>
-        </div>
-        `;
-    } else {
-        reservations.forEach(reservation => {
-            cards += `
-            <div class="col-md-12">
-                <div class="card-reservation">
-                    <div class="card-body">
-                        <h3 class="card-title ml-2"><b>${reservation.reservationName}</b></h3>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><h5>${reservation.startDate} - ${reservation.endDate}</h5></li>
-                            <li class="list-group-item">
-                                <btn class="btn boxed-btn5" id="ownerProfileBtn" data-toggle="modal" data-target="#ownerProfilePreview">
-                                    <i class="fa fa-address-card mr-2"  aria-hidden="true"></i>
-                                    Perfil del dueño
-                                </btn>
-                            </li>
-                            <li class="list-group-item">
-                                <h4><b>Actividades a completar:</b></h4>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            `;
+// async function createReservationsCards() {
+//     const reservations = await getReservations();
+//     const activities = await getActivities();
+//     if (!reservations) {
+//         console.error('No se pudo obtener la información de las reservaciones');
+//         return;
+//     }
+//     const reservationsSection = document.getElementById('reservations-section');
+//     let cards = '';
+//     if (reservations.length === 0) {
+//         cards = `
+//         <div class="col-md-12">
+//             <div class="card-reservation">
+//                 <div class="card-body">
+//                     <h4 class="card-title
+//                     "><b>No tienes reservaciones asignadas</b></h4> 
+//                     <ul class="list-group
+//                     list-group-flush">
+//                     </ul>
+//                 </div>
+//             </div>
+//         </div>
+//         `;
+//     } else {
+//         reservations.forEach(reservation => {
+//             cards += `
+//             <div class="col-md-12">
+//                 <div class="card-reservation">
+//                     <div class="card-body">
+//                         <h3 class="card-title ml-2"><b>${reservation.reservationName}</b></h3>
+//                         <ul class="list-group list-group-flush">
+//                             <li class="list-group-item"><h5>${reservation.startDate} - ${reservation.endDate}</h5></li>
+//                             <li class="list-group-item">
+//                                 <btn class="btn boxed-btn5" id="ownerProfileBtn" data-toggle="modal" data-target="#ownerProfilePreview">
+//                                     <i class="fa fa-address-card mr-2"  aria-hidden="true"></i>
+//                                     Perfil del dueño
+//                                 </btn>
+//                             </li>
+//                             <li class="list-group-item">
+//                                 <h4><b>Actividades a completar:</b></h4>
+//                             </li>
+//                         </ul>
+//                     </div>
+//                 </div>
+//             </div>
+//             `;
 
-            // Ciclo para mostrar las actividades de cada reserva
-            activities.forEach(activity => {
+//             // Ciclo para mostrar las actividades de cada reserva
+//             activities.forEach(activity => {
 
-                cards += `
-                    <div class="col-md-12">
-                        <div class="card-reservation">
-                            <div class="card-body">
-                                <div class="list-group-item-activity" id="individualActivity">
-                                    <div class="row accomplishable col-12">
-                                        <div class="col-md-10">
-                                            <h5><b>${activity.title}</b> <i>${activity.frequency}</i></h5>
-                                            <p>${activity.description}</p>
-                                            <p style="font-size: small;">Ya se ha completado ${activity.count} veces</p>
-                                        </div>
-                                        <div class="col-md-2 accomplish-section">
-                                            <btn class="btn boxed-btn-round-green accomplish-btn" >
-                                                <i class="fa fa-check mr-1" aria-hidden="true"></i>
-                                                Completar 
-                                            </btn>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    `;
+//                 cards += `
+//                     <div class="col-md-12">
+//                         <div class="card-reservation">
+//                             <div class="card-body">
+//                                 <div class="list-group-item-activity" id="individualActivity">
+//                                     <div class="row accomplishable col-12">
+//                                         <div class="col-md-10">
+//                                             <h5><b>${activity.title}</b> <i>${activity.frequency}</i></h5>
+//                                             <p>${activity.description}</p>
+//                                             <p style="font-size: small;">Ya se ha completado ${activity.count} veces</p>
+//                                         </div>
+//                                         <div class="col-md-2 accomplish-section">
+//                                             <btn class="btn boxed-btn-round-green accomplish-btn" >
+//                                                 <i class="fa fa-check mr-1" aria-hidden="true"></i>
+//                                                 Completar 
+//                                             </btn>
+//                                         </div>
+//                                     </div>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     </div>
+//                     `;
 
-            });
-        });
-    }
-    if (document.getElementById('card-reservation')) {
-        document.getElementById('card-reservation').innerHTML = cards;
-    }
-}
+//             });
+//         });
+//     }
+//     if (document.getElementById('card-reservation')) {
+//         document.getElementById('card-reservation').innerHTML = cards;
+//     }
+// }
 
 // --- Eventos DOM ---
 // TEMPORAL: Cerrar sesión (no-google)
@@ -491,13 +495,7 @@ document.addEventListener('DOMContentLoaded', function () {
         createEditProfileModal();
     });
 });
-// Abrir modal de petInfoModal
-document.addEventListener('DOMContentLoaded', function () {
-    //El event listener esta escuchando a lo que pasa con el tag #petInfoModal
-    $('#petInfoModal').on('show.bs.modal', function () {
-        createInfoPetModal();
-    });
-});
+
 
 // EVENT DELEGATION: Subir nueva imagen de perfil
 document.addEventListener('DOMContentLoaded', function () {

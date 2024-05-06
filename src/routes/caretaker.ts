@@ -61,7 +61,8 @@ router.put('/update-caretaker', caretakerController.updateCaretaker);
  */
 
 router.get('/get-caretaker', caretakerController.getCaretaker);
-router.get('/get-caretaker-pets', caretakerController.getAssignedPets);
+router.get('/get-caretaker-pets/:id', caretakerController.getAssignedPets);
+router.get('/get-caretaker-pets-by-id/:petID', caretakerController.getAssignedPetsByID);
 
 /**
  * @swagger
