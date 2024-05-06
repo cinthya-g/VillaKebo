@@ -23,7 +23,7 @@ function initApp() {
         // Cargar datos del cuidador
         createCaretakerCardBody();
         createPetsCards();
-        //createReservationsCards();
+        createReservationsCards();
 
     } else {
         console.error('No hay token de autenticación');
@@ -242,48 +242,43 @@ async function getPetRecord(petID) {
         return null;
     }
 };
-// async function getReservations() {
-//     const token = localStorage.getItem('token');
-//     try {
-//         const response = await fetch('/caretaker/get-assigned-reservations', {
-//             method: 'GET',
-//             headers: {
-//                 'content-type': 'application/json',
-//                 'Authorization': `Bearer ${token}`
-//             },
-//         });
-//         if (!response.ok) {
-//             throw new Error('Network response was not ok');
-//         }
-//         return await response.json();
-//     } catch (error) {
-//         console.error('Error:', error);
-//         return null;
-//     }
-// } async function getActivities() {
-//     const token = localStorage.getItem('token');
-//     try {
-//         const response = await fetch('/caretaker/get-assigned-activities', {
-//             method: 'GET',
-//             headers: {
-//                 'content-type': 'application/json',
-//                 'Authorization': `Bearer ${token}`
-//             },
-//         });
-//         if (!response.ok) {
-//             throw new Error('Network response was not ok');
-//         }
-//         return await response.json();
-//     } catch (error) {
-//         console.error('Error:', error);
-//         return null;
-//     }
-// }
-
-
-
-
-
+async function getReservations() {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch('/caretaker/get-assigned-reservations', {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+} async function getActivities() {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch('/caretaker/get-assigned-activities', {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+}
 
 // --- Funciones de DOM ---
 // Función para crear el cuerpo de la tarjeta del Caretaker ---
