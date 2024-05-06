@@ -49,28 +49,3 @@ document.getElementById('googleLogin').addEventListener('click', function(event)
     // Redirige al usuario directamente a la ruta de autenticación de Google en tu servidor
     window.location.href = '/google-passport/google-auth';
 });
-
-/*
-document.getElementById('nousedf').addEventListener('click', function(event) {
-    event.preventDefault();
-    fetch(`/google-passport/google-auth`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    }).then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok: ' + response.statusText);
-        }
-        return response.json();
-    }).then(data => {
-        // Guardar el token en localStorage
-        localStorage.setItem('token', data.token);
-        window.location.href = '/home-owner.html';
-
-    }).catch(error => {
-        console.error('GOOGLE LOGIN - Error:', error);
-        //alert('Hubo un problema con tu solicitud de inicio de sesión: ' + error.message);
-    });
-});
-*/

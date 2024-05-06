@@ -20,7 +20,8 @@ router.get('/login', (req: Request, res: Response) => {
 */
 
 router.get('/google-auth', passport.authenticate('google', { 
-    scope: ['profile', 'email'] 
+    scope: ['profile', 'email'],
+    prompt: 'select_account'
 }));
 
 router.get('/google/callback',
@@ -35,6 +36,8 @@ router.get('/google/callback',
 );
 
 router.get('/logout', (req: Request, res: Response, next: NextFunction) => {
+    console.log("logging out google");
+    console.log(req);
     req.logout(function(err) {
         if (err) { 
             return next(err); 
@@ -44,7 +47,7 @@ router.get('/logout', (req: Request, res: Response, next: NextFunction) => {
                 return next(err); 
             }
             res.clearCookie('connect.sid'); 
-            res.redirect('/google-passport/login'); 
+            res.redirect('/login.html'); 
         });
     });
 });

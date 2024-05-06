@@ -180,6 +180,8 @@ async function editPetData(petID, updateData) {
     }).then(data => {
         $('#editPetModal').modal('hide');
         createPetsCards();
+        createReservationCards();
+        createReservationCards();
     }).catch(error => {
         console.error('Error:', error);
     });
@@ -232,9 +234,11 @@ async function deletePet(petID) {
     }).then(data => {
         $('#deletePetModal').modal('hide');
         createPetsCards();
+        
     }).catch(error => {
         console.error('Error:', error);
     });
+    
 };
 
 // Crear mascota
@@ -565,9 +569,6 @@ async function createPetsCards() {
             <div class="card-pet">
                 <div class="card-body">
                     <h4 class="card-title"><b>No tienes mascotas registradas</b></h4>
-                    <ul class="list-group
-                    list-group-flush">
-                    </ul>
                 </div>
             </div>
         </div>
@@ -761,7 +762,15 @@ async function createReservationCards() {
     }
 
     if (!reservationsData || reservationsData.length === 0) {
-        reservationsSection.innerHTML = `<h3><b>No tienes reservaciones activas</b></h3>`;
+        reservationsSection.innerHTML = `
+        <div class="col-md-12">
+            <div class="card-reservation">
+                <div class="card-body">
+                    <h4 class="card-title"><b>Sin reservaciones activas</b></h4>
+                    
+                </div>
+            </div>
+        </div>`;
         return;
     }
 
@@ -951,12 +960,37 @@ async function createNewActivitiesModal(reservationID) {
 
 
 // --- Eventos DOM ---
-// TEMPORAL: Cerrar sesión (no-google)
-document.getElementById('logoutBtn').addEventListener('click', function() {
+// Cerrar sesión
+document.getElementById('logoutBtn').addEventListener('click', async function() {
     localStorage.removeItem('token');
-    localStorage.removeItem('GoogleAccount');
-    window.location.href = '../index.html';
+    if (localStorage.getItem('GoogleAccount')){
+        await googleSignOut();
+        localStorage.removeItem('GoogleAccount');
+    } else {
+        window.location.href = '../index.html';
+    }
 });
+
+// Endpoint de logout de google
+async function googleSignOut() {
+    fetch('/google-passport/logout', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        //console.log('response was ok and  successful');
+        window.location.href = '/login.html';  // Redireccionar al cliente directamente a la página de inicio de sesión
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+
+
 
 // Abrir modal de editar perfil
 document.addEventListener('DOMContentLoaded', function () {
