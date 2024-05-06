@@ -20,7 +20,7 @@ class NotificationController {
             });
 
             const savedNotification = await newNotification.save();
-            console.log('Notification saved:', savedNotification);
+            //console.log('Notification saved:', savedNotification);
         } catch (error) {
             console.error('Failed to save notification:', error);
             throw new Error('Error saving notification');
@@ -30,7 +30,7 @@ class NotificationController {
     async  getNotificationsByOwnerId(req:Request, res:Response) {
         try {
             const userid = req.params.id  // Obtener el ownerID del parámetro de la URL
-            console.log('OwnerID in getnotifications:', userid);
+            //console.log('OwnerID in getnotifications:', userid);
 
             const notifications = await Notification.find({ ownerID: userid });
             
@@ -38,8 +38,8 @@ class NotificationController {
                 res.status(404).send('No notifications found');
                 return;
             }
-            console.log('OwnerID:', userid);
-            console.log('Notifications:', notifications);
+            //console.log('OwnerID:', userid);
+            //console.log('Notifications:', notifications);
     
             res.status(200).json(notifications);
         } catch (error) {

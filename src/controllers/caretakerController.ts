@@ -492,6 +492,7 @@ class CaretakerController{
     async accomplishActivity(req: Request, res: Response) {
         try {
             const { activityId } = req.body;
+            console.log('ActivityID:', activityId);
     
             if (!activityId) {
                 res.status(400).send("Missing required fields: activityId"); // BAD_REQUEST

@@ -67,6 +67,7 @@ async function getCaretakerData() {
 
 async function accomplishActivity(activityId) {
     const token = localStorage.getItem('token');
+    console.log('Activity ID:', activityId);
     fetch('/caretaker/accomplish-activity', {
         method: 'PUT',
         headers: {
@@ -79,9 +80,11 @@ async function accomplishActivity(activityId) {
             throw new Error('Network response was not ok: ' + response.statusText);
         }
         const data = response.json();
-        socket.emit('accomplishActivity', data);
-        return response.json();
-    }).then(data => {
+        console.log('Data:', data);
+        
+        socket.emit('RecieveAcomplished', activityId);
+        //return data;
+    }).then(() => {
         location.reload();
     }).catch(error => {
         console.error('Error:', error);
