@@ -562,9 +562,28 @@ class CaretakerController{
             res.status(500).send("Internal Server Error"); // SERVER_ERROR
         }
     }
+    
+    async getOwnerByID(req: Request, res: Response){
+        try{
+            const ownerID = req.params.id;
+            if (!ownerID) {
+                res.status(400).send("Missing required fields: ownerID"); // BAD_REQUEST
+                return;
+            }
 
+            const owner = await Owner.findById(ownerID);
 
-
+            if (!owner) {
+                res.status(404).send("No owner found with the provided ID"); // NOT_FOUND
+                return;
+            }
+            res.status(200).send(owner);
+            return
+        }catch(error){
+            console.error('ERROR:', error);
+            res.status(500).send("Internal Server Error"); // SERVER_ERROR
+        }
+    }
 }
 
 export default new CaretakerController();

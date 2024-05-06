@@ -224,6 +224,26 @@ async function getPetData(petId) {
         console.error('ERROR:', error);
     }
 }
+
+async function getOwnerData(ownerID) {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`/caretaker/get-owner-by-id/${ownerID}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+}
+
 // Obtener el expediente de una mascota
 async function getPetRecord(petID) {
     const token = localStorage.getItem('token');
@@ -467,18 +487,21 @@ async function createReservationsCards() {
         </div>
         `;
     } else {
-        for(const reservation of reservations){
+        for (const reservation of reservations) {
             const petData = await getPetData(reservation.petID);
             const activitiesCards = await createActivitiesCards(reservation._id);
+            const ownerData = await getOwnerData(reservation.ownerID);
+
+            // Create reservation card
             let reservationCard = `
             <div class="col-md-12">
                 <div class="card-reservation m-3">
-                    <div class="card-body">.
+                    <div class="card-body">
                         <h3 class="card-title ml-2"><b>Reservación de: ${petData.name}</b></h3>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item"><h5>${formatDate(reservation.startDate)} - ${formatDate(reservation.endDate)}</h5></li>
                             <li class="list-group-item">
-                                <button class="btn boxed-btn5 owner-profile-btn" data-toggle="modal" data-target="#ownerProfilePreview">
+                                <button class="btn boxed-btn5 owner-profile-btn" data-toggle="modal" data-target="#ownerProfilePreview" data-owner-id="${reservation.ownerID}">
                                     <i class="fa fa-address-card mr-2" aria-hidden="true"></i>
                                     Perfil del dueño
                                 </button>
@@ -495,17 +518,33 @@ async function createReservationsCards() {
             </div>
             `;
             cards += reservationCard;
-        };
+        }
     }
     reservationsSection.innerHTML = cards;
 
-    // Attach click event listener to "Completar" buttons
-    document.querySelectorAll('.accomplish-btn').forEach(button => {
-        button.addEventListener('click', function (event) {
-            const activityId = event.target.getAttribute('data-activity-id');
+    // Attach click event listener to "Perfil del dueño" buttons
+    document.querySelectorAll('.owner-profile-btn').forEach(button => {
+        button.addEventListener('click', async function (event) {
+            const ownerId = event.target.getAttribute('data-owner-id');
+            const ownerData = await getOwnerData(ownerId);
 
-            
-            accomplishActivity(activityId);
+            // Populate modal with ownerData
+            const modalTitle = document.querySelector('#ownerProfilePreviewLabel');
+            modalTitle.textContent = `Detalles del dueño`;
+
+            const modalBody = document.querySelector('.modal-body');
+            modalBody.innerHTML = `
+                <div class="row">
+                    <div class="col-md-12 text-center vertical-center">
+                        <img class="caretaker-picture mb-2" src="${isItGoogleAccount(ownerData)}">
+                        <h5><b>Nombre:</b> ${ownerData.username}</h5>
+                        <h5><b>Contacto:</b> ${ownerData.email}</h5>
+                        <h5>${ownerData.status}</h5>
+                        <br>
+                        <h5>Tiene otras ${ownerData.petsIDs.length} mascotas</h5>
+                    </div>
+                </div>
+            `;
         });
     });
 }

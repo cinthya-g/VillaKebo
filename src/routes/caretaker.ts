@@ -105,6 +105,8 @@ router.post('/upload-photo', uploadPhoto.single('photo'), caretakerController.sa
  */
 router.get('/get-picture', caretakerController.getPicture);
 
+router.get('/get-owner-by-id/:id', caretakerController.getOwnerByID);
+
 // Caretaker-Reservation actions
 
 router.get('/get-assigned-reservations', caretakerController.getAssignedReservations);
