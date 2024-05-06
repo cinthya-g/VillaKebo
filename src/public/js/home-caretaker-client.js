@@ -262,10 +262,10 @@ async function getReservations() {
     }
 }
 
-async function getActivities() {
+async function getActivities(reservationID) {
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch('/caretaker/get-assigned-activities', {
+        const response = await fetch(`/caretaker/get-assigned-activities/${reservationID}`, {
             method: 'GET',
             headers: {
                 'content-type': 'application/json',
@@ -444,7 +444,7 @@ function formatDate(dateString) {
 
 async function createReservationsCards() {
     const reservations = await getReservations();
-    const activities = await getActivities();
+    console.log('Reservations:', reservations);
     if (!reservations) {
         console.error('No se pudo obtener la información de las reservaciones');
         return;
@@ -464,12 +464,14 @@ async function createReservationsCards() {
         </div>
         `;
     } else {
-        reservations.forEach((reservation, index) => {
+        for(const reservation of reservations){
+            const petData = await getPetData(reservation.petID);
+            const activitiesCards = await createActivitiesCards(reservation._id);
             let reservationCard = `
             <div class="col-md-12">
-                <div class="card-reservation">
-                    <div class="card-body">
-                        <h3 class="card-title ml-2"><b>Reservation ${index + 1}</b></h3>
+                <div class="card-reservation m-3">
+                    <div class="card-body">.
+                        <h3 class="card-title ml-2"><b>Reservación de: ${petData.name}</b></h3>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item"><h5>${formatDate(reservation.startDate)} - ${formatDate(reservation.endDate)}</h5></li>
                             <li class="list-group-item">
@@ -480,29 +482,9 @@ async function createReservationsCards() {
                             </li>
                             <li class="list-group-item">
                                 <h4><b>Actividades a completar:</b></h4>
-                                ${activities.map(activity => `
-                                    <div class="col-md-12">
-                                        <div class="card-reservation">
-                                            <div class="card-body">
-                                                <div class="list-group-item-activity">
-                                                    <div class="row accomplishable col-12">
-                                                        <div class="col-md-10">
-                                                            <h5><b>${activity.title}</b> <i>${activity.frequency}</i></i></h5>
-                                                            <p>${activity.description}</p>
-                                                            <p style="font-size: small;">Ya se ha completado ${activity.timesCompleted} veces</p>
-                                                        </div>
-                                                        <div class="col-md-2 accomplish-section">
-                                                            <button class="btn boxed-btn-round-green accomplish-btn" data-activity-id="${activity._id}">
-                                                                <i class="fa fa-check mr-1" aria-hidden="true"></i>
-                                                                Completar 
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `).join('')}
+                                
+                                    ${activitiesCards}
+                                
                             </li>
                         </ul>
                     </div>
@@ -510,7 +492,7 @@ async function createReservationsCards() {
             </div>
             `;
             cards += reservationCard;
-        });
+        };
     }
     reservationsSection.innerHTML = cards;
 
@@ -522,6 +504,46 @@ async function createReservationsCards() {
         });
     });
 }
+
+// Actividades
+async function createActivitiesCards(reservationID) {
+    const allActivities = await getActivities(reservationID);
+    if (!allActivities) {
+        console.error('No se pudo obtener la información de las actividades');
+        return;
+    }
+    let activitiesCards = '';
+    let activityNumber = 1;
+    allActivities.forEach(activity => {
+        activitiesCards += `
+        <div class="col-md-12">
+            <div class="card-reservation">
+                <div class="card-body">
+                    <div class="list-group-item-activity">
+                        <div class="row accomplishable col-12">
+                            <div class="col-md-10">
+                                <h5><b>${activityNumber}. ${activity.title}</b> <i>${activity.frequency}</i></i></h5>
+                                <p>${activity.description}</p>
+                                <p style="font-size: small;">Ya se ha completado ${activity.timesCompleted} veces</p>
+                            </div>
+                            <div class="col-md-2 accomplish-section">
+                                <button class="btn boxed-btn-round-green accomplish-btn" data-activity-id="${activity._id}">
+                                    <i class="fa fa-check mr-1" aria-hidden="true"></i>
+                                    Completar 
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+        activityNumber++;
+    });
+
+    return activitiesCards;
+
+};
 
 // --- Eventos DOM ---
 // TEMPORAL: Cerrar sesión (no-google)

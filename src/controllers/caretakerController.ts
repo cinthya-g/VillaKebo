@@ -349,16 +349,19 @@ class CaretakerController{
 
     async getAssignedActivities(req: Request, res: Response) {
         try {
-            const caretakerID = req.body.user.id;
-            if (!caretakerID) {
+            //const caretakerID = req.body.user.id;
+            const reservationID = req.params.reservationID;
+
+            if (!reservationID) {
                 res.status(ResponseCodes.BAD_REQUEST).send("Missing required fields");
                 return;
             }
 
-            const caretaker = await Caretaker.findOne({ _id: caretakerID });
-            const reservations = await Reservation.find({ _id: { $in: caretaker.assignedReservationsIDs } });
-            const activities = await Activity.find({ _id: { $in: reservations.map(reservation => reservation.activitiesIDs).flat() }});
-
+            //const caretaker = await Caretaker.findOne({ _id: caretakerID });
+            // Get the reservation by its ID
+            const reservation = await Reservation.findOne({ _id: reservationID });
+            // Get the activities from that reservation from its activitiesIDs array
+            const activities = await Activity.find({ _id: { $in: reservation.activitiesIDs } });
             res.status(ResponseCodes.SUCCESS).send(activities);
 
         } catch(error) {

@@ -108,7 +108,7 @@ router.get('/get-picture', caretakerController.getPicture);
 // Caretaker-Reservation actions
 
 router.get('/get-assigned-reservations', caretakerController.getAssignedReservations);
-router.get('/get-assigned-activities', caretakerController.getAssignedActivities);
+router.get('/get-assigned-activities/:reservationID', caretakerController.getAssignedActivities);
 
 // Caretaker-Reservation-Activity actions
 
