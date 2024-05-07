@@ -6,9 +6,11 @@ const socket = io();
 function initSocket() {
 
 const token = localStorage.getItem('token');
+console.log('Token in initsocket:', token);
 socket.emit('login', token);	
 
 socket.on('AccomplishActivity', (event) => {
+    console.log('Activity Accomplished: socket triggered', event);
     alert(`Activity Accomplished: ${event._id}`);
 });	
 }

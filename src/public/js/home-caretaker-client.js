@@ -85,7 +85,8 @@ async function accomplishActivity(activityId) {
         //return data;
     }).then(() => {
         // TODO: evitar recargar página, quitar cuando los sockets funcionen
-        location.reload();
+        //location.reload();
+        createReservationsCards();
     }).catch(error => {
         console.error('Error:', error);
     });
@@ -516,6 +517,17 @@ async function createReservationsCards() {
         }
     }
     reservationsSection.innerHTML = cards;
+
+        // Attach click event listener to "Completar" buttons
+        document.querySelectorAll('.accomplish-btn').forEach(button => {
+            button.addEventListener('click', function (event) {
+                const activityId = event.target.getAttribute('data-activity-id');
+    
+    
+                accomplishActivity(activityId);
+            });
+        });
+        
 
     // Attach click event listener to "Perfil del dueño" buttons
     document.querySelectorAll('.owner-profile-btn').forEach(button => {
