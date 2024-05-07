@@ -22,8 +22,8 @@ const app = express();
 app.use(express.json()); // Parses incoming JSON requests and puts the parsed data in req.body
 
 // Static routes to public resources
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'public/views')));
+app.use(express.static(path.join(__dirname, 'dist', 'public')));
+app.use(express.static(path.join(__dirname, 'dist', 'public', 'index.html')));
 
 
 // Add the API routes to the Express server and use the Google Auth middleware
