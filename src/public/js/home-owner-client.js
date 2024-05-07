@@ -6,10 +6,13 @@ const socket = io();
 function initSocket() {
 
 const token = localStorage.getItem('token');
+console.log('Token in initsocket:', token);
 socket.emit('login', token);	
 
 socket.on('AccomplishActivity', (event) => {
-    alert(`Activity Accomplished: ${event._id}`);
+    console.log('Activity Accomplished: socket triggered', event);
+    createNotificationCard();
+    alert(`La actividad ${event.activity}, para la mascota ${event.petName} ha sido completada por ${event.caretakerName}`);
 });	
 }
 
@@ -43,6 +46,7 @@ function initApp() {
         createOwnerCardBody();
         createPetsCards();
         createReservationCards();
+        createNotificationCard();
     } else {
         console.error('No hay token de autenticación');
         window.location.href = 'login.html';
@@ -498,9 +502,113 @@ async function confirmReservation(reservationID) {
     });
 }
 
+// Función para borrar todas las notificaciones
+async function clearAllNotifications() {
+    const token = localStorage.getItem('token');
+    const ownerData = await getOwnerData();
+    if (!ownerData) {
+        console.error('No se pudo obtener la información del dueño para borrar notificaciones en clearallnotifications');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/notification/notification/all/${ownerData._id}`, { // Asumiendo que este es el endpoint
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok en clearallnotifications');
+        }
+        // Refrescar las notificaciones mostradas
+        createNotificationCard();
+        console.log('Notificaciones borradas correctamente');
+    } catch (error) {
+        console.error('Error en clearallnotifications:', error);
+    }
+}
+async function getOwnerNotifications() {
+
+    const token = localStorage.getItem('token');
+    const ownerData = await getOwnerData();
+    if (!ownerData) {
+        console.error('No se pudo obtener la información del dueño en getOwnerNotifications');
+        return;
+    }
+    const userid = ownerData._id;
+    console.log(userid);
+
+    try {
+        const response = await fetch(`/notification/notification/${userid}`, {  // Utiliza la ruta correcta
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok en getowenernotifications');
+        }
+        const data = await response.json();
+        console.log(data);
+        return data;
+    } catch (error) {
+        console.error('Error en el catch de getOwnerNotifications: ', error);
+        return null;
+    }
+}
+
+
+
 
 
 // --- Funciones de DOM ---
+// Función para crear tarjetas de notificaciones y actualizar el contador
+// Función para crear tarjetas de notificaciones y actualizar el contador
+async function createNotificationCard() {
+    const notifications = await getOwnerNotifications();
+
+    const notificationSection = document.getElementById('notification-list');
+    let notificationCards = '';
+    console.log('notifications' ,notifications);
+
+    if (!notifications) {
+        console.error('No se pudieron obtener las notificaciones');
+        notificationCards = `
+        
+        <div class="notification-card">
+            <h3>No tienes notificaciones</h3>
+        </div>
+        `;
+        notificationSection.innerHTML = notificationCards;
+        document.querySelector('.notification-count').textContent =0;
+        return;
+    }
+
+    if (notifications.length === 0) {
+        notificationCards = `
+        <div class="notification-card">
+            <h3>No tienes notificaciones</h3>
+        </div>
+        `;
+    } else {
+        notifications.reverse();
+        notifications.forEach(notification => {
+            notificationCards += `
+            <li class="notification-item">
+                <div class="notification-content">
+                    <span class="notification-text">${notification.caretakerName} completed ${notification.activity} a total of ${notification.timesCompleted}</span>
+                    <span class="notification-date"> Completed on: ${notification.date} at ${notification.time}</span>
+                </div>
+            </li>
+            `;
+        });
+    }
+    notificationSection.innerHTML = notificationCards;
+    document.querySelector('.notification-count').textContent = notifications.length;  // Actualiza el contador con el número de notificaciones
+
+
+}
 // Función para crear el cuerpo de la tarjeta del Dueño ---
 async function createOwnerCardBody() {
     const ownerData = await getOwnerData();
@@ -974,6 +1082,7 @@ async function createNewActivitiesModal(reservationID) {
 
 
 
+
 // --- Eventos DOM ---
 // Cerrar sesión
 document.getElementById('logoutBtn').addEventListener('click', async function() {
@@ -1341,76 +1450,21 @@ async function submitActivities(reservationID) {
         }
     }
 }
-async function getOwnerNotifications() {
 
-    const token = localStorage.getItem('token');
-    const ownerData = await getOwnerData();
-    if (!ownerData) {
-        console.error('No se pudo obtener la información del dueño');
-        return;
-    }
-    const userid = ownerData._id;
-    console.log(userid);
 
-    try {
-        const response = await fetch(`/notification/notification/${userid}`, {  // Utiliza la ruta correcta
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        console.log(data);
-        return data;
-    } catch (error) {
-        console.error('Error:', error);
-        return null;
-    }
-}
 
-async function createNotificationCard(){
-
-    const notifications = await getOwnerNotifications();
-    //console.log(notifications);
-    if(!notifications){
-        console.error('No se pudieron obtener las notificaciones');
-        return;
-    }
-    const notificationSection= document.getElementById('notification-list');
-    let notificationcards = '';
-    if(notifications.length === 0){
-        notificationcards = `
-        <div class="notification-card">
-            <h3>No tienes notificaciones</h3>
-        </div>
-        `;
-    }
-    else{
-        notifications.reverse();
-        notifications.forEach(notification => {
-            notificationcards += `
-            <li class="notification-item">
-    <div class="notification-content">
-        <span class="notification-text">${notification.caretakerName} completed ${notification.activity} a total of ${notification.timesCompleted}</span>
-        <span class="notification-date"> Completed on: ${notification.date} at ${notification.time}</span>
-    </div>
-</li>
-            `;
-    });
-
-    }
-    notificationSection.innerHTML = notificationcards;
-
-}
+// Función para mostrar/ocultar el menú de notificaciones y resetear el contador
 function toggleNotifications() {
     const menu = document.getElementById('notificationMenu');
+    const notificationCount = document.querySelector('.notification-count');
     if (menu.style.display === 'none') {
-        menu.style.display = 'block'; // Mostrar el menú de notificaciones
-        createNotificationCard(); // Cargar y mostrar las notificaciones
+        menu.style.display = 'block';
+        notificationCount.style.display = 'none';  // Ocultar el contador de notificaciones
+        createNotificationCard();  // Cargar y mostrar las notificaciones
     } else {
-        menu.style.display = 'none'; // Ocultar el menú de notificaciones
+  
+        menu.style.display = 'none';  // Ocultar el menú de notificaciones
+        notificationCount.style.display = 'inline-block';  // Mostrar el contador de notificaciones
     }
 }
+

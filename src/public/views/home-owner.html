@@ -24,6 +24,52 @@
     <!-- <link rel="stylesheet" href="css/responsive.css"> -->
     <!-- Load the Socket.io Client library -->
     <script src="/socket.io/socket.io.js"></script>
+    <style>
+        /* Estilo para el contenedor de notificaciones */
+/* Estilo para el contenedor de notificaciones */
+.notification-container {
+    position: relative; /* Posición relativa para el contenedor */
+    display: inline-block;
+}
+
+/* Estilo para el menú de notificaciones */
+.notification-menu {
+    position: absolute;
+    top: 100%; /* Justo debajo del icono de la campana */
+    left: 0;
+    width: 300px; /* O ajusta según necesites */
+    max-height: 400px; /* Aumenta según tus necesidades */
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: none; /* Controlado por JavaScript */
+    z-index: 1000; /* Asegura que esté sobre otros elementos */
+    padding-bottom: 40px; /* Espacio para el botón al final */
+}
+
+/* Área desplazable para las notificaciones */
+#notification-list {
+    max-height: 360px; /* Ajusta la altura para dejar espacio para el botón */
+    overflow-y: auto;
+    padding: 10px;
+    margin-bottom: 40px; /* Deja espacio para el botón */
+}
+
+/* Estilo para el botón 'Clear Notifications' */
+.clear-notifications-btn {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer; /* Hacer que parezca clickeable */
+}
+    </style>
+
 </head>
 
 <body>
@@ -65,12 +111,14 @@
                                             <div class="notification-container">
                                                 <div class="bell-icon" onclick="toggleNotifications()">
                                                     🔔
-                                                    <span class="notification-count">0</span>
+                                                    <span class="notification-count"></span>
                                                 </div>
                                                 <div class="notification-menu" id="notificationMenu" style="display: none;">
                                                     <ul id="notification-list">
                                                         <!-- Los ítems de notificación se insertarán dinámicamente aquí -->
                                                     </ul>
+                                                    <button class="btn btn-danger clear-notifications-btn" onclick="clearAllNotifications()">Clear Notifications</button>
+
                                                 </div>
                                             </div>                                                                                       
                                         <li><a id="logoutBtn">Cerrar sesión</a></li>
