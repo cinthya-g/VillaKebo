@@ -12,6 +12,7 @@ import Activity from "../models/activity";
 import Owner from "../models/owner";
 import {getIo} from '../utils/io';
 import Notifications from './notificationController';
+import Notification from "../models/notification";
 
 
 
@@ -553,8 +554,22 @@ class CaretakerController{
             const fechaFormateada = `${dia}/${mes}/${anio}`;
             const horaFormateada = `${hora}:${minutos}`;
             await Notifications.saveNotification(owner.id, caretakerID, petID, activityTitle, updatedActivity.timesCompleted,caretaker.username, pet.name, fechaFormateada, horaFormateada);
+            const newNotification = new Notification({
+                ownerID: owner.id,
+                caretakerID: caretakerID,
+                caretakerName: caretaker.username,
+                petID: petID,
+                petName: pet.name,
+                activity: activityTitle,
+                timesCompleted: updatedActivity.timesCompleted,
+                date: fecha,
+                time: hora
+            });
 
-            Server.to(ownerName).emit('AccomplishActivity', updatedActivity);
+            
+           
+
+            Server.to(ownerName).emit('AccomplishActivity', newNotification);
 
     
             res.status(200).send(`Activity ${updatedActivity.title} accomplished. Times completed: ${updatedActivity.timesCompleted}`); // SUCCESS

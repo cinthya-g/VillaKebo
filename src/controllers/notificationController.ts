@@ -47,6 +47,34 @@ class NotificationController {
             res.status(500).send('Internal Server Error');
         }
     }
+    async deleteNotification(req:Request, res:Response) {
+        try {
+            const notificationID = req.params.id;  // Obtener el ID de la notificación a eliminar
+            //console.log('NotificationID:', notificationID);
+            const deletedNotification = await Notification.findByIdAndDelete(notificationID);
+            if (!deletedNotification) {
+                res.status(404).send('Notification not found');
+                return;
+            }
+            //console.log('Deleted notification:', deletedNotification);
+            res.status(200).send('Notification deleted');
+        } catch (error) {
+            console.error('Failed to delete notification:', error);
+            res.status(500).send('Internal Server Error');
+        }
+    }
+    async deleteAllNotificationsbyOwnerID(req:Request, res:Response) {
+        try {
+            const ownerID = req.params.id;  // Obtener el ID del owner a eliminar
+            //console.log('OwnerID:', ownerID);
+            const deletedNotifications = await Notification.deleteMany({ ownerID: ownerID });
+            //console.log('Deleted notifications:', deletedNotifications);
+            res.status(200).send('Notifications deleted');
+        } catch (error) {
+            console.error('Failed to delete notifications:', error);
+            res.status(500).send('Internal Server Error');
+        }
+    }
 }
 
 
