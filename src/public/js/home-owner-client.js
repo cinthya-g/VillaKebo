@@ -606,16 +606,7 @@ async function createNotificationCard() {
     notificationSection.innerHTML = notificationCards;
     document.querySelector('.notification-count').textContent = notifications.length;  // Actualiza el contador con el número de notificaciones
 
-    // Verifica si ya existe el botón para evitar duplicados
-    let clearButton = document.querySelector('.clear-notifications-btn');
-    if (!clearButton) {
-        clearButton = document.createElement('button');
-        clearButton.className = 'btn btn-danger clear-notifications-btn';
-        clearButton.innerText = 'Clear Notifications';
-        clearButton.onclick = clearAllNotifications; // Añade el manejador de eventos para limpiar notificaciones
-        const menu = document.getElementById('notificationMenu');
-        menu.appendChild(clearButton);
-    }
+
 }
 // Función para crear el cuerpo de la tarjeta del Dueño ---
 async function createOwnerCardBody() {
