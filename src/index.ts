@@ -1,12 +1,13 @@
 import path from "path";
 import express from "express";
+const { createServer } = require("http");
 import dotenv from "dotenv";
 dotenv.config();
 
 import { googleAuth } from './middleware/auth-google-middleware';
 
 //Socket.io
-import { Server as SocketIOServer } from 'socket.io'; // Import the Server class from the 'socket.io' module
+import { Server } from 'socket.io'; // Import the Server class from the 'socket.io' module
 import routes from "./routes";
 import './db/db-connector'; // Ensures database connection on server start
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -16,6 +17,7 @@ import {getUserIDFromToken} from './utils/genToken';
 import {setIo} from './utils/io';
 
 const app = express();
+const httpServer = createServer(app);
 
 // Static routes to public resources
 app.use(express.static(path.join(__dirname, 'public')));
@@ -34,14 +36,8 @@ app.use('/api-docs', serve, setup(swaggerDocs)); // Set up the Swagger-UI-expres
 // Define the port from the environment or use 3001 by default
 const port = process.env.PORT || 3001;
 
-//socket.io
 // Create a server using the Express app
-const server = app.listen(port, () => {
-    console.log(`Server is running http://localhost:${port}/`); // Confirmation the server is running
-});
-
-// Create a server using the Express app
-const io = new SocketIOServer(server); // Create a new instance of the Socket.io server
+const io = new Server(httpServer); // Create a new instance of the Socket.io server
 setIo(io); // Set the Socket.io server in the utility function to be accessed from anywhere
 // Escuchar conexiones de Socket.IO
 io.on('connection', (socket) => {
@@ -66,3 +62,8 @@ io.on('connection', (socket) => {
 
 });
 
+//socket.io
+// Create a server using the Express app
+httpServer.listen(port, () => {
+    console.log(`Server is running http://localhost:${port}/`); // Confirmation the server is running
+});
