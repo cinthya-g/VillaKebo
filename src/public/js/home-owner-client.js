@@ -45,6 +45,7 @@ function initApp() {
         createOwnerCardBody();
         createPetsCards();
         createReservationCards();
+        createNotificationCard();
     } else {
         console.error('No hay token de autenticación');
         window.location.href = 'login.html';
@@ -1373,48 +1374,47 @@ async function getOwnerNotifications() {
     }
 }
 
-async function createNotificationCard(){
-
+// Función para crear tarjetas de notificaciones y actualizar el contador
+async function createNotificationCard() {
     const notifications = await getOwnerNotifications();
-    //console.log(notifications);
-    if(!notifications){
+    if (!notifications) {
         console.error('No se pudieron obtener las notificaciones');
         return;
     }
-    const notificationSection= document.getElementById('notification-list');
-    let notificationcards = '';
-    if(notifications.length === 0){
-        notificationcards = `
+    const notificationSection = document.getElementById('notification-list');
+    let notificationCards = '';
+    if (notifications.length === 0) {
+        notificationCards = `
         <div class="notification-card">
             <h3>No tienes notificaciones</h3>
         </div>
         `;
-    }
-    else{
+    } else {
         notifications.reverse();
         notifications.forEach(notification => {
-            notificationcards += `
+            notificationCards += `
             <li class="notification-item">
-    <div class="notification-content">
-        <span class="notification-text">${notification.caretakerName} completed ${notification.activity} a total of ${notification.timesCompleted}</span>
-        <span class="notification-date"> Completed on: ${notification.date} at ${notification.time}</span>
-    </div>
-</li>
+                <div class="notification-content">
+                    <span class="notification-text">${notification.caretakerName} completed ${notification.activity} a total of ${notification.timesCompleted}</span>
+                    <span class="notification-date"> Completed on: ${notification.date} at ${notification.time}</span>
+                </div>
+            </li>
             `;
-    });
-
+        });
     }
-    notificationSection.innerHTML = notificationcards;
-
+    notificationSection.innerHTML = notificationCards;
+    document.querySelector('.notification-count').textContent = notifications.length;  // Actualiza el contador con el número de notificaciones
 }
+
+// Función para mostrar/ocultar el menú de notificaciones y resetear el contador
 function toggleNotifications() {
     const menu = document.getElementById('notificationMenu');
     if (menu.style.display === 'none') {
         menu.style.display = 'block';
-         // Mostrar el menú de notificaciones
-        createNotificationCard(); // Cargar y mostrar las notificaciones
+        createNotificationCard();  // Cargar y mostrar las notificaciones
     } else {
-        document.querySelector('.notification-count').textContent = '0';
-        menu.style.display = 'none'; // Ocultar el menú de notificaciones
+        document.querySelector('.notification-count').textContent = '0';  // Resetear el contador a 0
+        menu.style.display = 'none';  // Ocultar el menú de notificaciones
     }
 }
+
