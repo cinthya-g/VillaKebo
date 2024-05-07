@@ -11,6 +11,7 @@ socket.emit('login', token);
 
 socket.on('AccomplishActivity', (event) => {
     console.log('Activity Accomplished: socket triggered', event);
+    createNotificationCard();
     alert(`La actividad ${event.activity}, para la mascota ${event.petName} ha sido completada por ${event.caretakerName}`);
 });	
 }
