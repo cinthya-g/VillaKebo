@@ -1455,12 +1455,15 @@ async function submitActivities(reservationID) {
 // Función para mostrar/ocultar el menú de notificaciones y resetear el contador
 function toggleNotifications() {
     const menu = document.getElementById('notificationMenu');
+    const notificationCount = document.querySelector('.notification-count');
     if (menu.style.display === 'none') {
         menu.style.display = 'block';
+        notificationCount.style.display = 'none';  // Ocultar el contador de notificaciones
         createNotificationCard();  // Cargar y mostrar las notificaciones
     } else {
-        document.querySelector('.notification-count').textContent = '0';  // Resetear el contador a 0
+  
         menu.style.display = 'none';  // Ocultar el menú de notificaciones
+        notificationCount.style.display = 'inline-block';  // Mostrar el contador de notificaciones
     }
 }
 
