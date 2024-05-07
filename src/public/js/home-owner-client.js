@@ -1410,9 +1410,11 @@ async function createNotificationCard(){
 function toggleNotifications() {
     const menu = document.getElementById('notificationMenu');
     if (menu.style.display === 'none') {
-        menu.style.display = 'block'; // Mostrar el menú de notificaciones
+        menu.style.display = 'block';
+         // Mostrar el menú de notificaciones
         createNotificationCard(); // Cargar y mostrar las notificaciones
     } else {
+        document.querySelector('.notification-count').textContent = '0';
         menu.style.display = 'none'; // Ocultar el menú de notificaciones
     }
 }
