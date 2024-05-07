@@ -533,7 +533,7 @@ class CaretakerController{
                 return;
             }
             const ownerName = owner.id;
-            //console.log('Owner ID:', ownerName);
+            console.log('Owner ID in accomplish activity:', ownerName);
 
             const Server = getIo();
             console.log('Server:', Server.sockets.adapter.rooms)

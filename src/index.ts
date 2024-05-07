@@ -56,7 +56,6 @@ io.on('connection', (socket) => {
             const userId =  getUserIDFromToken(token); // Esta función debe extraer el userID del token
             //console.log('Desde Onlogin User ID:', userId);
             if (userId) {
-
                 socket.join(userId); // Unirse a la sala correspondiente al userID
                 console.log('User joined room:', userId);
         

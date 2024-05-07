@@ -525,6 +525,17 @@ async function createReservationsCards() {
     }
     reservationsSection.innerHTML = cards;
 
+        // Attach click event listener to "Completar" buttons
+        document.querySelectorAll('.accomplish-btn').forEach(button => {
+            button.addEventListener('click', function (event) {
+                const activityId = event.target.getAttribute('data-activity-id');
+    
+    
+                accomplishActivity(activityId);
+            });
+        });
+        
+
     // Attach click event listener to "Perfil del dueño" buttons
     document.querySelectorAll('.owner-profile-btn').forEach(button => {
         button.addEventListener('click', async function (event) {
