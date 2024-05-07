@@ -5,7 +5,6 @@ const socket = io();
 window.addEventListener('load', function () {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
-    //console.log('Token from URL:', token)
     if (token) {
         localStorage.setItem('token', token);
         removeTokenFromUrl();
@@ -85,6 +84,7 @@ async function accomplishActivity(activityId) {
         socket.emit('RecieveAcomplished', activityId);
         //return data;
     }).then(() => {
+        // TODO: evitar recargar página, quitar cuando los sockets funcionen
         location.reload();
     }).catch(error => {
         console.error('Error:', error);
@@ -93,7 +93,6 @@ async function accomplishActivity(activityId) {
 
 async function getCaretakerPets() {
     const token = localStorage.getItem('token');
-    //console.log('Token from localStorage:', token);
     if (!token) {
         console.error('No hay token de autenticación');
         return;
@@ -111,7 +110,6 @@ async function getCaretakerPets() {
         }
 
         const petsData = await response.json();
-        //console.log('Pets data:', petsData);
         return petsData;
     } catch (error) {
         console.error('ERROR:', error);
@@ -119,7 +117,7 @@ async function getCaretakerPets() {
 
 }
 
-// Editar datos del dueño
+// Editar datos del cuidador
 async function editCaretakerData(data) {
     const token = localStorage.getItem('token');
     fetch('/caretaker/update-caretaker', {
@@ -136,12 +134,12 @@ async function editCaretakerData(data) {
         return response.json();
     }).then(data => {
         $('#editProfileModal').modal('hide');
-        location.reload();
+        createCaretakerCardBody();
     }).catch(error => {
         console.error('Error:', error);
     });
 }
-// Cargar nueva foto de perfil del dueño
+// Cargar nueva foto de perfil del cuidador
 async function uploadProfilePicture(file) {
     const token = localStorage.getItem('token');
     // Obtener el id del usuario
@@ -150,9 +148,9 @@ async function uploadProfilePicture(file) {
         console.error('No se pudo obtener la información del dueño');
         return;
     }
-    const ownerID = caretakerData._id;
+    const caretakerID = caretakerData._id;
     const formData = new FormData();
-    formData.append('ownerID', ownerID);
+    formData.append('caretakerID', caretakerID);
     formData.append('photo', file);
 
     fetch('/caretaker/upload-photo', {
@@ -168,7 +166,7 @@ async function uploadProfilePicture(file) {
         return response.json();
     }).then(data => {
         $('#editProfileModal').modal('hide');
-        document.getElementById('displayPicture').src = isItGoogleAccount(data);
+        document.getElementById('caretakerDisplayPicture').src = isItGoogleAccount(data);
     }).catch(error => {
         console.error('Error:', error);
     });
@@ -180,7 +178,6 @@ async function getCaretakerPets() {
 
     const caretakerData = await getCaretakerData();
     const caretakerId = caretakerData._id;
-    //console.log('Caretaker ID:', caretakerId);
 
     try {
         const response = await fetch(`/caretaker/get-caretaker-pets/${caretakerId}`, {
@@ -193,7 +190,6 @@ async function getCaretakerPets() {
             throw new Error('Network response was not ok');
         }
         const petData = await response.json();
-        //console.log('Pet data:', petData);
         return petData;
     }
     catch (error) {
@@ -221,7 +217,6 @@ async function getPetData(petId) {
         }
 
         const petData = await response.json();
-        //console.log('Pet data:', petData);
         return petData;
     } catch (error) {
         console.error('ERROR:', error);
@@ -319,7 +314,7 @@ async function createCaretakerCardBody() {
 
     const cardBody = `
     <div class="card-caretaker">
-        <img class="card-img-top" src="${isItGoogleAccount(caretakerData)}" alt="Profile picture">
+        <img class="card-img-top" src="${isItGoogleAccount(caretakerData)}" alt="Profile picture" id="caretakerDisplayPicture">
         <div class="card-body">
             <h4 class="card-title"><b>${caretakerData.username}</b></h4>
             <h5 class="card-text-status"><i>
@@ -432,9 +427,6 @@ async function createPetsCards() {
 async function createInfoPetModal(petID) {
     const pet2 = await getPetData(petID);
     const record = await getPetRecord(petID);
-    console.log('Pet data:', pet2);
-
-
 
     const modalContent = `
     <div class="modal-body">
@@ -470,7 +462,7 @@ function formatDate(dateString) {
 
 async function createReservationsCards() {
     const reservations = await getReservations();
-    console.log('Reservations:', reservations);
+
     if (!reservations) {
         console.error('No se pudo obtener la información de las reservaciones');
         return;
@@ -535,7 +527,7 @@ async function createReservationsCards() {
             const modalTitle = document.querySelector('#ownerProfilePreviewLabel');
             modalTitle.textContent = `Detalles del dueño`;
 
-            const modalBody = document.querySelector('.modal-body');
+            const modalBody = document.querySelector('.modal-body-owner');
             modalBody.innerHTML = `
                 <div class="row">
                     <div class="col-md-12 text-center vertical-center">
@@ -650,12 +642,13 @@ document.getElementById('saveChangesProfileBtn').addEventListener('click', async
     if (editedEmail.trim() !== '') updateData.email = editedEmail;
 
     // Solo procede si hay algo que actualizar
-    if (Object.keys(updateData).length > 0) {
-        await editCaretakerData(updateData);
-    }
-    // Actualizar foto de perfil si se seleccionó una nueva
-    if (editedPicture) {
-        await uploadProfilePicture(editedPicture);
+    if (Object.keys(updateData).length > 0 || editedPicture) {
+        if(Object.keys(updateData).length > 0) {
+            await editCaretakerData(updateData);
+        }
+        if(editedPicture) {
+            await uploadProfilePicture(editedPicture);
+        }
     }
     else {
         document.getElementById('noChangesAlert').innerHTML = `
