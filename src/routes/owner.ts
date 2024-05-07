@@ -163,22 +163,34 @@ router.get('/get-picture', ownerController.getPicture);
  */
 router.post('/create-pet', ownerController.createPet);
 
+
 /**
  * @swagger
- * /owner/get-pet:
- *  get:
- *    tags: [Owner]
- *    summary: Get an owner's pet
- *    description: Retrieves a pet associated with the owner's account. Requires 'owner' or 'admin' role.
- *    security:
- *      - bearerAuth: []
- *    responses:
- *      200:
- *        description: Pet retrieved successfully
- *      400:
- *        description: Missing required fields or invalid pet ID
- *      500:
- *        description: Internal Server Error
+ * /owner/get-pet/{id}:
+ *   get:
+ *     tags: [Owner]
+ *     summary: Get pet information
+ *     description: Retrieves the information of a specific pet owned by the owner. Requires authentication and appropriate authorization.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The unique identifier of the pet
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Pet information retrieved successfully
+ *       400:
+ *         description: Missing required fields or invalid data
+ *       401:
+ *         description: Unauthorized access
+ *       404:
+ *         description: Pet not found
+ *       500:
+ *         description: Internal Server Error
  */
 router.get('/get-pet/:id', ownerController.getPet);
 
@@ -508,6 +520,35 @@ router.delete('/cancel-reservation/:reservationID', ownerController.cancelReserv
 
 router.get('/get-reservations-by-owner', ownerController.getOwnerReservations);
 
+
+/**
+ * @swagger
+ * /owner/get-assigned-caretaker/{reservationID}:
+ *   get:
+ *     tags: [Owner]
+ *     summary: Get the caretaker assigned to a reservation
+ *     description: Retrieves the caretaker assigned to a specific reservation. Requires authentication and authorization.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: reservationID
+ *         required: true
+ *         description: The unique identifier of the reservation
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Caretaker retrieved successfully
+ *       400:
+ *         description: Missing required fields or invalid data
+ *       401:
+ *         description: Unauthorized access
+ *       404:
+ *         description: Caretaker not found
+ *       500:
+ *         description: Internal Server Error
+ */
 router.get('/get-assigned-caretaker/:reservationID', ownerController.getReservationCaretaker);
 
 
@@ -662,5 +703,44 @@ router.delete('/delete-activity', ownerController.deleteActivity);
  */
 
 router.get('/get-activities-by-reservation/:id', ownerController.getReservationActivities);
+
+
+/**
+ * @swagger
+ * /owner/delete-unconfirmed-reservations:
+ *   get:
+ *     tags: [Owner]
+ *     summary: Discard past unconfirmed reservations
+ *     description: Discards all past reservations that were discarded because no activities were added. Requires authentication and authorization.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Past reservations discarded successfully
+ *       401:
+ *         description: Unauthorized access
+ *       500:
+ *         description: Internal Server Error
+ */
+router.delete('/delete-unconfirmed-reservations', ownerController.deleteUnconfirmed);
+
+/**
+ * @swagger
+ * /owner/discard-past-reservations:
+ *   delete:
+ *     tags: [Owner]
+ *     summary: Discard past reservations
+ *     description: Discards all past reservations that were not confirmed. Requires authentication and authorization.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Past reservations discarded successfully
+ *       401:
+ *         description: Unauthorized access
+ *       500:
+ *         description: Internal Server Error
+ */
+router.delete('/discard-past-reservations', ownerController.discardPastReservations);
 
 export default router;

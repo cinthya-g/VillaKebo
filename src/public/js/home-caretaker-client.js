@@ -539,11 +539,13 @@ async function createReservationsCards() {
             const modalTitle = document.querySelector('#ownerProfilePreviewLabel');
             modalTitle.textContent = `Detalles del dueño`;
 
+            const profilePicture = ownerData.email.endsWith('@gmail.com') ? ownerData.profilePicture : PROFILE_PHOTO_S3 + ownerData.profilePicture;
+
             const modalBody = document.querySelector('.modal-body-owner');
             modalBody.innerHTML = `
                 <div class="row">
                     <div class="col-md-12 text-center vertical-center">
-                        <img class="caretaker-picture mb-2" src="${isItGoogleAccount(ownerData)}">
+                        <img class="caretaker-picture mb-2" src="${profilePicture}">
                         <h5><b>Nombre:</b> ${ownerData.username}</h5>
                         <h5><b>Contacto:</b> ${ownerData.email}</h5>
                         <h5>${ownerData.status}</h5>

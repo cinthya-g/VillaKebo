@@ -1467,6 +1467,35 @@ class OwnerController{
         }
     }
 
+
+    /**
+     * @swagger
+     * /owner/get-reservation-caretaker/{reservationID}:
+     *   get:
+     *     tags: [Owner]
+     *     summary: Get the caretaker assigned to a reservation
+     *     description: Retrieves the caretaker assigned to a specific reservation.
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: reservationID
+     *         required: true
+     *         description: The unique identifier of the reservation
+     *         schema:
+     *           type: string
+     *     responses:
+     *       200:
+     *         description: Successfully retrieved the caretaker assigned to the reservation
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Caretaker' // Assumes a Caretaker schema is defined
+     *       400:
+     *         description: Missing required fields
+     *       500:
+     *         description: Internal Server Error
+     */
     async getReservationCaretaker(req: Request, res: Response) {
         // Get the assigned caretaker for a reservation
         try {
@@ -1478,6 +1507,81 @@ class OwnerController{
             const caretaker = await Caretaker.findOne({ assignedReservationsIDs: reservationID });
             res.status(ResponseCodes.SUCCESS).send(caretaker);
 
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+
+    /**
+     * @swagger
+     * /owner/delete-unconfirmed-reservations:
+     *   delete:
+     *     tags: [Owner]
+     *     summary: Discard unconfirmed reservations
+     *     description: Deletes all unconfirmed reservations made by the owner. Also deletes any associated activities.
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Unconfirmed reservations deleted successfully
+     *       400:
+     *         description: Missing required fields
+     *       500:
+     *         description: Internal Server Error
+     */	
+    async deleteUnconfirmed(req: Request, res: Response) {
+        // Erase those reservations that are not confirmed
+        try {
+            let ownerID = req.body.user.id;
+            let reservations = await Reservation.find({ ownerID: ownerID, confirmed: false });
+            for (let i = 0; i < reservations.length; i++) {
+                await Reservation.findOneAndDelete({ _id: reservations[i]._id });
+                await Owner.findOneAndUpdate({ _id: ownerID }, { $pull: { reservationsIDs: reservations[i]._id }});
+                await Pet.findOneAndUpdate({ _id: reservations[i].petID },{ currentReservation: null} );
+                await Activity.deleteMany({ reservationID: reservations[i]._id });
+            }
+            res.status(ResponseCodes.SUCCESS).json({deletedReservations : reservations.length});
+        } catch(error) {
+            console.log('ERROR:', error);
+            res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");
+        }
+    }
+
+
+    /**
+     * @swagger
+     * /owner/discard-past-reservations:
+     *   delete:
+     *     tags: [Owner]
+     *     summary: Discard past reservations
+     *     description: Deletes all past reservations made by the owner. Also deletes any associated activities.
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Past reservations deleted successfully
+     *       400:
+     *         description: Missing required fields
+     *       500:
+     *         description: Internal Server Error
+     */
+    async discardPastReservations(req: Request, res: Response) {
+        // Delete those reservations whose endDate is less than the current date
+        try {
+            let ownerID = req.body.user.id;
+            let reservations = await Reservation.find({ ownerID: ownerID });
+            const today = new Date();
+            let pastReservations = reservations.filter(reservation => new Date(reservation.endDate) < today);
+            for (let i = 0; i < pastReservations.length; i++) {
+                await Reservation.findOneAndDelete({ _id: pastReservations[i]._id });
+                await Owner.findOneAndUpdate({ _id: ownerID }, { $pull: { reservationsIDs: pastReservations[i]._id }});
+                await Pet.findOneAndUpdate({ _id: pastReservations[i].petID },{ currentReservation: null} );
+                await Activity.deleteMany({ reservationID: pastReservations[i]._id });
+                // delete it from the caretakers assignedReservationsIDs array
+                await Caretaker.findOneAndUpdate({ assignedReservationsIDs: pastReservations[i]._id },{ $pull: { assignedReservationsIDs: pastReservations[i]._id }});
+            }
+            res.status(ResponseCodes.SUCCESS).json({deletedReservations : pastReservations.length});
         } catch(error) {
             console.log('ERROR:', error);
             res.status(ResponseCodes.SERVER_ERROR).send("Internal Server Error");

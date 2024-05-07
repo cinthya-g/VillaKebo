@@ -19,7 +19,7 @@ socket.on('AccomplishActivity', (event) => {
 
 
 // --- Funciones de token ---
-window.addEventListener('load', function() {
+window.addEventListener('load', async function() {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     if (token) {
@@ -43,10 +43,14 @@ function removeTokenFromUrl() {
 // --- Funciones de inicialización ---
 function initApp() {
     if (localStorage.getItem('token')) {
+        deletePastReservations();
+        deleteUnconfirmedReservations();
+
         createOwnerCardBody();
         createPetsCards();
         createReservationCards();
         createNotificationCard();
+       
     } else {
         console.error('No hay token de autenticación');
         window.location.href = 'login.html';
@@ -558,6 +562,45 @@ async function getOwnerNotifications() {
     }
 }
 
+// Función para eliminar las reservaciones sin confirmar
+async function deleteUnconfirmedReservations() {
+    const token = localStorage.getItem('token');
+    fetch('/owner/delete-unconfirmed-reservations', {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+
+};
+
+// Borrar las reservaciones pasadas
+async function deletePastReservations() {
+    const token = localStorage.getItem('token');
+    fetch('/owner/discard-past-reservations', {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+};
+
 
 
 
@@ -878,6 +921,9 @@ async function createRecordModal(petID) {
 async function createReservationCards() {
     const reservationsData = await getOwnerReservations();
     const reservationsSection = document.getElementById('card-reservation-section');
+
+    // Sort by date
+    reservationsData.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
     
     // Limpiar el contenido existente de manera segura
     while (reservationsSection.firstChild) {
@@ -960,8 +1006,11 @@ async function createActivitiesSection(reservationData) {
 // Función para formatear fechas traidas de mongo
 function formatDate(date) {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return new Date(date).toLocaleDateString('es-ES', options);
-};
+    const dateObj = new Date(date);
+    const utcDate = new Date(dateObj.getUTCFullYear(), dateObj.getUTCMonth(), dateObj.getUTCDate());
+    return utcDate.toLocaleDateString('es-ES', options);
+}
+
 
 // Función para crear el modal de perfil del cuidador
 async function createCaretakerProfileModal(reservationID) {
@@ -995,7 +1044,7 @@ async function createDeleteReservationModal(startDate, endDate, reservationID) {
     document.getElementById('delete-reservation-content').innerHTML = modalContent;
     
     const buttons = `
-    <button type="button" class="btn boxed-btn-round-green" data-dismiss="modal">Cancelar</button>
+    <button type="button" class="btn boxed-btn-round-green" data-dismiss="modal">Atrás</button>
     <button type="button" class="btn boxed-btn-round-cancel" onclick=deleteReservation('${reservationID}')>Eliminar</button>
     `;
     document.getElementById('delete-reservation-buttons').innerHTML = buttons;
@@ -1081,18 +1130,23 @@ async function createNewActivitiesModal(reservationID) {
 
 
 
-
-
 // --- Eventos DOM ---
 // Cerrar sesión
 document.getElementById('logoutBtn').addEventListener('click', async function() {
-    localStorage.removeItem('token');
-    if (localStorage.getItem('GoogleAccount')){
-        await googleSignOut();
-        localStorage.removeItem('GoogleAccount');
-    } else {
-        window.location.href = '../index.html';
-    }
+    await deletePastReservations();
+    await deleteUnconfirmedReservations();
+
+    // esperar a que se borren las reservaciones antes de cerrar sesión
+    setTimeout(() => {
+        localStorage.removeItem('token');
+        if (localStorage.getItem('GoogleAccount')) {
+            googleSignOut();
+            localStorage.removeItem('GoogleAccount');
+        } else {
+            window.location.href = '../index.html';
+        }
+    }, 1000);
+
 });
 
 // Endpoint de logout de google
@@ -1267,19 +1321,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Función que añade el máximo y mínimo de fechas seleccionables cuando se abre el modal createReservation
 document.getElementById('addReservationBtn').addEventListener('click', async function() {
-    // crear modal
-    await createNewReservationModal();
-    var today = new Date();
-    var nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+    // eliminar reservaciones sin confirmar
+    await deleteUnconfirmedReservations();
 
-    var startDateInput = document.getElementById('newReservationStartDate');
-    var endDateInput = document.getElementById('newReservationEndDate');
+    setTimeout(async () => {
+        // Actualizar las tarjetas de reservaciones
+        await createNewReservationModal();
 
-    startDateInput.min = today.toISOString().split('T')[0];
-    startDateInput.max = nextYear.toISOString().split('T')[0];
-    endDateInput.min = today.toISOString().split('T')[0];
-    endDateInput.max = nextYear.toISOString().split('T')[0];
+        var today = new Date();
+        var tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+        var nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+    
+        // Convertir a la fecha local
+        var formatDateToLocal = function(date) {
+            var d = new Date(date);
+            var offset = d.getTimezoneOffset() * 60000; // Convertir offset a milisegundos
+            var localDate = new Date(d.getTime() - offset);
+            return localDate.toISOString().split('T')[0];
+        };
+    
+        var startDateInput = document.getElementById('newReservationStartDate');
+        var endDateInput = document.getElementById('newReservationEndDate');
+    
+        // Asignar los valores ajustados
+        startDateInput.min = formatDateToLocal(today);
+        startDateInput.max = formatDateToLocal(nextYear);
+        endDateInput.min = formatDateToLocal(tomorrow);
+        endDateInput.max = formatDateToLocal(nextYear);
+    }, 150);
 });
+
 
 
 

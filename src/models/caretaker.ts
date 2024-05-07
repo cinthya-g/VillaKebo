@@ -14,11 +14,11 @@ import { Roles } from "../utils/roles";
  *      properties:
  *        username:
  *          type: string
- *          description: Unique username for the Caretaker
+ *          description: Username for the Caretaker
  *        email:
  *          type: string
  *          format: email
- *          description: Email address of the Caretaker
+ *          description: Unique email address of the Caretaker
  *        password:
  *          type: string
  *          description: Password for the Caretaker account
@@ -30,12 +30,12 @@ import { Roles } from "../utils/roles";
  *          type: string
  *          default: 'I <3 pets!'
  *          description: Status message or description for the Caretaker profile
- *        GroupsIDs:
+ *        assignedReservationsIDs:
  *          type: array
  *          items:
  *            type: string
  *            format: uuid
- *            description: Identifiers for groups that the Caretaker is part of
+ *            description: Identifiers for reservations the Caretaker is assigned to
  *        profilePicture:
  *          type: string
  *          description: URL to the profile picture of the Caretaker
