@@ -60,10 +60,11 @@ router.use("/notification", notificationRouter);
  */
 router.use("/google-passport", googleRouter);
 
+//test4
 router.get("/", (req, res) => {
-
-    console.log("(index routes) The path is: ", path.join(__dirname, "..", "public", "index.html"));
-    res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+    console.log("(index routes) The path is: ", path.join(__dirname, '..', '..', 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, '..', '..', 'public', 'index.html'));
 });
+
 
 export default router;
