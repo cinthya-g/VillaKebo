@@ -8,7 +8,7 @@
     "local": "ts-node src/index.ts",
     "dev": "nodemon src/index.ts",
     "build": "rimraf dist && tsc && copyfiles -u 1 ./src/public/**/* ./dist/src",
-    "postinstall": "npm run build"
+    "build:unix": "npm install && rimraf dist && tsc && cp -rf src/public dist/src"
   },
   "keywords": [],
   "author": "",
