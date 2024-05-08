@@ -14,11 +14,11 @@ import { Roles } from "../utils/roles";
  *      properties:
  *        username:
  *          type: string
- *          description: Unique username for the Owner
+ *          description: Username for the Owner
  *        email:
  *          type: string
  *          format: email
- *          description: Email address of the Owner
+ *          description: Unique email address of the Owner
  *        password:
  *          type: string
  *          description: Password for the Owner's account
@@ -26,9 +26,6 @@ import { Roles } from "../utils/roles";
  *          type: string
  *          default: 'OWNER'
  *          description: The role of the user in the system, defaults to OWNER
- *        phone:
- *          type: string
- *          description: Owners phone number
  *        status:
  *          type: string
  *          default: '¡Acabo de unirme a Villa Kebo!'
@@ -57,7 +54,6 @@ const ownerSchema = new Schema({
     email: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: String, default: Roles.OWNER },
-    phone: { type: String },
     status: { type: String, default: "¡Acabo de unirme a Villa Kebo!" },
     petsIDs: [{ type: Schema.Types.ObjectId, ref: "pets" }],
     reservationsIDs: [{ type: Schema.Types.ObjectId, ref: "reservations" }],

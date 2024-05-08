@@ -453,21 +453,28 @@ async function createInfoPetModal(petID) {
     document.getElementById('petInfoModalContent').innerHTML = modalContent;
 }
 
-
-// Function to format the date in a shorter format
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
-}
-
+// Función para crear las tarjetas de reservaciones
 async function createReservationsCards() {
     const reservations = await getReservations();
-
     if (!reservations) {
         console.error('No se pudo obtener la información de las reservaciones');
         return;
     }
+
+    // Quitar de 'reservations' aquellas donde today > endDate
+    const today = new Date(new Date().toISOString());
+    reservations.forEach((reservation, index) => {
+        const endDate = new Date(reservation.endDate);
+        if (today > endDate) {
+            reservations.splice(index, 1);
+        }
+    });
+    
+    // Hacer sort por fecha de las que queden
+    reservations.sort((a, b) => {
+        return new Date(a.startDate) - new Date(b.startDate);
+    });
+
     const reservationsSection = document.getElementById('card-reservation-section');
     let cards = '';
     if (reservations.length === 0) {
@@ -485,8 +492,13 @@ async function createReservationsCards() {
     } else {
         for (const reservation of reservations) {
             const petData = await getPetData(reservation.petID);
-            const activitiesCards = await createActivitiesCards(reservation._id);
-            const ownerData = await getOwnerData(reservation.ownerID);
+            // Si startDate es es mayor a hoy, se desactivan los botones de completar
+            const reservationStartDate = reservation.startDate;
+            const startDate = new Date(reservationStartDate.includes('Z') ? reservationStartDate : reservationStartDate + 'Z');
+            
+            console.log('Start date:', startDate, 'Today:', today, 'Comparison:', startDate > today)
+            const disabled = startDate > today ? 'disabled' : '';
+            const activitiesCards = await createActivitiesCards(reservation._id, disabled);            
 
             // Create reservation card
             let reservationCard = `
@@ -522,8 +534,6 @@ async function createReservationsCards() {
         document.querySelectorAll('.accomplish-btn').forEach(button => {
             button.addEventListener('click', function (event) {
                 const activityId = event.target.getAttribute('data-activity-id');
-    
-    
                 accomplishActivity(activityId);
             });
         });
@@ -550,7 +560,7 @@ async function createReservationsCards() {
                         <h5><b>Contacto:</b> ${ownerData.email}</h5>
                         <h5>${ownerData.status}</h5>
                         <br>
-                        <h5>Tiene otras ${ownerData.petsIDs.length} mascotas</h5>
+                        <h5>Tiene otra(s) ${ownerData.petsIDs.length - 1} mascota(s)</h5>
                     </div>
                 </div>
             `;
@@ -559,7 +569,7 @@ async function createReservationsCards() {
 }
 
 // Actividades
-async function createActivitiesCards(reservationID) {
+async function createActivitiesCards(reservationID, disabled) {
     const allActivities = await getActivities(reservationID);
     if (!allActivities) {
         console.error('No se pudo obtener la información de las actividades');
@@ -580,7 +590,7 @@ async function createActivitiesCards(reservationID) {
                                 <p style="font-size: small;">Ya se ha completado ${activity.timesCompleted} veces</p>
                             </div>
                             <div class="col-md-2 accomplish-section">
-                                <button class="btn boxed-btn-round-green accomplish-btn" data-activity-id="${activity._id}">
+                                <button class="btn boxed-btn-round-green accomplish-btn" data-activity-id="${activity._id}" ${disabled}>
                                     <i class="fa fa-check mr-1" aria-hidden="true"></i>
                                     Completar 
                                 </button>
@@ -597,6 +607,14 @@ async function createActivitiesCards(reservationID) {
     return activitiesCards;
 
 };
+
+// Función para formatear fechas traidas de mongo
+function formatDate(date) {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    const dateObj = new Date(date);
+    const utcDate = new Date(dateObj.getUTCFullYear(), dateObj.getUTCMonth(), dateObj.getUTCDate());
+    return utcDate.toLocaleDateString('es-ES', options);
+}
 
 // --- Eventos DOM ---
 // TEMPORAL: Cerrar sesión (no-google)

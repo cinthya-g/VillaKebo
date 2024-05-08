@@ -1025,7 +1025,7 @@ async function createCaretakerProfileModal(reservationID) {
     <h5><b>Contacto:</b> ${caretakerData.email}</h5>
     <h6><i>${caretakerData.status}</i></h6>
     <br>
-    <h5>Cuida a otra(s) ${caretakerData.assignedReservationsIDs.length} mascota(s)</h5>
+    <h5>Cuida a otra(s) ${caretakerData.assignedReservationsIDs.length -1} mascota(s)</h5>
     `;
     document.getElementById('caretaker-details-modal').innerHTML = modalContent;
 };
