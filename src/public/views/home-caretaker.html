@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Villa Kebo: Caretaker</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- <link rel="manifest" href="site.webmanifest"> -->
+    <link rel="shortcut icon" type="image/x-icon" href="../img/favicon.png">
+    <!-- Place favicon.ico in the root directory -->
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/magnific-popup.css">
+    <link rel="stylesheet" href="../css/themify-icons.css">
+    <link rel="stylesheet" href="../css/nice-select.css">
+    <link rel="stylesheet" href="../css/animate.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- <link rel="stylesheet" href="css/responsive.css"> -->
+</head>
+
+<body>
+    <!--[if lte IE 9]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+        <![endif]-->
+
+    <header>
+        <div class="header-area ">
+            <div class="header-top_area">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-8">
+                            <div class="short_contact_list">
+                                <ul>
+                                    <li><a href="#">Vista del cuidador</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="sticky-header" class="main-header-area">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-xl-3 col-lg-3">
+                            <div class="logo">
+                                <a href="#">
+                                    <img src="../img/logo.png" alt="">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-xl-9 col-lg-9">
+                            <div class="main-menu  d-none d-lg-block">
+                                <nav>
+                                    <ul id="navigation">
+                                        <li><a href="#assignedReservationsTitle">Reservaciones asignadas</a></li>                                                                                      
+                                        <li><a href="login.html">Cerrar sesión</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mobile_menu d-block d-lg-none"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Section with the user's info, photo -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section_title text-center mb-80">
+                    <br>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3" id="card-caretaker-section">
+                <!-- Contenido dinámico (createCaretakerCardBody)-->
+            </div>
+    
+            
+
+            <!-- Modal Editar Perfil -->
+            <div class="modal" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document" >
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="editProfileModalLabel">Editar perfil</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div id="editProfileModalContent">
+                            <!-- Contenido dinámico (createEditProfileModal) -->
+                        </div>
+                        <div class="modal-footer">
+                            <div id="noChangesAlert">
+                                <!-- Alerta dinámica -->
+                            </div>
+                            <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
+                            <button type="button" class="btn boxed-btn-round-accept" id="saveChangesProfileBtn">Guardar cambios</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="col-lg-9">
+                
+                <div class="card-pets-caretaker">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <btn class="btn boxed-btn5 mr-2" id="addReservationBtn">
+                                <i class="fa fa-dog"  aria-hidden="true"></i>
+                            </btn>
+                            Mascotas asignadas
+                        </h3>
+                        
+                        
+                        
+                        <div class="row" id="card-pet-section">
+                            <!-- Dynamic card -->
+                        </div>  
+
+                    </div>
+                </div>
+            
+            </div>
+
+            <div class="modal" id="petInfoModal" tabindex="-1" role="dialog" aria-labelledby="petInfoModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="petInfoModalLabel">Detalles de la mascota</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div id="petInfoModalContent">
+                            <!-- Contenido dinámico (createPetInfoModal) -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal" id="ownerProfilePreview" tabindex="-1" role="dialog" aria-labelledby="ownerProfilePreviewLabel" aria-hidden="true">
+                <div class="modal-dialog modal" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="ownerProfilePreviewLabel">Detalles del dueño</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body-owner">
+                            <!-- Contenido dinámico  -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn boxed-btn-round-green" data-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-lg-12">
+                <div class="card-reservations-caretaker">
+                    <div class="card-body">
+                        <h3 class="card-title" id="assignedReservationsTitle">
+                            <btn class="btn boxed-btn5 mr-2" id="addReservationBtn">
+                                <i class="fa fa-notes-medical"  aria-hidden="true"></i>
+                            </btn>
+                            Tus responsabilidades
+                        </h3>
+                    </div>
+
+                    <div class="row" id="card-reservation-section">
+                        
+
+                    </div>
+                
+
+                </div>
+            </div>
+                
+        </div>
+    </div>
+    
+
+
+<!-- footer_start  -->
+<footer class="footer">
+    <div class="footer_top">
+        <div class="container">
+            <div class="row justify-content-center">
+
+                    <div class="footer_widget">
+                        <!-- logo -->
+                        <div class="footer_logo">
+                            <a href="#">
+                                <img src="../img/logo.png" alt="">
+                            </a>
+                            <a>Proyecto TDES - ITESO P2024</a>
+                        </div>
+
+                    </div>
+
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer_end  -->
+
+
+    <!-- JS here -->
+    <script src="../js/home-caretaker-client.js"></script>
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+
+
+    </script>     
+
+</body>
+
+</html>

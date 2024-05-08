@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Villa Kebo: Owner</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- <link rel="manifest" href="site.webmanifest"> -->
+    <link rel="shortcut icon" type="image/x-icon" href="../img/favicon.png">
+    <!-- Place favicon.ico in the root directory -->
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/magnific-popup.css">
+    <link rel="stylesheet" href="../css/themify-icons.css">
+    <link rel="stylesheet" href="../css/nice-select.css">
+    <link rel="stylesheet" href="../css/animate.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+    <!-- <link rel="stylesheet" href="css/responsive.css"> -->
+    <!-- Load the Socket.io Client library -->
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        /* Estilo para el contenedor de notificaciones */
+/* Estilo para el contenedor de notificaciones */
+.notification-container {
+    position: relative; /* Posición relativa para el contenedor */
+    display: inline-block;
+}
+
+/* Estilo para el menú de notificaciones */
+.notification-menu {
+    position: absolute;
+    top: 100%; /* Justo debajo del icono de la campana */
+    left: 0;
+    width: 300px; /* O ajusta según necesites */
+    max-height: 400px; /* Aumenta según tus necesidades */
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: none; /* Controlado por JavaScript */
+    z-index: 1000; /* Asegura que esté sobre otros elementos */
+    padding-bottom: 40px; /* Espacio para el botón al final */
+}
+
+/* Área desplazable para las notificaciones */
+#notification-list {
+    max-height: 360px; /* Ajusta la altura para dejar espacio para el botón */
+    overflow-y: auto;
+    padding: 10px;
+    margin-bottom: 40px; /* Deja espacio para el botón */
+}
+
+/* Estilo para el botón 'Clear Notifications' */
+.clear-notifications-btn {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer; /* Hacer que parezca clickeable */
+}
+    </style>
+
+</head>
+
+<body>
+    <!--[if lte IE 9]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+        <![endif]-->
+
+    <header>
+        <div class="header-area ">
+            <div class="header-top_area">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-8">
+                            <div class="short_contact_list">
+                                <ul>
+                                    <li><a href="#">Vista del dueño</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="sticky-header" class="main-header-area">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-xl-3 col-lg-3">
+                            <div class="logo">
+                                <a href="#">
+                                    <img src="../img/logo.png" alt="">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-xl-9 col-lg-9">
+                            <div class="main-menu  d-none d-lg-block">
+                                <nav>
+                                    <ul id="navigation">
+                                        <li><a href="#reservacionesTitle">Tus reservaciones</a></li>
+                                        <li>
+                                            <div class="notification-container">
+                                                <div class="bell-icon" onclick="toggleNotifications()">
+                                                    🔔
+                                                    <span class="notification-count"></span>
+                                                </div>
+                                                <div class="notification-menu" id="notificationMenu" style="display: none;">
+                                                    <ul id="notification-list">
+                                                        <!-- Los ítems de notificación se insertarán dinámicamente aquí -->
+                                                    </ul>
+                                                    <button class="btn btn-danger clear-notifications-btn" onclick="clearAllNotifications()">Clear Notifications</button>
+
+                                                </div>
+                                            </div>                                                                                       
+                                        <li><a id="logoutBtn">Cerrar sesión</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mobile_menu d-block d-lg-none"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Card del Dueño -->
+    <div class="container" id="principalContainer">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section_title text-center mb-80">
+                    <br>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="secondaryContainer">
+            
+            <div class="col-lg-3" id="card-owner-section">
+                <!-- Contenido dinámico (createOwnerCardBody)-->
+            </div>
+
+            
+            <div class="col-lg-9">
+                
+                <div class="card-pets">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <btn class="btn boxed-btn-round-green mr-2" id="addPetBtn" data-toggle="modal" data-target="#createPetModal">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                            </btn>
+                            Mascotas 
+                        </h3>
+                        
+                        
+                        <div class="row" id="card-pet-section">
+                            <!-- Contenido dinámico de las mascotas del Dueño -->
+
+                        </div>  
+                    </div>
+                </div>
+            </div> <!-- pets -->
+        
+    
+                            
+            <div class="col-lg-12">
+                
+                <div class="card-reservations">
+
+                    <div class="card-body">
+                        <h3 class="card-title" id="reservacionesTitle">
+                            <btn class="btn boxed-btn-round-green mr-2" id="addReservationBtn" data-toggle="modal" data-target="#createReservation">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                            </btn>
+                            Reservaciones 
+                        </h3>
+                        
+                        
+                        <div class="row" id="card-reservation-section">
+                            <!-- Contenido dinámico de las reservaciones (createReservationCards) -->
+                            <!--
+                            <div class="col-md-6">
+                                <div class="card-reservation">
+                                    <div class="card-body" id="reservation-cards-body">
+                                        <h3 class="card-title"><b>nombre</b></h3>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item"><h5>fecha1 fecha2</h5></li>
+                                            <li class="list-group-item">
+                                                <h4><b>Actividades:</b></h4>
+                                                1. actividad
+                                                2. actividad
+                                            </li>
+                                            <li class="list-group-item">                                                
+                                                <h5><btn class="btn boxed-btn6" 
+                                                    data-toggle="modal" data-target="#caretakerProfilePreview">
+                                                    <i class="fa fa-address-card mr-2" aria-hidden="true"
+                                                    ></i>Perfil del cuidador</btn></h5>
+                                            </li> 
+                                            <li class="list-group-item">
+                                                <btn class="btn boxed-btn-round-red" data-toggle="modal" data-target="#deleteReservation" 
+                                                >
+                                                    <i class="fa fa-times" aria-hidden="true"></i>
+                                                    Cancelar
+                                                </btn>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            -->
+
+
+                        </div> <!-- card reservation-section-->  
+
+                    </div> <!-- card-body-->
+                    
+                </div> <!-- card-reservations -->
+            </div> <!-- reservations -->
+            
+
+        </div> <!-- secondaryContainer -->
+
+    </div> <!-- principalContainer -->
+
+            <!-- Modal Editar Perfil -->
+            <div class="modal" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document" >
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="editProfileModalLabel">Editar perfil</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div id="editProfileModalContent">
+                            <!-- Contenido dinámico (createEditProfileModal) -->
+                        </div>
+                        <div class="modal-footer">
+                            <div id="noChangesAlert">
+                                <!-- Alerta dinámica -->
+                            </div>
+                            <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
+                            <button type="button" class="btn boxed-btn-round-accept" id="saveChangesProfileBtn">Guardar cambios</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal CREAR mascota -->
+            <div class="modal" id="createPetModal" tabindex="-1" role="dialog" aria-labelledby="createPetModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="createPetModalLabel">Registrar una nueva mascota</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <!-- Left section for form inputs -->
+                                <div class="col-md-8">
+                                    <form>
+                                        <div class="form-group">
+                                            <h5 for="petName">Nombre</h5>
+                                            <input type="text" class="form-control" id="petName" maxlength="40" placeholder="Escribe el nombre de tu mascota">
+                                        </div>
+                                        <div class="form-group">
+                                            <h5 for="petAge">Edad</h5>
+                                            <input type="number" min="0" max="25" class="form-control" id="petAge" placeholder="Indica su edad">
+                                        </div>
+                                        <div class="form-group">
+                                            <h5 for="petBreed">Raza</h5>
+                                            <input type="text" class="form-control" id="petBreed" placeholder="Indica su raza">
+                                        </div>
+                                        
+                                    </form>
+                                </div>
+                                <!-- Right section for profile picture -->
+                                <div class="col-md-4 text-center" id="newPetPicturePreview">
+                                    <img src="https://vk-profile-photos.s3.amazonaws.com/no-pet-photo.png" alt="Pet Picture" class="img-fluid change-picture mb-2" id="newProfilePicturePet">
+                                    <h6>
+                                        Tu mascota tendrá esta foto por default, pero podrás cambiarla cuantas veces quieras presionando el ícono de editar de su tarjeta.
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div id="cantCreatePetAlert">
+                                <!-- Alerta dinámica sobre datos vacíos -->
+                            </div>
+                            <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
+                            <button type="button" class="btn boxed-btn-round-accept" id="createNewPetBtn">Registrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Editar Mascota -->
+            <div class="modal" id="editPetModal" tabindex="-1" role="dialog" aria-labelledby="editPetModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="editPetModalLabel">Editar datos de la mascota</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div id="edit-pet-body-modal">
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <div id="noPetChangesAlert">
+
+                                </div>
+                                <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
+                                <div id="saveModifiedPetBtn">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+            <!-- Modal ELIMINAR Mascota -->
+            <div class="modal" id="deletePetModal" tabindex="-1" role="dialog" aria-labelledby="deletePetModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content" id="delete-pet-content">
+                            <!-- Contenido dinámico (createDeletePetModal)-->
+                        </div>
+                    </div>
+            </div>
+
+
+            <!-- Modal EXPEDIENTE (record) de la mascota-->
+            <div class="modal" id="petRecordModal" tabindex="-1" role="dialog" aria-labelledby="petRecordModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="petRecordModalLabel">Expediente de la mascota</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" id="record-modal-content">
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn boxed-btn-round-cancel" data-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+            </div>  
+
+    
+            <!-- Modal CREAR Reservación -->
+            <div class="modal" id="createReservation" tabindex="-1" role="dialog" aria-labelledby="createReservationLabel" aria-hidden="true">
+                <div class="modal-dialog modal-l" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="createReservationLabel">Crear reservación</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div id="new-reservation-content">
+                            <!-- Contenido dinámico de creación de reservación (createNewReservationModal)-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Modal para AÑADIR ACTIVIDADES en una reservación confirmada -->
+            <div class="modal fade" id="addActivitiesModal" tabindex="-1" role="dialog" aria-labelledby="addActivitiesModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="addActivitiesModalLabel">Añadir actividades</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div id="news-activites-content">
+                            <!-- Contenido dinámico de la creación de actividades (createNewActivitiesModal)-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Modal ELIMINAR Reservación -->
+            <div class="modal" id="deleteReservation" tabindex="-1" role="dialog" aria-labelledby="deleteReservationLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="deleteReservationLabel">¿Eliminar reservación?</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" id="delete-reservation-content">
+                            <!-- Contenido dinámico (createDeleteReservationModal)-->
+                        </div>
+                        <div class="modal-footer" id="delete-reservation-buttons">
+                            <!-- Contenido dinámico (createDeleteReservationModal)-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Modal VER PERFIL del cuidador -->
+            <div class="modal" id="caretakerProfilePreview" tabindex="-1" role="dialog" aria-labelledby="caretakerProfilePreviewLabel" aria-hidden="true">
+                <div class="modal-dialog modal" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="caretakerProfilePreviewLabel">Detalles del cuidador</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-12 text-center vertical-center" id="caretaker-details-modal">
+                                    <!-- Contenido dinámico del perfil del cuidador (createCaretakerProfileModal)-->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn boxed-btn-round-green" data-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+    <!-- footer_start  -->
+    <footer class="footer">
+        <div class="footer_top">
+            <div class="container">
+                <div class="row justify-content-center">
+
+                        <div class="footer_widget">
+                            <!-- logo -->
+                            <div class="footer_logo">
+                                <a href="#">
+                                    <img src="../img/logo.png" alt="">
+                                </a>
+                                <a>Proyecto TDES - ITESO P2024</a>
+                            </div>
+
+                        </div>
+
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- footer_end  -->
+
+    
+
+
+    <!-- JS here -->
+    <script src="../js/home-owner-client.js"></script>
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+
+</script>
+
+</body>
+
+</html>
